@@ -1,0 +1,138 @@
+/* Hover + focus affordance for editable elements. Only imported by the
+   client-side provider module, so these styles never ship to non-admin
+   visitors. */
+
+.cms-editable {
+  cursor: text;
+  transition: outline-color 120ms ease;
+  outline: 1px dashed transparent;
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.cms-editable:hover {
+  outline-color: rgba(0, 0, 0, 0.28);
+}
+
+.cms-editable:focus,
+.cms-editable:focus-within,
+.cms-editable.cms-editing {
+  outline: 1px solid rgba(0, 0, 0, 0.55);
+  outline-offset: 3px;
+}
+
+.cms-editable--image {
+  cursor: pointer;
+  position: relative;
+}
+
+.cms-editable--image:hover {
+  outline-color: rgba(0, 0, 0, 0.4);
+}
+
+.cms-editable--link {
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cms-editable:hover {
+    outline-color: rgba(255, 255, 255, 0.45);
+  }
+  .cms-editable:focus,
+  .cms-editable:focus-within,
+  .cms-editable.cms-editing {
+    outline-color: rgba(255, 255, 255, 0.75);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .cms-editable:hover {
+    outline: 2px dashed currentColor;
+  }
+  .cms-editable:focus,
+  .cms-editable:focus-within,
+  .cms-editable.cms-editing {
+    outline: 2px solid currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cms-editable {
+    transition: none;
+  }
+}
+
+/* Replace-image overlay button */
+.cms-image-replace {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(20, 20, 20, 0.82);
+  color: #fafafa;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  z-index: 2;
+}
+
+.cms-editable--image:hover .cms-image-replace,
+.cms-editable--image:focus-within .cms-image-replace {
+  opacity: 1;
+}
+
+/* Link popover */
+.cms-link-popover {
+  position: absolute;
+  z-index: 9400;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 16rem;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 0.85rem;
+  color: #1a1a1a;
+}
+
+.cms-link-popover label {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.cms-link-popover input {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
+  background: #fff;
+  color: inherit;
+}
+
+.cms-link-popover-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.cms-link-popover button {
+  border: 1px solid currentColor;
+  background: transparent;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: inherit;
+}

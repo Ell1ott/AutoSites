@@ -1,0 +1,60 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Node / Next.js (coffeShopTest) ---
+node_modules/
+.next/
+out/
+build/
+dist/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Bun / package managers
+.pnpm-store/
+
+# Vercel
+.vercel
+
+# Coverage
+coverage/
+.nyc_output/
+
+# --- Python (mapsLeadsFetcher) ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# uv
+.uv-cache/
+
+# --- Local project data ---
+mapsLeadsFetcher/maps_businesses.csv
+mapsLeadsFetcher/maps_businesses.json

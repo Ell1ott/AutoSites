@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f1efe9;
+  --bg-alt: #e9e4de;
+  --text: #3d352e;
+  --text-light: #8d6e54;
+  --accent: #c4b29a;
+  --transition: cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 4vw;
+}
+
+.kaffe-header {
+  height: 15vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(241, 239, 233, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.kaffe-logo {
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.kaffe-nav ul {
+  display: flex;
+  gap: 3rem;
+  list-style: none;
+}
+
+.kaffe-nav a {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: opacity 0.3s var(--transition);
+}
+
+.kaffe-nav a:hover {
+  opacity: 0.5;
+}
+
+.kaffe-hero {
+  height: 85vh;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4vw;
+  align-items: center;
+}
+
+.kaffe-hero-image-wrap {
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+
+.kaffe-hero-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(20%) sepia(10%);
+}
+
+.kaffe-hero-content {
+  padding-left: 2vw;
+}
+
+.kaffe-hero-content h1 {
+  font-family: var(--font-eb-garamond), serif;
+  font-size: clamp(3rem, 6vw, 8rem);
+  font-weight: 400;
+  line-height: 0.9;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.kaffe-metadata {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.kaffe-fluted-divider {
+  height: 20vh;
+  width: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 15px,
+    rgba(0, 0, 0, 0.03) 15px,
+    rgba(0, 0, 0, 0.03) 16px
+  );
+  margin: 10vh 0;
+}
+
+.kaffe-section-label {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 4rem;
+}
+
+.kaffe-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4vw;
+}
+
+.kaffe-menu-card {
+  cursor: pointer;
+}
+
+.kaffe-menu-card .kaffe-img-frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--bg-alt);
+  margin-bottom: 1.5rem;
+  border-radius: 200px 200px 0 0;
+  overflow: hidden;
+}
+
+.kaffe-menu-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--transition);
+}
+
+.kaffe-menu-card:hover img {
+  transform: scale(1.05);
+}
+
+.kaffe-menu-card h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.kaffe-menu-card p {
+  font-family: var(--font-eb-garamond), serif;
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.kaffe-philosophy {
+  margin: 30vh 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.kaffe-philosophy blockquote {
+  font-family: var(--font-eb-garamond), serif;
+  font-size: 3rem;
+  max-width: 800px;
+  width: 100%;
+  margin: 0;
+  line-height: 1.2;
+  color: var(--text);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.kaffe-cta-monolith {
+  display: inline-block;
+  background: var(--text);
+  color: var(--bg);
+  padding: 1.5rem 4rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.7rem;
+  margin-top: 2rem;
+  transition: background 0.4s var(--transition);
+}
+
+.kaffe-cta-monolith:hover {
+  background: var(--text-light);
+}
+
+.kaffe-footer {
+  padding: 10vh 0 5vh;
+  background: var(--bg-alt);
+  margin-top: 20vh;
+}
+
+.kaffe-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 4vw;
+}
+
+.kaffe-footer-logo {
+  font-size: 3rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 200;
+}
+
+.kaffe-footer-col h4 {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+}
+
+.kaffe-footer-col p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.kaffe-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.kaffe-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.2s var(--transition);
+}
+
+.kaffe-reveal.kaffe-reveal-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kaffe-space-image {
+  grid-column: span 2;
+  height: 60vh;
+  border-radius: 0;
+}
+
+.kaffe-space-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 2vw;
+}
+
+.kaffe-space-aside h2 {
+  font-family: var(--font-eb-garamond), serif;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.kaffe-space-aside p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.kaffe-hero-lede {
+  max-width: 300px;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.kaffe-footer-copy {
+  margin-top: 10vh;
+  opacity: 0.3;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.kaffe-space-section {
+  margin-bottom: 20vh;
+}

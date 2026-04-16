@@ -1,0 +1,413 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">Kaffe&amp;mere — Nordisk Ro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&amp;family=EB+Garamond:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+        :root {
+            --bg: #F1EFE9;
+            --bg-alt: #E9E4DE;
+            --text: #3D352E;
+            --text-light: #8D6E54;
+            --accent: #C4B29A;
+            --transition: cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 4vw;
+        }
+
+        header {
+            height: 15vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(241, 239, 233, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: opacity 0.3s var(--transition);
+        }
+
+        nav a:hover { opacity: 0.5; }
+
+        
+        .hero {
+            height: 85vh;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4vw;
+            align-items: center;
+            margin-bottom: 6rem;
+        }
+
+        .hero-image-wrap {
+            position: relative;
+            height: 70vh;
+            overflow: hidden;
+            background: var(--bg-alt);
+        }
+
+        .hero-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%) sepia(10%);
+        }
+
+        .hero-content {
+            padding-left: 2vw;
+        }
+
+        .hero-content h1 {
+            font-family: 'EB Garamond', serif;
+            font-size: clamp(3rem, 6vw, 8rem);
+            font-weight: 400;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .metadata {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        
+        .fluted-divider {
+            height: 6rem;
+            width: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 15px,
+                rgba(0,0,0,0.03) 15px,
+                rgba(0,0,0,0.03) 16px
+            );
+            margin: 3rem 0;
+        }
+
+        
+        .section-label {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4vw;
+        }
+
+        .menu-card {
+            cursor: pointer;
+        }
+
+        .menu-card .img-frame {
+            aspect-ratio: 4/5;
+            background: var(--bg-alt);
+            margin-bottom: 1.5rem;
+            border-radius: 200px 200px 0 0; 
+            overflow: hidden;
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s var(--transition);
+        }
+
+        .menu-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .menu-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-card p {
+            font-family: 'EB Garamond', serif;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        
+        .philosophy {
+            margin: 5rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .philosophy blockquote {
+            font-family: 'EB Garamond', serif;
+            font-size: 3rem;
+            max-width: 800px;
+            width: 100%;
+            margin: 0;
+            line-height: 1.2;
+            color: var(--text);
+            text-align: center;
+            text-wrap: balance;
+        }
+
+        
+        .cta-monolith {
+            display: inline-block;
+            background: var(--text);
+            color: var(--bg);
+            padding: 1.5rem 4rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.7rem;
+            margin-top: 2rem;
+            transition: background 0.4s var(--transition);
+        }
+
+        .cta-monolith:hover {
+            background: var(--text-light);
+        }
+
+        
+        footer {
+            padding: 4rem 0 2.5rem;
+            background: var(--bg-alt);
+            margin-top: 5rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4vw;
+        }
+
+        .footer-logo {
+            font-size: 3rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 200;
+        }
+
+        .footer-col h4 {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .footer-col p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3External-link%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s var(--transition);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body vid="9">
+    <div class="grain" vid="10"></div>
+
+    <header class="container" vid="11">
+        <div class="logo" vid="12">Kaffe&amp;mere</div>
+        <nav vid="13">
+            <ul vid="14">
+                <li vid="15"><a href="#" vid="16">The Brew</a></li>
+                <li vid="17"><a href="#" vid="18">Spaces</a></li>
+                <li vid="19"><a href="#" vid="20">Ethics</a></li>
+                <li vid="21"><a href="#" vid="22">Visit</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main vid="23">
+        <section class="container hero" vid="24">
+            <div class="hero-image-wrap" vid="25">
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&amp;fit=crop&amp;q=80&amp;w=2070" alt="Interior" vid="26" style="transform: translateY(0px) scale(1.1);">
+            </div>
+            <div class="hero-content" vid="27">
+                <span class="metadata" vid="28">Est. 2024 — Copenhagen</span>
+                <h1 vid="29">Quietude <br vid="30"> in every <br vid="31"> <i vid="32">pour.</i></h1>
+                <p style="max-width: 300px; color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;" vid="33">
+                    A curated ritual of slow-living through the lens of specialty coffee and architectural stillness.
+                </p>
+                <a href="#" class="cta-monolith" vid="34">Reserve a Table</a>
+            </div>
+        </section>
+
+        <div class="fluted-divider" vid="35"></div>
+
+        <section class="container" vid="36">
+            <div class="section-label" vid="37">
+                <span class="metadata" vid="38">The Collection</span>
+                <span class="metadata" vid="39">01 / 03</span>
+            </div>
+            
+            <div class="grid-3" vid="40">
+                <div class="menu-card reveal active" vid="41">
+                    <div class="img-frame" vid="42">
+                        <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="V60" vid="43">
+                    </div>
+                    <h3 vid="44">001. Origin V60</h3>
+                    <p vid="45">Notes of stone fruit, bergamot, and morning air.</p>
+                </div>
+                <div class="menu-card reveal active" style="margin-top: 3rem;" vid="46">
+                    <div class="img-frame" vid="47">
+                        <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Espresso" vid="48">
+                    </div>
+                    <h3 vid="49">002. Dark Matter</h3>
+                    <p vid="50">Viscous, velvety, with a lingering cocoa finish.</p>
+                </div>
+                <div class="menu-card reveal active" vid="51">
+                    <div class="img-frame" vid="52">
+                        <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Cold Brew" vid="53">
+                    </div>
+                    <h3 vid="54">003. Still Cold</h3>
+                    <p vid="55">Steeped for 18 hours in stone crocks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="philosophy container reveal active" vid="56">
+            <span class="metadata" vid="57">Our Philosophy</span>
+            <blockquote vid="58">
+                "We believe that a space should breathe as deeply as those within it."
+            </blockquote>
+        </section>
+
+        <section class="container" style="margin-bottom: 5rem;" vid="59">
+            <div class="grid-3" vid="60">
+                <div class="hero-image-wrap" style="grid-column: span 2; height: 60vh; border-radius: 0;" vid="61">
+                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;q=80&amp;w=2047" alt="Cafe space" vid="62">
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; padding-left: 2vw;" vid="63">
+                    <span class="metadata" vid="64">Space</span>
+                    <h2 style="font-family: 'EB Garamond', serif; font-size: 2.5rem; margin-bottom: 1rem;" vid="65">Materials of Rest.</h2>
+                    <p style="color: var(--text-light); font-size: 0.9rem;" vid="66">
+                        Our flagship store utilizes reclaimed oak beams and hand-applied lime wash to create a sensory vacuum.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer vid="67">
+        <div class="container footer-grid" vid="68">
+            <div class="footer-logo" vid="69">K&amp;M</div>
+            <div class="footer-col" vid="70">
+                <h4 vid="71">Inquiry</h4>
+                <p vid="72">hej@kaffemere.dk</p>
+                <p vid="73">+45 20 30 40 50</p>
+            </div>
+            <div class="footer-col" vid="74">
+                <h4 vid="75">Address</h4>
+                <p vid="76">Gothersgade 12</p>
+                <p vid="77">1123 København K</p>
+                <p vid="78">Denmark</p>
+            </div>
+        </div>
+        <div class="container" style="margin-top: 3rem; opacity: 0.3; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;" vid="79">
+            © 2024 Kaffe&amp;mere. A study in stillness.
+        </div>
+    </footer>
+
+    <script vid="80">
+        
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroImg = document.querySelector('.hero-image-wrap img');
+            if (heroImg) {
+                heroImg.style.transform = `translateY(${scrolled * 0.1}px) scale(1.1)`;
+            }
+        });
+    </script>
+
+</body></html>
