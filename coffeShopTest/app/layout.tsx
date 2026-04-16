@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${ebGaramond.variable}`}>
       <body>
-        <Suspense fallback={<>{children}</>}>
+        <Suspense fallback={null}>
           <EditableProvider>{children}</EditableProvider>
         </Suspense>
       </body>
