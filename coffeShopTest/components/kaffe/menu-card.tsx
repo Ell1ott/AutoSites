@@ -1,41 +1,48 @@
-import Image from "next/image";
-import { Reveal } from "./reveal";
+import { EditableImage, EditableText } from "@/lib/cms";
 
 type MenuCardProps = {
-  code: string;
-  title: string;
-  description: string;
-  imageSrc: string;
-  imageAlt: string;
+  keyPrefix: string;
+  fallbacks: {
+    code: string;
+    title: string;
+    description: string;
+    imageSrc: string;
+    imageAlt: string;
+  };
   offset?: boolean;
 };
 
-export function MenuCard({
-  code,
-  title,
-  description,
-  imageSrc,
-  imageAlt,
-  offset,
-}: MenuCardProps) {
+export function MenuCard({ keyPrefix, fallbacks, offset }: MenuCardProps) {
   return (
-    <Reveal
-      className="kaffe-menu-card"
+    <div
+      className="kaffe-menu-card kaffe-reveal kaffe-reveal-active"
       style={offset ? { marginTop: "10vh" } : undefined}
     >
       <div className="kaffe-img-frame">
-        <Image
-          src={imageSrc}
-          alt={imageAlt}
+        <EditableImage
+          cmsKey={`${keyPrefix}.image`}
+          fallback={{ src: fallbacks.imageSrc, alt: fallbacks.imageAlt }}
           fill
           sizes="(max-width: 1440px) 33vw, 400px"
           className="object-cover"
         />
       </div>
       <h3>
-        {code}. {title}
+        <EditableText
+          cmsKey={`${keyPrefix}.code`}
+          fallback={fallbacks.code}
+        />
+        .{" "}
+        <EditableText
+          cmsKey={`${keyPrefix}.title`}
+          fallback={fallbacks.title}
+        />
       </h3>
-      <p>{description}</p>
-    </Reveal>
+      <EditableText
+        cmsKey={`${keyPrefix}.description`}
+        fallback={fallbacks.description}
+        as="p"
+      />
+    </div>
   );
 }

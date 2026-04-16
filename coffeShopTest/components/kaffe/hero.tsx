@@ -1,16 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
-import { CtaMonolith } from "./cta-monolith";
-import { Metadata } from "./metadata";
-import { heroImageSrc } from "@/lib/kaffe-content";
 
 type HeroProps = {
   title?: ReactNode;
+  eyebrow?: ReactNode;
+  lede?: ReactNode;
+  cta?: ReactNode;
+  image?: ReactNode;
 };
 
-export function Hero({ title }: HeroProps) {
+export function Hero({ title, eyebrow, lede, cta, image }: HeroProps) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -22,30 +22,22 @@ export function Hero({ title }: HeroProps) {
   return (
     <section className="container kaffe-hero">
       <div className="kaffe-hero-image-wrap">
-        <Image
-          src={heroImageSrc}
-          alt="Interior"
-          fill
-          priority
-          sizes="(max-width: 1440px) 50vw, 720px"
-          className="object-cover [filter:grayscale(20%)_sepia(10%)]"
+        <div
+          className="[filter:grayscale(20%)_sepia(10%)]"
           style={{
+            position: "absolute",
+            inset: 0,
             transform: `translateY(${scrollY * 0.1}px) scale(1.1)`,
           }}
-        />
+        >
+          {image}
+        </div>
       </div>
       <div className="kaffe-hero-content">
-        <Metadata>Est. 2024 — Copenhagen</Metadata>
-        {title ?? (
-          <h1>
-            Quietude <br /> in every <br /> <em>pour.</em>
-          </h1>
-        )}
-        <p className="kaffe-hero-lede">
-          A curated ritual of slow-living through the lens of specialty coffee
-          and architectural stillness.
-        </p>
-        <CtaMonolith href="#">Reserve a Table</CtaMonolith>
+        <span className="kaffe-metadata">{eyebrow}</span>
+        {title}
+        <p className="kaffe-hero-lede">{lede}</p>
+        {cta}
       </div>
     </section>
   );
