@@ -1,4 +1,5 @@
 import { EditableImage, EditableText } from "@/lib/cms";
+import { Reveal } from "./reveal";
 
 type MenuCardProps = {
   keyPrefix: string;
@@ -14,8 +15,8 @@ type MenuCardProps = {
 
 export function MenuCard({ keyPrefix, fallbacks, offset }: MenuCardProps) {
   return (
-    <div
-      className="kaffe-menu-card kaffe-reveal kaffe-reveal-active"
+    <Reveal
+      className="kaffe-menu-card"
       style={offset ? { marginTop: "10vh" } : undefined}
     >
       <div className="kaffe-img-frame">
@@ -43,6 +44,6 @@ export function MenuCard({ keyPrefix, fallbacks, offset }: MenuCardProps) {
         fallback={fallbacks.description}
         as="p"
       />
-    </div>
+    </Reveal>
   );
 }

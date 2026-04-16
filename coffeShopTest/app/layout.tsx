@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { EditableProvider } from "@/lib/cms/components/EditableProvider";
 
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${ebGaramond.variable}`}>
       <body>
-        <EditableProvider>{children}</EditableProvider>
+        <Suspense fallback={<>{children}</>}>
+          <EditableProvider>{children}</EditableProvider>
+        </Suspense>
       </body>
     </html>
   );
