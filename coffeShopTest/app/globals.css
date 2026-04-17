@@ -390,6 +390,20 @@ main {
   text-transform: uppercase;
 }
 
+.kaffe-footer-copy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.65rem;
+  text-align: center;
+}
+
+.kaffe-footer-copy-sep {
+  opacity: 0.65;
+  user-select: none;
+}
+
 .kaffe-space-section {
   margin-bottom: 20vh;
 }

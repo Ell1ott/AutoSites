@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { revalidateContent, updateContent } from "../server/actions";
+import { updateContent } from "../server/actions";
 import type { CmsTextStyle } from "../types";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
@@ -84,10 +84,11 @@ export function EditableTextClient({
 }: EditableTextClientProps) {
   const ref = useRef<HTMLElement | null>(null);
   const toolbarRef = useRef<HTMLSpanElement | null>(null);
-  // After mount, the DOM owns the contentEditable's content — React must
-  // never re-apply innerHTML (it would wipe in-progress typing). Snapshotting
-  // the initial HTML keeps `dangerouslySetInnerHTML.__html` stable forever.
-  const initialHtml = useRef(initialText).current;
+  // The contentEditable is intentionally uncontrolled — the DOM owns its
+  // content. We set innerHTML once on mount (see effect below) and never
+  // pass dangerouslySetInnerHTML, so React has no way to overwrite typing
+  // when the parent server component re-renders after a save.
+  const hasInitializedRef = useRef(false);
   // Re-entry guard: prevents endEditing from running twice when both the
   // document mousedown listener AND the editable's onBlur fire on the same
   // outside-click.
@@ -96,18 +97,11 @@ export function EditableTextClient({
   // save, endEditing all need the latest committed value without waiting for
   // a React render).
   const savedTextRef = useRef(initialText);
-  // Track whether text was saved mid-edit without revalidation, so endEditing
-  // knows to invalidate the cache once at the end.
-  const textDirtyRef = useRef(false);
   const [savedText, setSavedText] = useState(initialText);
   const [textStyle, setTextStyle] = useState<CmsTextStyle | undefined>(
     initialStyle,
   );
   const savedStyleRef = useRef<CmsTextStyle | undefined>(initialStyle);
-  // Track whether the style has been changed since the editable was focused,
-  // so we can trigger a single cache revalidation on blur instead of one per
-  // slider tick / button click.
-  const styleDirtyRef = useRef(false);
   const [focused, setFocused] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { pushToast } = useEditableContext();
@@ -117,7 +111,6 @@ export function EditableTextClient({
     const prev = savedStyleRef.current;
     if (sameStyle(prev, next)) return;
     savedStyleRef.current = next;
-    styleDirtyRef.current = true;
     const payload: { text: string; style?: CmsTextStyle } = {
       text: savedTextRef.current,
     };
@@ -125,10 +118,7 @@ export function EditableTextClient({
       payload.style = next;
     }
     try {
-      // Skip cache revalidation here — the local state already reflects the
-      // change, and revalidating on every tick would refresh the whole route.
-      // We invalidate once on blur (see onBlur).
-      await updateContent(cmsKey, "text", payload, { revalidate: false });
+      await updateContent(cmsKey, "text", payload);
     } catch (err) {
       pushToast({
         kind: "error",
@@ -172,28 +162,25 @@ export function EditableTextClient({
     void persistStyle(undefined);
   }
 
-  // -------------------- throttled text saves while editing --------------------
-  // Save at most once every TEXT_SAVE_INTERVAL_MS, leading + trailing edge.
-  // Each save skips revalidation so the route doesn't refresh as you type;
-  // endEditing fires the single invalidation at the end of the session.
+  // -------------------- text autosave while editing --------------------
+  // Every TEXT_SAVE_INTERVAL_MS while focused, check the DOM for changes and
+  // save if anything differs from what's already saved. Each save revalidates
+  // the CMS cache tag so other requests see fresh content (contentEditable
+  // stays uncontrolled so local typing is not wiped by re-renders).
   const TEXT_SAVE_INTERVAL_MS = 1200;
-  const lastTextSaveAt = useRef(0);
-  const trailingTextTimer = useRef<number | null>(null);
 
   async function persistText(next: string) {
     if (next === savedTextRef.current) return;
     const prev = savedTextRef.current;
     savedTextRef.current = next;
     setSavedText(next);
-    textDirtyRef.current = true;
-    lastTextSaveAt.current = Date.now();
     const payload: { text: string; style?: CmsTextStyle } = { text: next };
     const cs = savedStyleRef.current;
     if (cs && (cs.fontSize !== undefined || cs.lineHeight !== undefined)) {
       payload.style = cs;
     }
     try {
-      await updateContent(cmsKey, "text", payload, { revalidate: false });
+      await updateContent(cmsKey, "text", payload);
     } catch (err) {
       pushToast({
         kind: "error",
@@ -204,37 +191,30 @@ export function EditableTextClient({
     }
   }
 
-  function scheduleTextSave() {
-    const el = ref.current;
-    if (!el) return;
-    const next = sanitizeHtml(el.innerHTML);
-    if (next === savedTextRef.current) return;
-    const elapsed = Date.now() - lastTextSaveAt.current;
-    if (trailingTextTimer.current !== null) {
-      window.clearTimeout(trailingTextTimer.current);
-      trailingTextTimer.current = null;
-    }
-    if (elapsed >= TEXT_SAVE_INTERVAL_MS) {
-      void persistText(next);
-    } else {
-      trailingTextTimer.current = window.setTimeout(() => {
-        trailingTextTimer.current = null;
-        const el2 = ref.current;
-        if (!el2) return;
-        void persistText(sanitizeHtml(el2.innerHTML));
-      }, TEXT_SAVE_INTERVAL_MS - elapsed);
-    }
-  }
-
-  function cancelPendingTextSave() {
-    if (trailingTextTimer.current !== null) {
-      window.clearTimeout(trailingTextTimer.current);
-      trailingTextTimer.current = null;
-    }
-  }
-
   useEffect(() => {
-    return () => cancelPendingTextSave();
+    if (!focused) return;
+    const id = window.setInterval(() => {
+      const el = ref.current;
+      if (!el) return;
+      const next = sanitizeHtml(el.innerHTML);
+      if (next !== savedTextRef.current) void persistText(next);
+    }, TEXT_SAVE_INTERVAL_MS);
+    return () => window.clearInterval(id);
+    // persistText captures refs only — safe to omit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focused]);
+
+  // Set the initial HTML once — this is the ONLY place React/JS touches the
+  // contentEditable's content. After this effect runs, the DOM is the source
+  // of truth until endEditing reads from it to save.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+    el.innerHTML = initialText;
+    // initialText is the prop at first render; we deliberately don't re-run
+    // this effect when the prop changes (that would wipe in-progress typing).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** End the editing session: commit text & style, close the toolbar. */
@@ -255,7 +235,6 @@ export function EditableTextClient({
       active.blur();
     }
 
-    cancelPendingTextSave();
     el.classList.remove("cms-editing");
     setFocused(false);
     setExpanded(false);
@@ -263,20 +242,9 @@ export function EditableTextClient({
     const next = sanitizeHtml(el.innerHTML);
     const textChanged = next !== savedTextRef.current;
 
-    if (!textChanged) {
-      // Text matches what's saved. If anything was written without
-      // revalidation during this session, invalidate the cache once now.
-      if (styleDirtyRef.current || textDirtyRef.current) {
-        styleDirtyRef.current = false;
-        textDirtyRef.current = false;
-        void revalidateContent(cmsKey).catch(() => {});
-      }
-      return;
-    }
+    if (!textChanged) return;
 
     const prev = savedTextRef.current;
-    styleDirtyRef.current = false; // text save below revalidates everything
-    textDirtyRef.current = false;
     savedTextRef.current = next;
     setSavedText(next);
     const payload: { text: string; style?: CmsTextStyle } = { text: next };
@@ -452,12 +420,13 @@ export function EditableTextClient({
       contentEditable: true,
       suppressContentEditableWarning: true,
       spellCheck: true,
-      dangerouslySetInnerHTML: { __html: initialHtml },
+      // Intentionally NO dangerouslySetInnerHTML — see the mount effect above.
+      // React must never re-apply innerHTML or it will wipe user typing when
+      // the parent server component re-renders after a save.
       onBlur,
       onFocus,
       onKeyDown,
       onPaste,
-      onInput: scheduleTextSave,
       "data-cms-key": cmsKey,
     }),
   );

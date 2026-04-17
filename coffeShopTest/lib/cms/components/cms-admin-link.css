@@ -1,0 +1,17 @@
+/* Subdued footer utility link — works inside any footer row; inherits color. */
+.cms-footer-admin-link {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.85;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.cms-footer-admin-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

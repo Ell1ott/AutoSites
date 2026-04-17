@@ -1,4 +1,4 @@
-import { EditableText } from "@/lib/cms";
+import { CmsFooterAdminLink, EditableText } from "@/lib/cms";
 
 export function SiteFooter() {
   return (
@@ -70,10 +70,16 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="container kaffe-footer-copy">
-        <EditableText
-          cmsKey="footer.copy"
-          fallback="© 2025 KAFFE&MERE — STORGADE 27, SORØ"
-        />
+        <div className="kaffe-footer-copy-row">
+          <EditableText
+            cmsKey="footer.copy"
+            fallback="© 2025 KAFFE&MERE — STORGADE 27, SORØ"
+          />
+          <span className="kaffe-footer-copy-sep" aria-hidden>
+            ·
+          </span>
+          <CmsFooterAdminLink />
+        </div>
       </div>
     </footer>
   );
