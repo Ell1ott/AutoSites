@@ -1,16 +1,15 @@
 import type { CSSProperties, ReactNode } from "react";
 import { getCmsContent } from "../server/content";
 import { getEditMode } from "../server/mode";
+import { getSiteId } from "../server/site";
 import type { CmsLink } from "../types";
 
 type EditableLinkProps = {
   cmsKey: string;
   fallback: CmsLink;
-  /** "a" (default) or "button". Buttons ignore href and render a plain <button>. */
   as?: "a" | "button";
   className?: string;
   style?: CSSProperties;
-  /** Wrapping content around the label (icons, arrows, etc.). */
   children?: (label: string) => ReactNode;
   target?: string;
   rel?: string;
@@ -26,7 +25,8 @@ export async function EditableLink({
   target,
   rel,
 }: EditableLinkProps) {
-  const row = await getCmsContent<"link">(cmsKey);
+  const siteId = await getSiteId();
+  const row = await getCmsContent<"link">(siteId, cmsKey);
   const value: CmsLink = row?.kind === "link" ? row.value : fallback;
   const editMode = await getEditMode();
 

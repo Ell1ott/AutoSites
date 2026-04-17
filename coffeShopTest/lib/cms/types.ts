@@ -1,6 +1,14 @@
 export type CmsKind = "text" | "image" | "link";
 
-export type CmsText = { text: string };
+export type CmsTextStyle = {
+  fontSize?: number;
+  lineHeight?: number;
+};
+
+export type CmsText = {
+  text: string;
+  style?: CmsTextStyle;
+};
 export type CmsImage = {
   src: string;
   alt: string;

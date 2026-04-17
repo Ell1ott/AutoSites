@@ -7,13 +7,13 @@ export function PhilosophySection() {
       <span className="kaffe-metadata">
         <EditableText
           cmsKey="home.philosophy.label"
-          fallback="Our Philosophy"
+          fallback="VORES FILOSOFI"
         />
       </span>
       <blockquote>
         <EditableText
           cmsKey="home.philosophy.quote"
-          fallback="“We believe that a space should breathe as deeply as those within it.”"
+          fallback="God kaffe, friskbagt kage og tid til at nyde det - det er det, Kaffe og mere handler om."
         />
       </blockquote>
     </Reveal>

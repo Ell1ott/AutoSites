@@ -10,7 +10,7 @@ export function SiteFooter() {
         <div className="kaffe-footer-col">
           <EditableText
             cmsKey="footer.inquiry.heading"
-            fallback="Inquiry"
+            fallback="Kontakt"
             as="h4"
           />
           <EditableText
@@ -27,22 +27,44 @@ export function SiteFooter() {
         <div className="kaffe-footer-col">
           <EditableText
             cmsKey="footer.address.heading"
-            fallback="Address"
+            fallback="Adresse"
             as="h4"
           />
           <EditableText
             cmsKey="footer.address.line1"
-            fallback="Gothersgade 12"
+            fallback="Storgade 27"
             as="p"
           />
           <EditableText
             cmsKey="footer.address.line2"
-            fallback="1123 København K"
+            fallback="4180 Sorø"
             as="p"
           />
           <EditableText
             cmsKey="footer.address.line3"
-            fallback="Denmark"
+            fallback="Danmark"
+            as="p"
+          />
+        </div>
+        <div className="kaffe-footer-col">
+          <EditableText
+            cmsKey="footer.hours.heading"
+            fallback="Åbningstider"
+            as="h4"
+          />
+          <EditableText
+            cmsKey="footer.hours.weekdays"
+            fallback="Man – Fre: 09 – 17"
+            as="p"
+          />
+          <EditableText
+            cmsKey="footer.hours.saturday"
+            fallback="Lørdag: 09 – 14"
+            as="p"
+          />
+          <EditableText
+            cmsKey="footer.hours.sunday"
+            fallback="Søndag: Lukket"
             as="p"
           />
         </div>
@@ -50,7 +72,7 @@ export function SiteFooter() {
       <div className="container kaffe-footer-copy">
         <EditableText
           cmsKey="footer.copy"
-          fallback="© 2024 Kaffe&mere. A study in stillness."
+          fallback="© 2025 KAFFE&MERE — STORGADE 27, SORØ"
         />
       </div>
     </footer>

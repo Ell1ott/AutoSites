@@ -2,6 +2,7 @@ import { CollectionSection } from "@/components/kaffe/collection-section";
 import { FlutedDivider } from "@/components/kaffe/fluted-divider";
 import { Grain } from "@/components/kaffe/grain";
 import { Hero } from "@/components/kaffe/hero";
+import { HoursSection } from "@/components/kaffe/hours-section";
 import { PhilosophySection } from "@/components/kaffe/philosophy-section";
 import { SiteFooter } from "@/components/kaffe/site-footer";
 import { SiteHeader } from "@/components/kaffe/site-header";
@@ -18,26 +19,26 @@ export default function Home() {
           title={
             <EditableText
               cmsKey="home.hero.title"
-              fallback="Quietude in every pour."
+              fallback="<i>Kaffe, kage og hygge midt i Sorø</i>"
               as="h1"
             />
           }
           eyebrow={
             <EditableText
               cmsKey="home.hero.eyebrow"
-              fallback="Est. 2024 — Copenhagen"
+              fallback="STORGADE 27 — SORØ"
             />
           }
           lede={
             <EditableText
               cmsKey="home.hero.lede"
-              fallback="A curated ritual of slow-living through the lens of specialty coffee and architectural stillness."
+              fallback="En hyggelig café og butik på Storgade i Sorø. Vi serverer kaffe, kage, brunch og lette retter — og holder åbent for private selskaber og arrangementer."
             />
           }
           cta={
             <EditableLink
               cmsKey="home.hero.cta"
-              fallback={{ href: "#", label: "Reserve a Table" }}
+              fallback={{ href: "https://www.facebook.com/kaffemere", label: "Book bord eller selskab" }}
               className="kaffe-cta-monolith"
             />
           }
@@ -50,7 +51,7 @@ export default function Home() {
               }}
               fill
               priority
-              sizes="(max-width: 1440px) 50vw, 720px"
+              sizes="(max-width: 768px) 100vw, (max-width: 1440px) 50vw, 720px"
               className="object-cover"
             />
           }
@@ -58,6 +59,7 @@ export default function Home() {
         <FlutedDivider />
         <CollectionSection />
         <PhilosophySection />
+        <HoursSection />
         <SpaceSection />
       </main>
       <SiteFooter />

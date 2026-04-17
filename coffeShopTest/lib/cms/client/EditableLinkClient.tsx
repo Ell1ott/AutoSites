@@ -9,7 +9,7 @@ import {
   type MouseEvent,
 } from "react";
 import { updateContent } from "../server/actions";
-import { useEditableContext } from "./EditableProvider";
+import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
 import type { CmsLink } from "../types";
 
@@ -36,6 +36,7 @@ export function EditableLinkClient({
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLSpanElement | null>(null);
   const { pushToast } = useEditableContext();
+  useCmsFieldRegistration(cmsKey, "link", value);
 
   useEffect(() => {
     if (!open) return;

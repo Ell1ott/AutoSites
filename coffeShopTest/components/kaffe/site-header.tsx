@@ -1,39 +1,40 @@
 import { EditableLink, EditableText } from "@/lib/cms";
+import { MobileNav } from "./mobile-nav";
 
 export function SiteHeader() {
   return (
     <header className="container kaffe-header">
       <div className="kaffe-logo">
-        <EditableText cmsKey="site.brand.name" fallback="Kaffe&mere" />
+        <EditableText cmsKey="site.brand.name" fallback="KAFFE&MERE" />
       </div>
-      <nav className="kaffe-nav" aria-label="Primary">
+      <MobileNav>
         <ul>
           <li>
             <EditableLink
+              cmsKey="nav.0"
+              fallback={{ href: "#", label: "Overblik" }}
+            />
+          </li>
+          <li>
+            <EditableLink
               cmsKey="nav.1"
-              fallback={{ href: "#", label: "The Brew" }}
+              fallback={{ href: "#menu", label: "Menu" }}
             />
           </li>
           <li>
             <EditableLink
               cmsKey="nav.2"
-              fallback={{ href: "#", label: "Spaces" }}
+              fallback={{ href: "#åbningstider", label: "Åbningstider" }}
             />
           </li>
           <li>
             <EditableLink
               cmsKey="nav.3"
-              fallback={{ href: "#", label: "Ethics" }}
-            />
-          </li>
-          <li>
-            <EditableLink
-              cmsKey="nav.4"
-              fallback={{ href: "#", label: "Visit" }}
+              fallback={{ href: "#arrangementer", label: "Arrangementer" }}
             />
           </li>
         </ul>
-      </nav>
+      </MobileNav>
     </header>
   );
 }

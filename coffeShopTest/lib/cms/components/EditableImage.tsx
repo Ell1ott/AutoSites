@@ -2,12 +2,12 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { getCmsContent } from "../server/content";
 import { getEditMode } from "../server/mode";
+import { getSiteId } from "../server/site";
 import type { CmsImage } from "../types";
 
 type EditableImageProps = {
   cmsKey: string;
   fallback: CmsImage;
-  /** Intrinsic width; used by next/image unless `fill` is true. */
   width?: number;
   height?: number;
   fill?: boolean;
@@ -28,7 +28,8 @@ export async function EditableImage({
   className,
   style,
 }: EditableImageProps) {
-  const row = await getCmsContent<"image">(cmsKey);
+  const siteId = await getSiteId();
+  const row = await getCmsContent<"image">(siteId, cmsKey);
   const value: CmsImage = row?.kind === "image" ? row.value : fallback;
   const editMode = await getEditMode();
 

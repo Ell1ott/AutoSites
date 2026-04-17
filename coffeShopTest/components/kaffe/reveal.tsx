@@ -11,10 +11,11 @@ import {
 type RevealProps = {
   children: ReactNode;
   className?: string;
+  id?: string;
   style?: CSSProperties;
 };
 
-export function Reveal({ children, className, style }: RevealProps) {
+export function Reveal({ children, className, id, style }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
 
@@ -46,7 +47,7 @@ export function Reveal({ children, className, style }: RevealProps) {
     .join(" ");
 
   return (
-    <div ref={ref} className={combined} style={style}>
+    <div ref={ref} id={id} className={combined} style={style}>
       {children}
     </div>
   );

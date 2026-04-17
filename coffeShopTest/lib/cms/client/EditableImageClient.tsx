@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef, useState, type CSSProperties } from "react";
 import { updateContent, uploadImage } from "../server/actions";
-import { useEditableContext } from "./EditableProvider";
+import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
 import type { CmsImage } from "../types";
 
@@ -34,6 +34,7 @@ export function EditableImageClient({
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { pushToast } = useEditableContext();
+  useCmsFieldRegistration(cmsKey, "image", value);
 
   async function handleFile(file: File) {
     setUploading(true);

@@ -2,23 +2,18 @@ import { cacheTag } from "next/cache";
 import { createPublicServerClient } from "./supabase";
 import type { CmsKind, CmsRow, CmsValueByKind } from "../types";
 
-/**
- * Cached read of a single CMS row by key. Tagged with `cms:<key>` so a
- * Server Action can call `revalidateTag('cms:<key>')` after a write to
- * publish the new value on the next request.
- *
- * Returns `null` if no row exists — callers use their `fallback` prop.
- */
 export async function getCmsContent<K extends CmsKind>(
+  siteId: string,
   key: string,
 ): Promise<CmsRow<K> | null> {
   "use cache";
-  cacheTag(`cms:${key}`);
+  cacheTag(`cms:${siteId}:${key}`);
 
   const supabase = createPublicServerClient();
   const { data, error } = await supabase
     .from("cms_content")
     .select("kind, value")
+    .eq("site_id", siteId)
     .eq("key", key)
     .maybeSingle();
 

@@ -1,4 +1,5 @@
 import { createSessionServerClient } from "./supabase";
+import { getSiteId } from "./site";
 
 export class CmsAuthError extends Error {
   constructor(message: string) {
@@ -7,12 +8,8 @@ export class CmsAuthError extends Error {
   }
 }
 
-/**
- * Verifies the request comes from an authenticated CMS admin. Throws
- * `CmsAuthError` otherwise. Intended for the top of Server Actions and
- * Route Handlers that perform writes — defence in depth on top of RLS.
- */
-export async function requireAdmin(): Promise<{ userId: string }> {
+export async function requireAdmin(): Promise<{ userId: string; siteId: string }> {
+  const siteId = await getSiteId();
   const supabase = await createSessionServerClient();
   const {
     data: { user },
@@ -23,8 +20,9 @@ export async function requireAdmin(): Promise<{ userId: string }> {
     .from("cms_admins")
     .select("user_id")
     .eq("user_id", user.id)
+    .eq("site_id", siteId)
     .maybeSingle();
 
-  if (!admin) throw new CmsAuthError("Not an admin.");
-  return { userId: user.id };
+  if (!admin) throw new CmsAuthError("Not an admin for this site.");
+  return { userId: user.id, siteId };
 }

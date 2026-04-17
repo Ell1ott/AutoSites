@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cms:pull": "bun scripts/cms-sync.ts pull --site",
+    "cms:push": "bun scripts/cms-sync.ts push --site"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "glob": "^13.0.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

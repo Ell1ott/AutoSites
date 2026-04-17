@@ -1,46 +1,74 @@
--- CMS content storage + admin membership, with RLS.
--- Run this in the Supabase SQL editor (or via `supabase db push`).
+-- Multi-site CMS schema: sites, site_hosts, cms_content, cms_admins + RLS.
 
+-- Sites
+create table if not exists public.sites (
+  id         uuid primary key default gen_random_uuid(),
+  slug       text unique not null,
+  name       text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.sites enable row level security;
+
+drop policy if exists "sites public read" on public.sites;
+create policy "sites public read"
+  on public.sites for select using (true);
+
+-- Host → site mapping
+create table if not exists public.site_hosts (
+  host    text primary key,
+  site_id uuid not null references public.sites(id) on delete cascade
+);
+
+alter table public.site_hosts enable row level security;
+
+drop policy if exists "site_hosts public read" on public.site_hosts;
+create policy "site_hosts public read"
+  on public.site_hosts for select using (true);
+
+-- CMS content, scoped per site
 create table if not exists public.cms_content (
-  key        text primary key,
+  site_id    uuid not null references public.sites(id) on delete cascade,
+  key        text not null,
   kind       text not null check (kind in ('text', 'image', 'link')),
   value      jsonb not null,
   updated_at timestamptz not null default now(),
-  updated_by uuid references auth.users(id) on delete set null
+  updated_by uuid references auth.users(id) on delete set null,
+  primary key (site_id, key)
 );
 
+-- Admin membership, scoped per site (N:M)
 create table if not exists public.cms_admins (
-  user_id uuid primary key references auth.users(id) on delete cascade
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  site_id    uuid not null references public.sites(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, site_id)
 );
 
 alter table public.cms_content enable row level security;
 alter table public.cms_admins  enable row level security;
 
--- Public reads: the content is rendered on a public site, so anyone can read.
+-- Public reads
 drop policy if exists "cms_content read" on public.cms_content;
 create policy "cms_content read"
-  on public.cms_content
-  for select
-  using (true);
+  on public.cms_content for select using (true);
 
--- Writes: only members of cms_admins.
+-- Writes: only admins of the same site
 drop policy if exists "cms_content write" on public.cms_content;
 create policy "cms_content write"
   on public.cms_content
   for all
   to authenticated
-  using (exists (select 1 from public.cms_admins where user_id = auth.uid()))
-  with check (exists (select 1 from public.cms_admins where user_id = auth.uid()));
+  using  (exists (select 1 from public.cms_admins where user_id = auth.uid() and site_id = cms_content.site_id))
+  with check (exists (select 1 from public.cms_admins where user_id = auth.uid() and site_id = cms_content.site_id));
 
--- Admins can see their own membership row (used server-side to check admin status).
+-- Admins can see their own membership rows
 drop policy if exists "cms_admins self-read" on public.cms_admins;
 create policy "cms_admins self-read"
-  on public.cms_admins
-  for select
-  to authenticated
+  on public.cms_admins for select to authenticated
   using (user_id = auth.uid());
 
--- Keep updated_at honest.
+-- Keep updated_at honest
 create or replace function public.cms_content_touch_updated_at()
 returns trigger
 language plpgsql

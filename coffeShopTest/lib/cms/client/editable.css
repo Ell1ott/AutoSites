@@ -21,6 +21,238 @@
   outline-offset: 3px;
 }
 
+/* Rich text mini toolbar — positioned relative to the editable element.
+   translateY(-100%) anchors the toolbar's BOTTOM edge to `top`, so when the
+   "more options" rows expand they grow upward and the B/I row stays put.
+
+   Design tokens (kept inline for portability):
+     - control height: 26px
+     - grid: 4px
+     - radii: 8px outer, 5px controls
+     - fg: #f5f5f5; muted: rgba(255,255,255,0.55)
+     - hover bg: rgba(255,255,255,0.08); active: rgba(255,255,255,0.14)
+*/
+.cms-rich-toolbar {
+  position: absolute;
+  transform: translateY(-100%);
+  z-index: 9100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  background: rgb(20, 20, 20);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #f5f5f5;
+  pointer-events: auto;
+}
+
+.cms-rich-toolbar__row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 26px;
+}
+
+.cms-rich-toolbar__row--style {
+  gap: 6px;
+  padding: 0 2px;
+}
+
+/* Visual divider between the style rows and the B/I row. */
+.cms-rich-toolbar--expanded .cms-rich-toolbar__row:last-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 4px;
+  margin-top: 1px;
+  height: 30px;
+}
+
+.cms-rich-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    background-color 80ms ease,
+    color 80ms ease;
+}
+
+.cms-rich-toolbar button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cms-rich-toolbar button:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cms-rich-toolbar button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* B / I keep a serif glyph so the meaning reads at a glance. */
+.cms-rich-toolbar__row:last-child button:not(.cms-rich-toolbar__more) {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 26px;
+}
+
+.cms-rich-toolbar__more {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  margin-left: 2px;
+  position: relative;
+}
+
+/* Subtle separator before the ⋯ button so it reads as a secondary cluster. */
+.cms-rich-toolbar__more::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cms-rich-toolbar__more.is-active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.cms-rich-toolbar__label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+  min-width: 26px;
+}
+
+.cms-rich-toolbar__num {
+  height: 22px;
+  width: 52px;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  font: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  outline: none;
+  transition:
+    border-color 80ms ease,
+    background-color 80ms ease;
+}
+
+.cms-rich-toolbar__num:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.cms-rich-toolbar__num:focus {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cms-rich-toolbar__num.is-default {
+  color: rgba(245, 245, 245, 0.55);
+}
+
+/* Hide native spinners — we have explicit −/+ buttons. */
+.cms-rich-toolbar__num::-webkit-outer-spin-button,
+.cms-rich-toolbar__num::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cms-rich-toolbar__num {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.cms-rich-toolbar__slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 96px;
+  height: 22px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  margin: 0 4px;
+  padding: 0;
+}
+
+.cms-rich-toolbar__slider::-webkit-slider-runnable-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.cms-rich-toolbar__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: none;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 80ms ease;
+}
+
+.cms-rich-toolbar__slider:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.cms-rich-toolbar__slider::-moz-range-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.cms-rich-toolbar__slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: none;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.cms-rich-toolbar__reset {
+  font-size: 13px;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.cms-rich-toolbar__reset:not(:disabled):hover {
+  opacity: 1;
+}
+
 .cms-editable--image {
   cursor: pointer;
   position: relative;
@@ -135,4 +367,165 @@
   text-transform: uppercase;
   cursor: pointer;
   color: inherit;
+}
+
+/* Edit banner + page data inspector */
+.cms-banner-btn {
+  border: 1px solid rgba(250, 250, 250, 0.45);
+  background: rgba(250, 250, 250, 0.08);
+  color: #fafafa;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.cms-banner-btn:hover {
+  background: rgba(250, 250, 250, 0.16);
+}
+
+.cms-page-data-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4.5rem 1rem 2rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.cms-page-data-panel {
+  width: min(52rem, 100%);
+  max-height: min(70vh, 36rem);
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+  color: #1a1a1a;
+  border-radius: 6px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.cms-page-data-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cms-page-data-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cms-page-data-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cms-page-data-copy {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: #fff;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.cms-page-data-copy:hover {
+  background: #f3f3f3;
+}
+
+.cms-page-data-close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+}
+
+.cms-page-data-close:hover {
+  opacity: 1;
+}
+
+.cms-page-data-hint {
+  margin: 0;
+  padding: 0.6rem 1rem 0;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  line-height: 1.4;
+}
+
+.cms-page-data-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cms-page-data-empty {
+  padding: 1rem 0;
+  text-align: center;
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.cms-page-data-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.35rem;
+  row-gap: 0.05rem;
+  padding: 0.2rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cms-page-data-row:first-of-type {
+  border-top: none;
+}
+
+.cms-page-data-path {
+  flex: 0 1 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  word-break: break-all;
+  color: #0d47a1;
+}
+
+.cms-page-data-sep {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.cms-page-data-compact {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #2a2a2a;
+  word-break: break-word;
 }

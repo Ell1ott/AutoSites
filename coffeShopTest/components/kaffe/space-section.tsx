@@ -2,32 +2,32 @@ import { EditableImage, EditableText } from "@/lib/cms";
 
 export function SpaceSection() {
   return (
-    <section className="container kaffe-space-section">
+    <section id="arrangementer" className="container kaffe-space-section">
       <div className="kaffe-grid-3">
         <div className="kaffe-hero-image-wrap kaffe-space-image">
           <EditableImage
             cmsKey="home.space.image"
             fallback={{
-              src: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=2047",
+              src: "https://nkuxxhuyeiwopzcdwsaq.supabase.co/storage/v1/object/public/cms-images/1b61a950-4245-4f3b-ad7d-11e8aa880684.jpg",
               alt: "Cafe space",
             }}
             fill
-            sizes="(max-width: 1440px) 66vw, 950px"
+            sizes="(max-width: 768px) 100vw, (max-width: 1440px) 66vw, 950px"
             className="object-cover [filter:grayscale(20%)_sepia(10%)]"
           />
         </div>
         <div className="kaffe-space-aside">
           <span className="kaffe-metadata">
-            <EditableText cmsKey="home.space.label" fallback="Space" />
+            <EditableText cmsKey="home.space.label" fallback="SELSKABER & ARRANGEMENTER" />
           </span>
           <EditableText
             cmsKey="home.space.heading"
-            fallback="Materials of Rest."
+            fallback="Hold dit næste arrangement hos os"
             as="h2"
           />
           <EditableText
             cmsKey="home.space.body"
-            fallback="Our flagship store utilizes reclaimed oak beams and hand-applied lime wash to create a sensory vacuum."
+            fallback="Vi tilbyder booking til private selskaber, fødselsdage og firmaarrangementer. Kontakt os via Facebook eller kig forbi butikken på Storgade 27 for at høre mere."
             as="p"
           />
         </div>

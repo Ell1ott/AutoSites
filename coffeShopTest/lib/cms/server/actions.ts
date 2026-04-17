@@ -9,8 +9,9 @@ export async function updateContent<K extends CmsKind>(
   key: string,
   kind: K,
   value: CmsValueByKind[K],
+  options?: { revalidate?: boolean },
 ): Promise<void> {
-  const { userId } = await requireAdmin();
+  const { userId, siteId } = await requireAdmin();
 
   if (!key || typeof key !== "string" || key.length > 200) {
     throw new Error("Invalid cmsKey.");
@@ -19,6 +20,7 @@ export async function updateContent<K extends CmsKind>(
 
   const supabase = await createSessionServerClient();
   const { error } = await supabase.from("cms_content").upsert({
+    site_id: siteId,
     key,
     kind,
     value,
@@ -26,13 +28,28 @@ export async function updateContent<K extends CmsKind>(
   });
   if (error) throw new Error(error.message);
 
-  updateTag(`cms:${key}`);
+  if (options?.revalidate !== false) {
+    updateTag(`cms:${siteId}:${key}`);
+  }
+}
+
+/**
+ * Invalidate the cache for a single CMS key without writing anything.
+ * Used to defer revalidation after a series of low-frequency writes
+ * (e.g. style slider saves) so the page only refreshes once.
+ */
+export async function revalidateContent(key: string): Promise<void> {
+  const { siteId } = await requireAdmin();
+  if (!key || typeof key !== "string" || key.length > 200) {
+    throw new Error("Invalid cmsKey.");
+  }
+  updateTag(`cms:${siteId}:${key}`);
 }
 
 export async function uploadImage(
   formData: FormData,
 ): Promise<{ src: string; width?: number; height?: number }> {
-  await requireAdmin();
+  const { siteId } = await requireAdmin();
 
   const file = formData.get("file");
   if (!(file instanceof File)) throw new Error("No file provided.");
@@ -48,7 +65,7 @@ export async function uploadImage(
     ? file.name.split(".").pop()!.toLowerCase()
     : "bin";
   const safeExt = /^[a-z0-9]{1,8}$/.test(ext) ? ext : "bin";
-  const path = `${crypto.randomUUID()}.${safeExt}`;
+  const path = `${siteId}/${crypto.randomUUID()}.${safeExt}`;
 
   const { error } = await supabase.storage
     .from("cms-images")
@@ -67,6 +84,28 @@ function validateValue(kind: CmsKind, value: unknown): void {
   if (kind === "text") {
     if (typeof v.text !== "string" || v.text.length > 5000) {
       throw new Error("text.text must be a string (≤ 5000 chars).");
+    }
+    if (v.style !== undefined) {
+      if (!v.style || typeof v.style !== "object") {
+        throw new Error("text.style must be an object.");
+      }
+      const s = v.style as Record<string, unknown>;
+      if (s.fontSize !== undefined) {
+        if (typeof s.fontSize !== "number" || !Number.isFinite(s.fontSize)) {
+          throw new Error("text.style.fontSize must be a number.");
+        }
+        if (s.fontSize < 0.5 || s.fontSize > 6) {
+          throw new Error("text.style.fontSize out of range (0.5–6).");
+        }
+      }
+      if (s.lineHeight !== undefined) {
+        if (typeof s.lineHeight !== "number" || !Number.isFinite(s.lineHeight)) {
+          throw new Error("text.style.lineHeight must be a number.");
+        }
+        if (s.lineHeight < 0.8 || s.lineHeight > 3) {
+          throw new Error("text.style.lineHeight out of range (0.8–3).");
+        }
+      }
     }
   } else if (kind === "image") {
     if (typeof v.src !== "string" || typeof v.alt !== "string") {

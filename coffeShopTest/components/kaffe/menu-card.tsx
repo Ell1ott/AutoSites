@@ -16,15 +16,16 @@ type MenuCardProps = {
 export function MenuCard({ keyPrefix, fallbacks, offset }: MenuCardProps) {
   return (
     <Reveal
-      className="kaffe-menu-card"
-      style={offset ? { marginTop: "10vh" } : undefined}
+      className={
+        offset ? "kaffe-menu-card kaffe-menu-card--offset" : "kaffe-menu-card"
+      }
     >
       <div className="kaffe-img-frame">
         <EditableImage
           cmsKey={`${keyPrefix}.image`}
           fallback={{ src: fallbacks.imageSrc, alt: fallbacks.imageAlt }}
           fill
-          sizes="(max-width: 1440px) 33vw, 400px"
+          sizes="(max-width: 768px) 100vw, (max-width: 1440px) 33vw, 400px"
           className="object-cover"
         />
       </div>
