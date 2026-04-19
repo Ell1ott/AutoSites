@@ -71,14 +71,13 @@ export function SiteFooter() {
       </div>
       <div className="container kaffe-footer-copy">
         <div className="kaffe-footer-copy-row">
-          <EditableText
-            cmsKey="footer.copy"
-            fallback="© 2025 KAFFE&MERE — STORGADE 27, SORØ"
-          />
-          <span className="kaffe-footer-copy-sep" aria-hidden>
-            ·
-          </span>
-          <CmsFooterAdminLink />
+          <div className="kaffe-footer-copy-text">
+            <EditableText
+              cmsKey="footer.copy"
+              fallback="© 2025 KAFFE&MERE — STORGADE 27, SORØ"
+            />
+          </div>
+          <CmsFooterAdminLink className="kaffe-footer-admin-link" />
         </div>
       </div>
     </footer>

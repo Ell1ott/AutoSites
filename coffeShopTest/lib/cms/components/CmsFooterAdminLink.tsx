@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-import "./cms-admin-link.css";
 
 type CmsFooterAdminLinkProps = {
   /** Defaults to the CMS sign-in route for this app. */
@@ -10,22 +8,20 @@ type CmsFooterAdminLinkProps = {
 };
 
 /**
- * Small, muted link to the CMS admin sign-in page. Intended for footer
- * utility rows alongside copyright — typography matches typical fine-print
- * footer copy (uppercase, wide tracking).
+ * Link to enter edit mode (sets the `cms-edit` cookie when already signed in;
+ * otherwise redirects to sign-in). Unstyled — pass `className` (and layout
+ * wrappers) from the site so the footer can match its design.
  */
 export function CmsFooterAdminLink({
-  href = "/cms/login",
+  href = "/cms/edit",
   className,
   children = "Admin",
 }: CmsFooterAdminLinkProps) {
+  // Use a plain <a> so the browser does a full navigation. <Link> client
+  // transitions can apply the redirect before the new cookie is visible to RSC.
   return (
-    <Link
-      href={href}
-      className={["cms-footer-admin-link", className].filter(Boolean).join(" ")}
-      aria-label="CMS admin sign in"
-    >
+    <a href={href} className={className} aria-label="Enter CMS edit mode">
       {children}
-    </Link>
+    </a>
   );
 }
