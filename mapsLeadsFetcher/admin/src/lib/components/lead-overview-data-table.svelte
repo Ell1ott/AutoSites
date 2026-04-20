@@ -42,6 +42,7 @@
 
 	const SORTABLE: TableColumnId[] = [
 		'name',
+		'added',
 		'type',
 		'address',
 		'phone',
@@ -55,6 +56,8 @@
 		switch (colId) {
 			case 'name':
 				return placeTitle(p);
+			case 'added':
+				return typeof p.added === 'string' ? p.added : '';
 			case 'type':
 				return p.primaryTypeDisplayName?.text ?? '';
 			case 'address':

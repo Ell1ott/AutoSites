@@ -3,8 +3,10 @@
 Fetch businesses via Google Places API (New) Text Search and save the full API
 response to JSON, plus a flattened CSV of lead fields (same run). If the output
 JSON already exists, new places are merged in by place id; existing ids are skipped.
+Each place object includes an ISO8601 `added` timestamp when first stored by this script.
 
 Requires: GOOGLE_MAPS_API_KEY with Places API (New) enabled in Google Cloud.
+Loads .env.local from this script's directory if present (then os.environ).
 
 Run: uv run fetch_businesses.py [--query ...] [--output maps_businesses.json]
 
@@ -24,8 +26,11 @@ from pathlib import Path
 from typing import Any
 
 import requests
+from dotenv import load_dotenv
 
 PLACES_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Sorø town center (Denmark) — used as default search bias for distance ranking.
 SORO_LAT = 55.4318
@@ -150,6 +155,7 @@ def record_to_csv_rows(record: dict[str, Any]) -> list[dict[str, str]]:
                 "search_center_latitude": lat0_s,
                 "search_center_longitude": lng0_s,
                 "place_id": str(place.get("id") or ""),
+                "added": str(place.get("added") or ""),
                 "name": _localizable_text(place.get("displayName")),
                 "primary_type": str(place.get("primaryType") or ""),
                 "primary_type_label": _localizable_text(place.get("primaryTypeDisplayName")),
@@ -181,6 +187,7 @@ CSV_FIELDNAMES = [
     "search_center_latitude",
     "search_center_longitude",
     "place_id",
+    "added",
     "name",
     "primary_type",
     "primary_type_label",
@@ -316,6 +323,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    load_dotenv(_SCRIPT_DIR / ".env.local")
+
     api_key = os.environ.get("GOOGLE_MAPS_API_KEY", "").strip()
     if not api_key:
         print(
@@ -349,6 +358,7 @@ def main() -> None:
         if isinstance(p, dict) and p.get("id") is not None
     }
 
+    added_now = datetime.now(timezone.utc).isoformat()
     new_places: list[dict[str, Any]] = []
     skipped = 0
     for p in places:
@@ -361,7 +371,9 @@ def main() -> None:
                 skipped += 1
                 continue
             existing_ids.add(sid)
-        new_places.append(p)
+        place_row = dict(p)
+        place_row["added"] = added_now
+        new_places.append(place_row)
 
     merged_places = existing + new_places
     merged_payload = dict(payload)

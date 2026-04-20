@@ -68,6 +68,8 @@ export interface WebsiteCrawl {
 
 export interface Place {
 	id: string;
+	/** ISO 8601 timestamp when the lead was first stored (from fetch script). */
+	added?: string;
 	name?: string;
 	types?: string[];
 	nationalPhoneNumber?: string;

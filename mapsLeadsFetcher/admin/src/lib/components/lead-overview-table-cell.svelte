@@ -59,6 +59,12 @@
 	function priceLevelText(place: Place): string {
 		return typeof place.priceLevel === 'string' ? place.priceLevel : '';
 	}
+
+	function formatAdded(iso: string): string {
+		const d = new Date(iso);
+		if (Number.isNaN(d.getTime())) return iso;
+		return d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+	}
 </script>
 
 {#if colId === 'screenshot'}
@@ -90,6 +96,18 @@
 	</div>
 {:else if colId === 'name'}
 	<span class="font-semibold text-foreground">{placeTitle(p)}</span>
+{:else if colId === 'added'}
+	{#if typeof p.added === 'string' && p.added.trim()}
+		<time
+			class="text-muted-foreground text-sm tabular-nums whitespace-nowrap"
+			datetime={p.added}
+			title={p.added}
+		>
+			{formatAdded(p.added)}
+		</time>
+	{:else}
+		<span class="text-muted-foreground">—</span>
+	{/if}
 {:else if colId === 'type'}
 	{p.primaryTypeDisplayName?.text ?? ''}
 {:else if colId === 'address'}
