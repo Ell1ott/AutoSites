@@ -3,6 +3,7 @@ import { EB_Garamond, Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { EditableProvider } from "@/lib/cms/components/EditableProvider";
+import { AnalyticsBoot } from "@/lib/analytics/AnalyticsBoot";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,7 +33,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${ebGaramond.variable}`}>
       <body>
         <Suspense fallback={null}>
-          <EditableProvider>{children}</EditableProvider>
+          <AnalyticsBoot>
+            <EditableProvider>{children}</EditableProvider>
+          </AnalyticsBoot>
         </Suspense>
       </body>
     </html>

@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSessionServerClient } from "@/lib/cms/server/supabase";
 import { getSiteId } from "@/lib/cms/server/site";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
+import { EVENTS } from "@/lib/analytics/events";
 
 const EDIT_COOKIE = "cms-edit";
 
@@ -15,6 +17,7 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
+    await captureServerEvent(EVENTS.EDIT_MODE_DENIED, { reason: "unauthenticated" });
     return NextResponse.redirect(new URL("/cms/login", request.url));
   }
 
@@ -27,8 +30,19 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (!admin) {
+    await captureServerEvent(
+      EVENTS.EDIT_MODE_DENIED,
+      { reason: "not_admin_for_site" },
+      { userId: user.id, email: user.email ?? null, siteId },
+    );
     return NextResponse.redirect(new URL("/", request.url));
   }
+
+  await captureServerEvent(
+    EVENTS.EDIT_MODE_ENTERED,
+    {},
+    { userId: user.id, email: user.email ?? null, siteId },
+  );
 
   const res = NextResponse.redirect(new URL("/", request.url));
   res.cookies.set(EDIT_COOKIE, "1", {

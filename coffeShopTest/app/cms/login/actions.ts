@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSessionServerClient } from "@/lib/cms/server/supabase";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
+import { EVENTS } from "@/lib/analytics/events";
 
 const EDIT_COOKIE = "cms-edit";
 
@@ -20,6 +22,10 @@ export async function signIn(
     password,
   });
   if (error || !data.user) {
+    await captureServerEvent(EVENTS.ADMIN_SIGN_IN_FAILED, {
+      email_attempted: email,
+      reason: error?.message ?? "no_user",
+    });
     return { error: error?.message ?? "Sign-in failed." };
   }
 
@@ -30,6 +36,10 @@ export async function signIn(
     .maybeSingle();
 
   if (!admin) {
+    await captureServerEvent(EVENTS.ADMIN_SIGN_IN_FAILED, {
+      email_attempted: email,
+      reason: "not_admin",
+    }, { userId: data.user.id, email: data.user.email ?? null });
     await supabase.auth.signOut();
     return { error: "This account is not authorised to edit." };
   }
@@ -42,11 +52,25 @@ export async function signIn(
     maxAge: 60 * 60 * 24 * 30,
   });
 
+  await captureServerEvent(
+    EVENTS.ADMIN_SIGNED_IN,
+    {},
+    { userId: data.user.id, email: data.user.email ?? null },
+  );
+
   redirect("/");
 }
 
 export async function signOut(): Promise<void> {
   const supabase = await createSessionServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  await captureServerEvent(
+    EVENTS.ADMIN_SIGNED_OUT,
+    {},
+    { userId: user?.id ?? null, email: user?.email ?? null },
+  );
+
   await supabase.auth.signOut();
   const cookieStore = await cookies();
   cookieStore.delete(EDIT_COOKIE);

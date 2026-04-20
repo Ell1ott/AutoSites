@@ -1,8 +1,26 @@
+import { randomBytes } from 'node:crypto';
 import { env as privateEnv } from '$env/dynamic/private';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getSupabaseAdmin } from '$lib/server/supabase-admin';
 import type { CmsContentRow, SiteAdminRow, SiteWithHosts } from '$lib/sites.types';
+
+/**
+ * Origin of the app that serves GET /auth/callback (e.g. http://localhost:3000).
+ * Override with CMS_AUTH_CALLBACK_ORIGIN, or AUTH_SITE_URL / CMS_LOGIN_REDIRECT_URL.
+ */
+function authCallbackOrigin(): string {
+	const raw =
+		privateEnv.CMS_AUTH_CALLBACK_ORIGIN?.trim() ||
+		privateEnv.AUTH_SITE_URL?.trim() ||
+		privateEnv.CMS_LOGIN_REDIRECT_URL?.trim() ||
+		'http://localhost:3000';
+	try {
+		return new URL(raw.includes('://') ? raw : `https://${raw}`).origin;
+	} catch {
+		return 'http://localhost:3000';
+	}
+}
 
 export const load: PageServerLoad = async ({ params }) => {
 	const siteId = params.siteId?.trim();
@@ -99,27 +117,20 @@ export const actions = {
 			return fail(403, { message: 'User is not an admin for this site' });
 		}
 
-		const { data: userData, error: userErr } = await supabase.auth.admin.getUserById(userId);
-		if (userErr || !userData?.user?.email) {
-			return fail(400, { message: 'Could not load an email for this user' });
+		const code = randomBytes(32).toString('base64url');
+		const { error: upErr } = await supabase
+			.from('cms_admins')
+			.update({ code })
+			.eq('site_id', siteId)
+			.eq('user_id', userId);
+
+		if (upErr) {
+			return fail(500, { message: upErr.message });
 		}
 
-		const redirectTo = privateEnv.CMS_LOGIN_REDIRECT_URL?.trim();
-		const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-			type: 'magiclink',
-			email: userData.user.email,
-			...(redirectTo ? { options: { redirectTo } } : {})
-		});
-
-		if (linkErr) {
-			return fail(500, { message: linkErr.message });
-		}
-
-		const loginLink = linkData?.properties?.action_link;
-		if (!loginLink) {
-			return fail(500, { message: 'Supabase did not return a login link' });
-		}
-
-		return { loginLink };
+		const base = authCallbackOrigin().replace(/\/$/, '');
+		return {
+			loginLink: `${base}/auth/callback?code=${encodeURIComponent(code)}&next=/`
+		};
 	}
 } satisfies Actions;

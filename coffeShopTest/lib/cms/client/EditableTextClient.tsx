@@ -16,6 +16,8 @@ import { updateContent } from "../server/actions";
 import type { CmsTextStyle } from "../types";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
+import { useTrack } from "@/lib/analytics/client/useTrack";
+import { EVENTS } from "@/lib/analytics/events";
 
 type EditableTextClientProps = {
   cmsKey: string;
@@ -105,6 +107,7 @@ export function EditableTextClient({
   const [focused, setFocused] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { pushToast } = useEditableContext();
+  const track = useTrack();
   useCmsFieldRegistration(cmsKey, "text", savedText);
 
   async function persistStyle(next: CmsTextStyle | undefined) {
@@ -281,6 +284,7 @@ export function EditableTextClient({
     e.currentTarget.classList.add("cms-editing");
     setFocused(true);
     endingRef.current = false; // new session — allow endEditing again
+    track(EVENTS.CMS_FIELD_FOCUSED, { key: cmsKey, kind: "text" });
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLElement>) {

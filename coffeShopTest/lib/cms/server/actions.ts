@@ -4,6 +4,8 @@ import { updateTag } from "next/cache";
 import { requireAdmin } from "./auth";
 import { createSessionServerClient } from "./supabase";
 import type { CmsKind, CmsValueByKind } from "../types";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
+import { EVENTS } from "@/lib/analytics/events";
 
 export async function updateContent<K extends CmsKind>(
   key: string,
@@ -31,6 +33,12 @@ export async function updateContent<K extends CmsKind>(
   if (options?.revalidate !== false) {
     updateTag(`cms:${siteId}:${key}`);
   }
+
+  await captureServerEvent(
+    EVENTS.CMS_CONTENT_UPDATED,
+    { key, kind, value_length: estimateValueLength(value), deferred_revalidate: options?.revalidate === false },
+    { userId, siteId },
+  );
 }
 
 /**
@@ -39,17 +47,18 @@ export async function updateContent<K extends CmsKind>(
  * (e.g. style slider saves) so the page only refreshes once.
  */
 export async function revalidateContent(key: string): Promise<void> {
-  const { siteId } = await requireAdmin();
+  const { userId, siteId } = await requireAdmin();
   if (!key || typeof key !== "string" || key.length > 200) {
     throw new Error("Invalid cmsKey.");
   }
   updateTag(`cms:${siteId}:${key}`);
+  await captureServerEvent(EVENTS.CMS_CONTENT_REVALIDATED, { key }, { userId, siteId });
 }
 
 export async function uploadImage(
   formData: FormData,
 ): Promise<{ src: string; width?: number; height?: number }> {
-  const { siteId } = await requireAdmin();
+  const { userId, siteId } = await requireAdmin();
 
   const file = formData.get("file");
   if (!(file instanceof File)) throw new Error("No file provided.");
@@ -73,7 +82,32 @@ export async function uploadImage(
   if (error) throw new Error(error.message);
 
   const { data } = supabase.storage.from("cms-images").getPublicUrl(path);
+
+  await captureServerEvent(
+    EVENTS.CMS_IMAGE_UPLOADED,
+    {
+      filename: file.name,
+      content_type: file.type,
+      size_bytes: file.size,
+      storage_path: path,
+    },
+    { userId, siteId },
+  );
+
   return { src: data.publicUrl };
+}
+
+function estimateValueLength(value: unknown): number {
+  if (!value) return 0;
+  if (typeof value === "string") return value.length;
+  if (typeof value === "object") {
+    const v = value as Record<string, unknown>;
+    if (typeof v.text === "string") return v.text.length;
+    if (typeof v.label === "string") return v.label.length;
+    if (typeof v.alt === "string") return v.alt.length;
+    try { return JSON.stringify(value).length; } catch { return 0; }
+  }
+  return 0;
 }
 
 function validateValue(kind: CmsKind, value: unknown): void {

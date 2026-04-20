@@ -53,7 +53,12 @@
 	}
 </script>
 
-<div class="flex justify-end" onclick={(e) => e.stopPropagation()}>
+<div
+	class="flex justify-end"
+	role="group"
+	aria-label="Row actions"
+	onpointerdown={(e) => e.stopPropagation()}
+>
 	<DropdownMenu.Root bind:open>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}

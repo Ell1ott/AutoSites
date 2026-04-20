@@ -6,7 +6,10 @@
       "mcp__supabase__execute_sql",
       "mcp__supabase__list_tables",
       "Bash(node -e \"console.log\\(typeof require\\('node:fs'\\).globSync\\)\")",
-      "Bash(bun tsc *)"
+      "Bash(bun tsc *)",
+      "Bash(xargs cat *)",
+      "Bash(find /Users/elliottfriedrich/Documents/GitHub/AutoSites/coffeShopTest/app -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec grep -l \"use server\" {} \\\\;)",
+      "Read(//Users/elliottfriedrich/Documents/GitHub/AutoSites/**)"
     ]
   }
 }

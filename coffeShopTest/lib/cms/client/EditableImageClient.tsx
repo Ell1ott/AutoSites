@@ -6,6 +6,8 @@ import { updateContent, uploadImage } from "../server/actions";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
 import type { CmsImage } from "../types";
+import { useTrack } from "@/lib/analytics/client/useTrack";
+import { EVENTS } from "@/lib/analytics/events";
 
 type EditableImageClientProps = {
   cmsKey: string;
@@ -34,6 +36,7 @@ export function EditableImageClient({
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { pushToast } = useEditableContext();
+  const track = useTrack();
   useCmsFieldRegistration(cmsKey, "image", value);
 
   async function handleFile(file: File) {
@@ -126,7 +129,10 @@ export function EditableImageClient({
       <button
         type="button"
         className="cms-image-replace"
-        onClick={() => inputRef.current?.click()}
+        onClick={() => {
+          track(EVENTS.CMS_IMAGE_PICKER_OPENED, { key: cmsKey });
+          inputRef.current?.click();
+        }}
         disabled={uploading}
         aria-label="Replace image"
       >
