@@ -131,8 +131,9 @@
 				header: sortable
 					? ({ column }) =>
 							renderComponent(LeadOverviewColumnHeader, {
-								column,
-								label: col.label
+								label: col.label,
+								onToggleSort: column.getToggleSortingHandler() ?? (() => {}),
+								sortState: column.getIsSorted()
 							})
 					: col.label,
 				enableSorting: sortable,
@@ -289,15 +290,19 @@
 		</DropdownMenu.Root>
 		</div>
 	</div>
-	<div class="rounded-md border">
+	<div class="border-border overflow-hidden rounded-md border">
 		<Table.Root>
 			<Table.Header>
 				{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 					<Table.Row class="hover:bg-transparent">
-						{#each headerGroup.headers as header (header.id)}
+						{#each headerGroup.headers as header, hi (header.id)}
 							<Table.Head
 								colspan={header.colSpan}
-								class="bg-card [&:has([role=checkbox])]:ps-3 border-border sticky top-0 z-[1] border-b font-semibold"
+								class={cn(
+									'bg-card [&:has([role=checkbox])]:ps-3 border-border sticky top-0 z-[1] border-b font-semibold',
+									hi === 0 && 'rounded-tl-md',
+									hi === headerGroup.headers.length - 1 && 'rounded-tr-md'
+								)}
 							>
 								{#if !header.isPlaceholder}
 									<FlexRender
@@ -311,7 +316,7 @@
 				{/each}
 			</Table.Header>
 			<Table.Body>
-				{#each table.getRowModel().rows as row (row.id)}
+				{#each table.getRowModel().rows as row, ri (row.id)}
 					<Table.Row
 						data-state={row.getIsSelected() || selectedId === row.original.id
 							? 'selected'
@@ -332,11 +337,15 @@
 						tabindex={0}
 						role="button"
 					>
-						{#each row.getVisibleCells() as cell (cell.id)}
+						{#each row.getVisibleCells() as cell, ci (cell.id)}
 							<Table.Cell
 								class={cn(
 									'[&:has([role=checkbox])]:ps-3 max-w-72 align-middle',
-									cell.column.id !== 'screenshot' && 'whitespace-normal'
+									cell.column.id !== 'screenshot' && 'whitespace-normal',
+									ri === table.getRowModel().rows.length - 1 && ci === 0 && 'rounded-bl-md',
+									ri === table.getRowModel().rows.length - 1 &&
+										ci === row.getVisibleCells().length - 1 &&
+										'rounded-br-md'
 								)}
 							>
 								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
@@ -345,7 +354,9 @@
 					</Table.Row>
 				{:else}
 					<Table.Row>
-						<Table.Cell colspan={columns.length} class="h-24 text-center">No results.</Table.Cell>
+						<Table.Cell colspan={columns.length} class="h-24 rounded-b-md text-center">
+							No results.
+						</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { Column } from '@tanstack/table-core';
-	import type { Place } from '$lib/places.types';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import {
@@ -10,19 +8,21 @@
 	} from '@hugeicons/core-free-icons';
 
 	let {
-		column,
-		label
+		label,
+		onToggleSort,
+		sortState
 	}: {
-		column: Column<Place, unknown>;
 		label: string;
+		onToggleSort: (e: unknown) => void;
+		sortState: false | 'asc' | 'desc';
 	} = $props();
 </script>
 
-<Button variant="ghost" size="sm" class="-ms-2 h-8 px-2" onclick={column.getToggleSortingHandler()}>
+<Button variant="ghost" size="sm" class="-ms-2 h-8 px-2" onclick={onToggleSort}>
 	<span>{label}</span>
-	{#if column.getIsSorted() === 'asc'}
+	{#if sortState === 'asc'}
 		<HugeiconsIcon icon={ArrowUp01Icon} data-icon="inline-end" strokeWidth={2} />
-	{:else if column.getIsSorted() === 'desc'}
+	{:else if sortState === 'desc'}
 		<HugeiconsIcon icon={ArrowDown01Icon} data-icon="inline-end" strokeWidth={2} />
 	{:else}
 		<HugeiconsIcon

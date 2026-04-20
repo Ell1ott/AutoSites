@@ -15,9 +15,15 @@
 		{ href: '/sites', label: 'Sites' }
 	] as const;
 
-	const currentLabel = $derived(
-		nav.find((item) => page.url.pathname === item.href)?.label ?? 'Lead overview'
-	);
+	const currentLabel = $derived.by(() => {
+		const path = page.url.pathname;
+		for (const item of nav) {
+			if (path === item.href || path.startsWith(`${item.href}/`)) {
+				return item.label;
+			}
+		}
+		return 'Lead overview';
+	});
 </script>
 
 <svelte:head>
