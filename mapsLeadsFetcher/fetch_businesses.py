@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Fetch businesses via Google Places API (New) Text Search and save the full API
-response to JSON, plus a flattened CSV of lead fields (same run).
+response to JSON, plus a flattened CSV of lead fields (same run). If the output
+JSON already exists, new places are merged in by place id; existing ids are skipped.
 
 Requires: GOOGLE_MAPS_API_KEY with Places API (New) enabled in Google Cloud.
 
@@ -211,6 +212,28 @@ def write_places_csv(path: Path, record: dict[str, Any]) -> int:
     return len(rows)
 
 
+def _load_existing_places(output_path: Path) -> list[dict[str, Any]]:
+    """Return places already saved in output_path, or empty list if missing/invalid."""
+    if not output_path.is_file():
+        return []
+    try:
+        raw = output_path.read_text(encoding="utf-8")
+        data = json.loads(raw)
+    except (OSError, json.JSONDecodeError):
+        return []
+    if not isinstance(data, dict):
+        return []
+    api = data.get("api_response")
+    if not isinstance(api, dict):
+        return []
+    places = api.get("places") or []
+    out: list[dict[str, Any]] = []
+    for p in places:
+        if isinstance(p, dict):
+            out.append(p)
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fetch businesses from Google Maps (Places API Text Search) and write JSON output."
@@ -319,19 +342,50 @@ def main() -> None:
     )
 
     places = payload.get("places") or []
+    existing = _load_existing_places(args.output)
+    existing_ids = {
+        str(p["id"])
+        for p in existing
+        if isinstance(p, dict) and p.get("id") is not None
+    }
+
+    new_places: list[dict[str, Any]] = []
+    skipped = 0
+    for p in places:
+        if not isinstance(p, dict):
+            continue
+        pid = p.get("id")
+        if pid is not None:
+            sid = str(pid)
+            if sid in existing_ids:
+                skipped += 1
+                continue
+            existing_ids.add(sid)
+        new_places.append(p)
+
+    merged_places = existing + new_places
+    merged_payload = dict(payload)
+    merged_payload["places"] = merged_places
     record: dict[str, Any] = {
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "query": args.query,
         "requested_count": n,
         "returned_count": len(places),
+        "added_count": len(new_places),
+        "skipped_existing_count": skipped,
+        "total_places": len(merged_places),
         "search_center": {"latitude": args.lat, "longitude": args.lng},
         "bias_radius_meters": args.radius_m if use_bias else None,
         "rank_preference": "DISTANCE" if use_bias else None,
-        "api_response": payload,
+        "api_response": merged_payload,
     }
 
     args.output.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"Wrote {len(places)} place(s) to {args.output.resolve()}", file=sys.stderr)
+    print(
+        f"Added {len(new_places)} new place(s), skipped {skipped} already in file; "
+        f"total {len(merged_places)} in {args.output.resolve()}",
+        file=sys.stderr,
+    )
 
     if not args.no_csv:
         csv_path = args.csv_output if args.csv_output is not None else args.output.with_suffix(".csv")
