@@ -95,7 +95,7 @@
 		</Button>
 	</div>
 {:else if colId === 'name'}
-	<span class="font-semibold text-foreground">{placeTitle(p)}</span>
+	<span class="block min-w-0 truncate font-semibold text-foreground">{placeTitle(p)}</span>
 {:else if colId === 'added'}
 	{#if typeof p.added === 'string' && p.added.trim()}
 		<time
@@ -109,15 +109,15 @@
 		<span class="text-muted-foreground">—</span>
 	{/if}
 {:else if colId === 'type'}
-	{p.primaryTypeDisplayName?.text ?? ''}
+	<span class="block min-w-0 truncate">{p.primaryTypeDisplayName?.text ?? ''}</span>
 {:else if colId === 'address'}
-	{p.formattedAddress ?? ''}
+	<span class="block min-w-0 truncate">{p.formattedAddress ?? ''}</span>
 {:else if colId === 'phone'}
-	{p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? ''}
+	<span class="block min-w-0 truncate">{p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? ''}</span>
 {:else if colId === 'rating'}
-	{ratingLabel(p)}
+	<span class="block min-w-0 truncate">{ratingLabel(p)}</span>
 {:else if colId === 'status'}
-	{p.businessStatus ?? ''}
+	<span class="block min-w-0 truncate">{p.businessStatus ?? ''}</span>
 {:else if colId === 'open_now'}
 	{#if openNowValue(p) === true}
 		Yes
@@ -127,7 +127,7 @@
 		—
 	{/if}
 {:else if colId === 'hours'}
-	<span class="line-clamp-2 break-words" title={hoursSummary(p)}>{hoursSummary(p)}</span>
+	<span class="block min-w-0 truncate" title={hoursSummary(p)}>{hoursSummary(p)}</span>
 {:else if colId === 'website'}
 	{#if p.websiteUri}
 		<a
@@ -153,13 +153,13 @@
 		</a>
 	{/if}
 {:else if colId === 'types'}
-	<span class="line-clamp-2 break-words" title={p.types?.join(' · ') ?? ''}>
+	<span class="block min-w-0 truncate" title={p.types?.join(' · ') ?? ''}>
 		{typesSummary(p)}
 	</span>
 {:else if colId === 'lat_lng'}
-	{placeCoords(p)}
+	<span class="block min-w-0 truncate">{placeCoords(p)}</span>
 {:else if colId === 'plus_code'}
-	{plusCodeText(p)}
+	<span class="block min-w-0 truncate">{plusCodeText(p)}</span>
 {:else if colId === 'price'}
-	{priceLevelText(p)}
+	<span class="block min-w-0 truncate">{priceLevelText(p)}</span>
 {/if}

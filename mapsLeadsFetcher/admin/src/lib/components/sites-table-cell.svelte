@@ -23,12 +23,12 @@
 {#if colId === 'name'}
 	<a
 		href="/sites/{site.id}"
-		class="text-primary font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+		class="text-primary block min-w-0 truncate font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 	>
 		{site.name}
 	</a>
 {:else if colId === 'slug'}
-	<span class="text-muted-foreground font-mono text-xs">{site.slug}</span>
+	<span class="text-muted-foreground block min-w-0 truncate font-mono text-xs">{site.slug}</span>
 {:else if colId === 'hosts'}
 	<span class="max-w-72 truncate" title={hostsList(site)}>{hostsList(site)}</span>
 {:else if colId === 'created_at'}

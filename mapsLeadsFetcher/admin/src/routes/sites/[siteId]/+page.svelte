@@ -32,6 +32,14 @@
 			return String(row.value);
 		}
 	}
+
+	function valueOneLine(row: CmsContentRow): string {
+		try {
+			return JSON.stringify(row.value);
+		} catch {
+			return String(row.value);
+		}
+	}
 </script>
 
 <div class="flex flex-1 flex-col gap-6 p-4">
@@ -90,22 +98,27 @@
 						<Table.Body>
 							{#each data.cmsContent as row (row.key)}
 								<Table.Row>
-									<Table.Cell class="align-top font-mono text-xs break-all">{row.key}</Table.Cell>
-									<Table.Cell class="align-top">
+									<Table.Cell class="max-w-0 align-middle font-mono text-xs">
+										<span class="block truncate" title={row.key}>{row.key}</span>
+									</Table.Cell>
+									<Table.Cell class="align-middle">
 										<span class="bg-muted rounded-md px-1.5 py-0.5 text-xs font-medium">
 											{row.kind}
 										</span>
 									</Table.Cell>
-									<Table.Cell class="align-top">
-										<pre
-											class="text-muted-foreground max-h-40 overflow-auto font-mono text-xs whitespace-pre-wrap break-all"
-										>{valuePreview(row)}</pre>
+									<Table.Cell class="max-w-0 align-middle">
+										<span
+											class="text-muted-foreground block truncate font-mono text-xs"
+											title={valuePreview(row)}
+										>{valueOneLine(row)}</span>
 									</Table.Cell>
-									<Table.Cell class="text-muted-foreground align-top text-xs whitespace-nowrap">
+									<Table.Cell class="text-muted-foreground align-middle text-xs whitespace-nowrap">
 										{formatUpdated(row.updated_at)}
 									</Table.Cell>
-									<Table.Cell class="text-muted-foreground align-top font-mono text-xs break-all">
-										{row.updated_by ?? '—'}
+									<Table.Cell class="text-muted-foreground max-w-0 align-middle font-mono text-xs">
+										<span class="block truncate" title={row.updated_by ?? ''}>
+											{row.updated_by ?? '—'}
+										</span>
 									</Table.Cell>
 								</Table.Row>
 							{/each}

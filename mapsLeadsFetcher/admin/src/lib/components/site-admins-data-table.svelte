@@ -155,7 +155,7 @@
 						{#each row.getVisibleCells() as cell, ci (cell.id)}
 							<Table.Cell
 								class={cn(
-									'[&:has([role=checkbox])]:ps-3 max-w-72 align-middle whitespace-normal',
+									'[&:has([role=checkbox])]:ps-3 max-w-72 min-w-0 align-middle truncate',
 									ri === table.getRowModel().rows.length - 1 && ci === 0 && 'rounded-bl-md',
 									ri === table.getRowModel().rows.length - 1 &&
 										ci === row.getVisibleCells().length - 1 &&
@@ -165,7 +165,10 @@
 								)}
 							>
 								{#if cell.column.id === 'user_id'}
-									<span class="text-muted-foreground font-mono text-xs break-all">
+									<span
+										class="text-muted-foreground block min-w-0 truncate font-mono text-xs"
+										title={row.original.user_id}
+									>
 										{row.original.user_id}
 									</span>
 								{:else}

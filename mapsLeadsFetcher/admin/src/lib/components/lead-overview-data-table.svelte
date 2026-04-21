@@ -101,7 +101,7 @@
 		onColumnVisibilityPersist?: () => void;
 	} = $props();
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
 	let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
@@ -344,7 +344,7 @@
 							<Table.Cell
 								class={cn(
 									'[&:has([role=checkbox])]:ps-3 max-w-72 align-middle',
-									cell.column.id !== 'screenshot' && 'whitespace-normal',
+									cell.column.id !== 'screenshot' && 'min-w-0 truncate',
 									ri === table.getRowModel().rows.length - 1 && ci === 0 && 'rounded-bl-md',
 									ri === table.getRowModel().rows.length - 1 &&
 										ci === row.getVisibleCells().length - 1 &&

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
 Read maps_businesses.json, open each place's websiteUri with Patchright (PyPI:
-`patchright`, a patched Playwright fork), save PNG(s) per store, and write paths
-and crawl metadata onto each place object in the JSON.
+`patchright`, a patched Playwright fork), save PNG(s) per store, save the page
+HTML alongside each captured PNG ({same stem}.html), and write paths and crawl
+metadata onto each place object in the JSON.
 
 The homepage screenshot stays at screenshots/{placeId}.png for compatibility with
-leadsOverview. Subpages use screenshots/{placeId}__{hash}.png; paths and URLs
-are listed under website_crawl.
+leadsOverview; HTML is screenshots/{placeId}.html. Subpages use
+screenshots/{placeId}__{hash}.png and .html; paths and URLs are listed under
+website_crawl.
 
 First-time setup for browsers:
 
@@ -18,6 +20,9 @@ Run:
 
 Before each screenshot, common CMP / cookie banners are auto-dismissed (see
 cookie_consent_rules.py). Use --no-cookie-dismiss to skip.
+
+If the homepage PNG (screenshots/{placeId}.png) already exists and is non-empty,
+that place is skipped entirely (no browser crawl). Use --force to crawl anyway.
 """
 
 from __future__ import annotations
@@ -259,6 +264,7 @@ def _crawl_store_website(
             "url_final": None,
             "depth": depth,
             "screenshot_path": None,
+            "html_path": None,
             "screenshot_error": None,
             "link_count_seen_on_page": None,
         }
@@ -312,8 +318,13 @@ def _crawl_store_website(
             t_shot = time.perf_counter()
             page.screenshot(path=str(shot_path), full_page=True)
             logger.debug("%s screenshot %.2fs", sub_prefix, time.perf_counter() - t_shot)
+            html_path = shot_path.with_suffix(".html")
+            t_html = time.perf_counter()
+            html_path.write_text(page.content(), encoding="utf-8")
+            logger.debug("%s html %.2fs", sub_prefix, time.perf_counter() - t_html)
             rel = shot_path.relative_to(base_dir)
             page_entry["screenshot_path"] = rel.as_posix()
+            page_entry["html_path"] = html_path.relative_to(base_dir).as_posix()
             if is_home:
                 place["website_screenshot_path"] = rel.as_posix()
                 home_captured = True
@@ -588,6 +599,11 @@ def main() -> None:
         help="Do not follow internal links; still records discovered_links from the homepage",
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Crawl even when the homepage PNG already exists on disk",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -606,7 +622,7 @@ def main() -> None:
     logger.info(
         "Starting screenshot run (input=%s, screenshot_dir=%s, wait_until=%s, timeout_ms=%s, "
         "ignore_https_errors=%s, cookie_dismiss=%s, max_subpages=%s, max_crawl_depth=%s, "
-        "same_path_prefix=%s, no_subpage_crawl=%s)",
+        "same_path_prefix=%s, no_subpage_crawl=%s, force=%s)",
         args.input,
         args.screenshot_dir,
         args.wait_until,
@@ -617,6 +633,7 @@ def main() -> None:
         args.max_crawl_depth,
         args.same_path_prefix,
         args.no_subpage_crawl,
+        args.force,
     )
 
     json_path = args.input.resolve()
@@ -652,67 +669,97 @@ def main() -> None:
         logger.warning("No websiteUri values found; JSON updated for cleanup only.")
         return
 
-    skipped = len(places) - len(urls)
+    skipped_no_uri = len(places) - len(urls)
+    try:
+        skipped_home = sum(
+            1
+            for _, _, fp in urls
+            if fp.is_file() and fp.stat().st_size > 0 and not args.force
+        )
+    except OSError:
+        skipped_home = 0
+    to_crawl = len(urls) - skipped_home
     logger.info(
-        "Opening Patchright / Chromium (headless); %d site(s) queued (%d without websiteUri skipped) — "
-        "first navigation may take a while",
+        "%d place(s) with websiteUri (%d without URI skipped); %d to crawl, "
+        "%d skipped — homepage PNG already on disk%s",
         len(urls),
-        skipped,
+        skipped_no_uri,
+        to_crawl,
+        skipped_home,
+        " (--force set)" if args.force else "",
     )
-    with sync_playwright() as p:
-        logger.debug("sync_playwright() context entered")
-        browser = p.chromium.launch(headless=True)
-        logger.info("Chromium launched")
-        try:
-            context = browser.new_context(
-                viewport={"width": 1280, "height": 720},
-                ignore_https_errors=args.ignore_https_errors,
-            )
-            logger.info("Browser context ready (viewport 1280x720)")
+    if to_crawl == 0:
+        logger.info("Nothing to crawl; skipping browser launch.")
+    else:
+        logger.info(
+            "Opening Patchright / Chromium (headless) — first navigation may take a while",
+        )
+        with sync_playwright() as p:
+            logger.debug("sync_playwright() context entered")
+            browser = p.chromium.launch(headless=True)
+            logger.info("Chromium launched")
             try:
-                for i, (place, url, file_path) in enumerate(urls, start=1):
-                    label = place.get("name") or place.get("id") or url
-                    prefix = f"[{i}/{len(urls)}]"
-                    pid = str(place.get("id") or place.get("name") or "place")
-                    logger.info(
-                        "%s %s — crawl start %s (wait_until=%s, timeout_ms=%s)",
-                        prefix,
-                        label,
-                        url,
-                        args.wait_until,
-                        args.timeout_ms,
-                    )
-                    page = context.new_page()
-                    try:
-                        _crawl_store_website(
-                            page,
-                            place=place,
-                            start_url=url,
-                            home_file_path=file_path,
-                            out_dir=out_dir,
-                            base_dir=base_dir,
-                            place_id=pid,
-                            wait_until=args.wait_until,
-                            timeout_ms=args.timeout_ms,
-                            no_cookie_dismiss=args.no_cookie_dismiss,
-                            cookie_click_ms=args.cookie_click_ms,
-                            cookie_iframe_ms=args.cookie_iframe_ms,
-                            cookie_rounds=args.cookie_rounds,
-                            cookie_settle_ms=args.cookie_settle_ms,
-                            max_subpages=args.max_subpages,
-                            max_crawl_depth=args.max_crawl_depth,
-                            same_path_prefix=args.same_path_prefix,
-                            no_subpage_crawl=args.no_subpage_crawl,
-                            log_prefix=prefix,
+                context = browser.new_context(
+                    viewport={"width": 1280, "height": 720},
+                    ignore_https_errors=args.ignore_https_errors,
+                )
+                logger.info("Browser context ready (viewport 1280x720)")
+                try:
+                    for i, (place, url, file_path) in enumerate(urls, start=1):
+                        label = place.get("name") or place.get("id") or url
+                        prefix = f"[{i}/{len(urls)}]"
+                        pid = str(place.get("id") or place.get("name") or "place")
+                        try:
+                            home_exists = file_path.is_file() and file_path.stat().st_size > 0
+                        except OSError:
+                            home_exists = False
+                        if home_exists and not args.force:
+                            logger.info(
+                                "%s %s — skip (homepage screenshot exists: %s)",
+                                prefix,
+                                label,
+                                file_path,
+                            )
+                            continue
+                        logger.info(
+                            "%s %s — crawl start %s (wait_until=%s, timeout_ms=%s)",
+                            prefix,
+                            label,
+                            url,
+                            args.wait_until,
+                            args.timeout_ms,
                         )
-                    finally:
-                        page.close()
+                        page = context.new_page()
+                        try:
+                            _crawl_store_website(
+                                page,
+                                place=place,
+                                start_url=url,
+                                home_file_path=file_path,
+                                out_dir=out_dir,
+                                base_dir=base_dir,
+                                place_id=pid,
+                                wait_until=args.wait_until,
+                                timeout_ms=args.timeout_ms,
+                                no_cookie_dismiss=args.no_cookie_dismiss,
+                                cookie_click_ms=args.cookie_click_ms,
+                                cookie_iframe_ms=args.cookie_iframe_ms,
+                                cookie_rounds=args.cookie_rounds,
+                                cookie_settle_ms=args.cookie_settle_ms,
+                                max_subpages=args.max_subpages,
+                                max_crawl_depth=args.max_crawl_depth,
+                                same_path_prefix=args.same_path_prefix,
+                                no_subpage_crawl=args.no_subpage_crawl,
+                                log_prefix=prefix,
+                            )
+                        finally:
+                            page.close()
+                finally:
+                    context.close()
+                    logger.debug("browser context closed")
             finally:
-                context.close()
-                logger.debug("browser context closed")
-        finally:
-            browser.close()
-            logger.info("Browser closed")
+                browser.close()
+                logger.info("Browser closed")
 
     logger.info("Writing updated JSON to %s", json_path)
     with json_path.open("w", encoding="utf-8") as f:
@@ -720,7 +767,12 @@ def main() -> None:
         f.write("\n")
 
     ok = sum(1 for p in places if p.get("website_screenshot_path"))
-    logger.info("Done: %d/%d screenshot path(s) recorded in JSON", ok, len(urls))
+    logger.info(
+        "Done: %d/%d place(s) with websiteUri have screenshot path in JSON (%d skipped — existing homepage PNG)",
+        ok,
+        len(urls),
+        skipped_home,
+    )
 
 
 if __name__ == "__main__":
