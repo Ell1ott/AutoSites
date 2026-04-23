@@ -12,7 +12,8 @@
 
 	const nav = [
 		{ href: '/leadoverview', label: 'Lead overview' },
-		{ href: '/sites', label: 'Sites' }
+		{ href: '/sites', label: 'Sites' },
+		{ href: '/ai/design-prompts', label: 'AI · Website briefs' }
 	] as const;
 
 	const currentLabel = $derived.by(() => {

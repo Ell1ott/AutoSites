@@ -3,6 +3,8 @@ name = "maps-leads-fetcher"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
+    "google-genai>=1.0.0",
+    "markitdown>=0.1.0",
     "patchright>=1.58.2",
     "python-dotenv>=1.0.0",
     "requests>=2.33.1",

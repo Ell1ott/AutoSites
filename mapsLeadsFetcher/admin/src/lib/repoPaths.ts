@@ -8,6 +8,10 @@ export const mapsLeadsFetcherRoot = join(libDir, '../../..');
 
 export const mapsBusinessesJsonPath = join(mapsLeadsFetcherRoot, 'maps_businesses.json');
 
+export const settingsJsonPath = join(mapsLeadsFetcherRoot, 'settings.json');
+
+export const runsJsonPath = join(mapsLeadsFetcherRoot, 'runs.json');
+
 export function screenshotPath(placeId: string): string {
 	return join(mapsLeadsFetcherRoot, 'screenshots', `${placeId}.png`);
 }

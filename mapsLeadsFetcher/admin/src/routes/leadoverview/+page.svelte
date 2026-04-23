@@ -161,6 +161,16 @@
 		return typeof p.websiteUri === 'string' && p.websiteUri.trim().length > 0;
 	}
 
+	function placeAiOutput(place: Place, outputField: string): string | undefined {
+		const v = (place as Record<string, unknown>)[outputField];
+		return typeof v === 'string' && v.trim().length > 0 ? v : undefined;
+	}
+
+	function placeAiOutputError(place: Place, outputField: string): string | undefined {
+		const v = (place as Record<string, unknown>)[`${outputField}_error`];
+		return typeof v === 'string' && v.trim().length > 0 ? v : undefined;
+	}
+
 </script>
 
 <svelte:head>
@@ -385,6 +395,32 @@
 									</a>
 								</p>
 							</section>
+						{/if}
+
+						{#if data.aiTasks.length > 0}
+							{#each data.aiTasks as task (task.id)}
+								{@const out = placeAiOutput(selected, task.output_field)}
+								{@const errOut = placeAiOutputError(selected, task.output_field)}
+								{#if out !== undefined || errOut !== undefined}
+									<section class="flex flex-col gap-1.5">
+										<h3
+											class="text-muted-foreground text-[0.7rem] font-semibold tracking-wide uppercase"
+										>
+											{task.label}
+										</h3>
+										{#if errOut}
+											<p class="text-destructive m-0 text-[0.8rem] leading-relaxed">{errOut}</p>
+										{/if}
+										{#if out !== undefined}
+											<p
+												class="text-foreground/95 m-0 text-[0.88rem] leading-relaxed whitespace-pre-wrap"
+											>
+												{out}
+											</p>
+										{/if}
+									</section>
+								{/if}
+							{/each}
 						{/if}
 
 						{#if selected.website_crawl}
@@ -776,7 +812,7 @@
 								alt={overlayCaption
 									? `Screenshot: ${overlayCaption}`
 									: `Screenshot of ${placeTitle(selected)}`}
-								class="max-h-[calc(100dvh-5rem)] w-[min(90vw,1400px)] shrink-0 rounded shadow-2xl"
+								class="h-auto w-[min(90vw,1400px)] max-w-full shrink-0 rounded shadow-2xl"
 							/>
 						</div>
 					</div>

@@ -1,0 +1,73 @@
+{
+  "ai_tasks": {
+    "design_prompt": {
+      "label": "Design brief",
+      "output_field": "design_prompt",
+      "meta_prompt": "You are looking at a screenshot and markdown extract of a business's current website. Write a short design brief (3-5 sentences) for creating a website for the business. \n\nInclude:\n- Who they are (business's name, type etc.)\n- What they do/sell\n- What design and feeling the website should give, based on the screenshot. Include accent color, but ONLY if it is very clear in the screenshot\n- Very short resume of what features the page has (eg. payment, ordering table, opening times, etc.) ONLY include these if it is not a super basic feature that every page has\n\nDO NOT mention specific copy, product names, addresses, contact details, or other literal page content.\n\nExample breif:\n\"Create the website for a Sejers Konditori\nSejers Konditori is an artisanal bakery, confectionery, and cafe that specializes in fresh-baked breads, celebratory cakes, and homemade treats.\nIt should have a cozy, warm, but also scandinavien design\nKey features include organized product category portfolios, an integrated customer testimonial widget, and dedicated sections for their various physical locations.\"\n\n",
+      "model": "gemma-4-31b-it",
+      "send_screenshot": true,
+      "send_markdown": true,
+      "subpage_markdown_mode": "none",
+      "recommended_subpages_field": "ai_subpages"
+    },
+    "website_overview": {
+      "label": "Website overview",
+      "output_field": "website_overview",
+      "meta_prompt": "You are looking at the markdown extract of a business website. Give me all the information of it. Opening times, contact details, products, etc.",
+      "model": "gemini-3-flash-preview",
+      "send_screenshot": true,
+      "send_markdown": true,
+      "subpage_markdown_mode": "recommended",
+      "recommended_subpages_field": "ai_subpages"
+    },
+    "ai_subpages": {
+      "label": "Ai Subpages",
+      "output_field": "ai_subpages",
+      "meta_prompt": "You are looking at the markdown extract of a business website. Identify the most important subpages or sections a reader should open to learn about the business (e.g. hours, contact, menu, booking, products, locations). For each item, give a short human-readable name and one line on what information that page likely contains. Prefer paths or labels implied by the markdown; if unknown, infer from context. Order by usefulness. Skip generic pages that add nothing beyond the home view.",
+      "model": "gemini-3-flash-preview",
+      "send_screenshot": true,
+      "send_markdown": true,
+      "subpage_markdown_mode": "none",
+      "recommended_subpages_field": "ai_subpages",
+      "response_json_schema": {
+        "type": "object",
+        "properties": {
+          "subpages": {
+            "type": "array",
+            "description": "Important subpages or sections to visit for key site information",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Nav label, heading, or short title for the subpage or section"
+                },
+                "path_or_hint": {
+                  "type": "string",
+                  "description": "URL path, slug, or hint from markdown if present; empty string if unknown"
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "One line: what the user learns there (hours, contact, products, etc.)"
+                }
+              },
+              "required": [
+                "name",
+                "path_or_hint",
+                "summary"
+              ]
+            }
+          }
+        },
+        "required": [
+          "subpages"
+        ]
+      }
+    }
+  },
+  "ai_task_order": [
+    "design_prompt",
+    "website_overview",
+    "ai_subpages"
+  ]
+}

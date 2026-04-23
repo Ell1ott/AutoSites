@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/elliottfriedrich/Documents/GitHub/AutoSites/**)",
+      "Bash(git -C /Users/elliottfriedrich/Documents/GitHub/AutoSites log --oneline --all)",
+      "Bash(bunx --bun shadcn-svelte@latest add textarea label select alert skeleton --overwrite --yes)"
+    ]
+  }
+}
