@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createSessionServerClient } from "@/lib/cms/server/supabase";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
-import { EVENTS } from "@/lib/analytics/events";
+import { getCmsLogger } from "@/lib/cms/logger";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -10,7 +9,7 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/";
 
   if (!code) {
-    await captureServerEvent(EVENTS.AUTH_CALLBACK_FAILED, { reason: "missing_code" });
+    await getCmsLogger().captureServerEvent("auth_callback_failed", { reason: "missing_code" });
     return NextResponse.redirect(new URL("/cms/login?error=missing_code", origin));
   }
 
@@ -27,13 +26,13 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (lookupError || !row) {
-    await captureServerEvent(EVENTS.AUTH_CALLBACK_FAILED, { reason: "invalid_code" });
+    await getCmsLogger().captureServerEvent("auth_callback_failed", { reason: "invalid_code" });
     return NextResponse.redirect(new URL("/cms/login?error=invalid_code", origin));
   }
 
   const { data: userData, error: userError } = await admin.auth.admin.getUserById(row.user_id);
   if (userError || !userData.user?.email) {
-    await captureServerEvent(EVENTS.AUTH_CALLBACK_FAILED, { reason: "user_not_found" }, {
+    await getCmsLogger().captureServerEvent("auth_callback_failed", { reason: "user_not_found" }, {
       userId: row.user_id,
     });
     return NextResponse.redirect(new URL("/cms/login?error=user_not_found", origin));
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
     email: userData.user.email,
   });
   if (linkError || !linkData.properties?.hashed_token) {
-    await captureServerEvent(EVENTS.AUTH_CALLBACK_FAILED, { reason: "link_failed" }, {
+    await getCmsLogger().captureServerEvent("auth_callback_failed", { reason: "link_failed" }, {
       userId: userData.user.id,
       email: userData.user.email,
     });
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest) {
     token_hash: linkData.properties.hashed_token,
   });
   if (verifyError) {
-    await captureServerEvent(EVENTS.AUTH_CALLBACK_FAILED, { reason: verifyError.message }, {
+    await getCmsLogger().captureServerEvent("auth_callback_failed", { reason: verifyError.message }, {
       userId: userData.user.id,
       email: userData.user.email,
     });
@@ -66,7 +65,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  await captureServerEvent(EVENTS.AUTH_CALLBACK_SUCCEEDED, {}, {
+  await getCmsLogger().captureServerEvent("auth_callback_succeeded", {}, {
     userId: userData.user.id,
     email: userData.user.email,
   });

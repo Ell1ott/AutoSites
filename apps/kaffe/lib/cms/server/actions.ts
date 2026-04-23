@@ -4,8 +4,7 @@ import { updateTag } from "next/cache";
 import { requireAdmin } from "./auth";
 import { createSessionServerClient } from "./supabase";
 import type { CmsKind, CmsValueByKind } from "../types";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
-import { EVENTS } from "@/lib/analytics/events";
+import { getCmsLogger } from "../logger";
 
 export async function updateContent<K extends CmsKind>(
   key: string,
@@ -34,8 +33,8 @@ export async function updateContent<K extends CmsKind>(
     updateTag(`cms:${siteId}:${key}`);
   }
 
-  await captureServerEvent(
-    EVENTS.CMS_CONTENT_UPDATED,
+  await getCmsLogger().captureServerEvent(
+    "cms_content_updated",
     { key, kind, value_length: estimateValueLength(value), deferred_revalidate: options?.revalidate === false },
     { userId, siteId },
   );
@@ -52,7 +51,7 @@ export async function revalidateContent(key: string): Promise<void> {
     throw new Error("Invalid cmsKey.");
   }
   updateTag(`cms:${siteId}:${key}`);
-  await captureServerEvent(EVENTS.CMS_CONTENT_REVALIDATED, { key }, { userId, siteId });
+  await getCmsLogger().captureServerEvent("cms_content_revalidated", { key }, { userId, siteId });
 }
 
 export async function uploadImage(
@@ -83,8 +82,8 @@ export async function uploadImage(
 
   const { data } = supabase.storage.from("cms-images").getPublicUrl(path);
 
-  await captureServerEvent(
-    EVENTS.CMS_IMAGE_UPLOADED,
+  await getCmsLogger().captureServerEvent(
+    "cms_image_uploaded",
     {
       filename: file.name,
       content_type: file.type,
