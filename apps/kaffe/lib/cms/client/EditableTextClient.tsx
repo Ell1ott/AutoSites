@@ -16,8 +16,8 @@ import { updateContent } from "../server/actions";
 import type { CmsTextStyle } from "../types";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
-import { useTrack } from "@/lib/analytics/client/useTrack";
-import { EVENTS } from "@/lib/analytics/events";
+import { useTrack } from "@autosites/analytics/client";
+import { EVENTS } from "@autosites/analytics/events";
 
 type EditableTextClientProps = {
   cmsKey: string;

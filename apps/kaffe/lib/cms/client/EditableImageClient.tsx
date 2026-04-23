@@ -6,8 +6,8 @@ import { updateContent, uploadImage } from "../server/actions";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
 import type { CmsImage } from "../types";
-import { useTrack } from "@/lib/analytics/client/useTrack";
-import { EVENTS } from "@/lib/analytics/events";
+import { useTrack } from "@autosites/analytics/client";
+import { EVENTS } from "@autosites/analytics/events";
 
 type EditableImageClientProps = {
   cmsKey: string;

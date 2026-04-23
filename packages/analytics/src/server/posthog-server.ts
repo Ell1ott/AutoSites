@@ -1,8 +1,8 @@
 import "server-only";
 import { PostHog } from "posthog-node";
 import { after } from "next/server";
-import { getAnalyticsContext } from "./server/analytics-context";
-import type { EventName } from "./events";
+import { getAnalyticsContext } from "./analytics-context";
+import type { EventName } from "../events";
 
 let client: PostHog | null = null;
 

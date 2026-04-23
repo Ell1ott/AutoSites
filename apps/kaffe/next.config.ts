@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   skipTrailingSlashRedirect: true,
+  transpilePackages: ["@autosites/analytics"],
   images: {
     remotePatterns: [
       {

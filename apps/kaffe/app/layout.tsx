@@ -3,7 +3,7 @@ import { EB_Garamond, Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { EditableProvider } from "@/lib/cms/components/EditableProvider";
-import { AnalyticsBoot } from "@/lib/analytics/AnalyticsBoot";
+import { AnalyticsBoot } from "@autosites/analytics/server";
 
 const inter = Inter({
   variable: "--font-inter",

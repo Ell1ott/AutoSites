@@ -1,18 +1,11 @@
-import type { EventName } from "@/lib/analytics/events";
-
 export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
   const { setCmsLogger } = await import("@/lib/cms/logger");
-  const { captureServerEvent } = await import("@/lib/analytics/posthog-server");
-  setCmsLogger({
-    captureServerEvent: (event, props, ctx) =>
-      captureServerEvent(event as EventName, props, ctx),
-  });
+  const { cmsLogger } = await import("@autosites/analytics/cms-logger");
+  setCmsLogger(cmsLogger);
 
-  const { setAnalyticsContextResolver } = await import(
-    "@/lib/analytics/server/analytics-context"
-  );
+  const { setAnalyticsContextResolver } = await import("@autosites/analytics/server");
   const { getSiteId } = await import("@/lib/cms/server/site");
   const { createSessionServerClient } = await import("@/lib/cms/server/supabase");
   setAnalyticsContextResolver({

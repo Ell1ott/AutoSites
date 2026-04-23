@@ -11,6 +11,7 @@
     "cms:push": "bun scripts/cms-sync.ts push --site"
   },
   "dependencies": {
+    "@autosites/analytics": "workspace:*",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.2",
     "next": "16.2.4",

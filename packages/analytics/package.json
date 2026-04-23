@@ -1,0 +1,29 @@
+{
+  "name": "@autosites/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server/index.ts",
+    "./client": "./src/client/index.ts",
+    "./events": "./src/events.ts",
+    "./cms-logger": "./src/cms-logger.ts"
+  },
+  "peerDependencies": {
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "posthog-js": "^1.369.3",
+    "posthog-node": "^5.29.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19",
+    "typescript": "^5"
+  }
+}

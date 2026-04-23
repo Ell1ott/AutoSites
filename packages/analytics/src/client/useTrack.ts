@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import posthog from "posthog-js";
-import type { EventName } from "@/lib/analytics/events";
+import type { EventName } from "../events";
 
 export function useTrack() {
   return useCallback((event: EventName | (string & {}), properties?: Record<string, unknown>) => {

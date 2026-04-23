@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import posthog from "posthog-js";
-import type { AnalyticsContext } from "@/lib/analytics/events";
+import type { AnalyticsContext } from "../events";
 import { PageView } from "./PageView";
 
 type Props = {

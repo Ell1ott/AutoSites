@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { getAnalyticsContext } from "./server/analytics-context";
-import { PostHogProvider } from "./client/PostHogProvider";
+import { getAnalyticsContext } from "./analytics-context";
+import { PostHogProvider } from "../client/PostHogProvider";
 
 export async function AnalyticsBoot({ children }: { children: ReactNode }) {
   const ctx = await getAnalyticsContext();

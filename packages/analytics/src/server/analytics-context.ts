@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import type { AnalyticsContext } from "@/lib/analytics/events";
+import type { AnalyticsContext } from "../events";
 
 export type AnalyticsContextResolver = {
   getSiteId(): Promise<string>;
