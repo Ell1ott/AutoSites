@@ -1,4 +1,4 @@
-import { CmsFooterAdminLink, EditableText } from "@/lib/cms";
+import { CmsFooterAdminLink, EditableText } from "@autosites/cms/components";
 
 export function SiteFooter() {
   return (

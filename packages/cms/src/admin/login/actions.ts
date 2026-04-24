@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createSessionServerClient } from "@/lib/cms/server/supabase";
-import { getCmsLogger } from "@/lib/cms/logger";
+import { createSessionServerClient } from "../../server/supabase";
+import { getCmsLogger } from "../../logger";
 
 const EDIT_COOKIE = "cms-edit";
 

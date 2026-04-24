@@ -6,8 +6,7 @@ import { updateContent, uploadImage } from "../server/actions";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
 import type { CmsImage } from "../types";
-import { useTrack } from "@autosites/analytics/client";
-import { EVENTS } from "@autosites/analytics/events";
+import { useTrack } from "../client-logger";
 
 type EditableImageClientProps = {
   cmsKey: string;
@@ -130,7 +129,7 @@ export function EditableImageClient({
         type="button"
         className="cms-image-replace"
         onClick={() => {
-          track(EVENTS.CMS_IMAGE_PICKER_OPENED, { key: cmsKey });
+          track("cms_image_picker_opened", { key: cmsKey });
           inputRef.current?.click();
         }}
         disabled={uploading}

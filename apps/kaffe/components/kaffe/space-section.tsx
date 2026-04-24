@@ -1,4 +1,4 @@
-import { EditableImage, EditableText } from "@/lib/cms";
+import { EditableImage, EditableText } from "@autosites/cms/components";
 
 export function SpaceSection() {
   return (

@@ -16,8 +16,7 @@ import { updateContent } from "../server/actions";
 import type { CmsTextStyle } from "../types";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
 import { useToastStore } from "./Toast";
-import { useTrack } from "@autosites/analytics/client";
-import { EVENTS } from "@autosites/analytics/events";
+import { useTrack } from "../client-logger";
 
 type EditableTextClientProps = {
   cmsKey: string;
@@ -284,7 +283,7 @@ export function EditableTextClient({
     e.currentTarget.classList.add("cms-editing");
     setFocused(true);
     endingRef.current = false; // new session — allow endEditing again
-    track(EVENTS.CMS_FIELD_FOCUSED, { key: cmsKey, kind: "text" });
+    track("cms_field_focused", { key: cmsKey, kind: "text" });
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLElement>) {

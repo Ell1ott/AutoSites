@@ -1,0 +1,36 @@
+{
+  "name": "@autosites/cms",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./admin/login/page": "./src/admin/login/page.tsx",
+    "./admin/edit": "./src/admin/edit/index.ts",
+    "./admin/auth-callback": "./src/admin/auth-callback/index.ts",
+    "./proxy": "./src/proxy.ts",
+    "./components": "./src/components/index.ts",
+    "./server": "./src/server/index.ts",
+    "./server/site": "./src/server/site.ts",
+    "./server/supabase": "./src/server/supabase.ts",
+    "./logger": "./src/logger.ts",
+    "./client-logger": "./src/client-logger.ts",
+    "./types": "./src/types.ts"
+  },
+  "peerDependencies": {
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19",
+    "typescript": "^5"
+  }
+}

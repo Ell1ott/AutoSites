@@ -1,4 +1,4 @@
-import { EditableText } from "@/lib/cms";
+import { EditableText } from "@autosites/cms/components";
 import { MenuCard } from "./menu-card";
 
 export function CollectionSection() {

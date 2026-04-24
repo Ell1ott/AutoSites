@@ -11,9 +11,9 @@ const EDIT_COOKIE = "cms-edit";
  *    bookmarks or analytics.
  * 2. Refresh the Supabase auth session so token rotation works across
  *    Server Components and Server Actions. Per Supabase docs, this must
- *    happen in middleware.
+ *    happen at the proxy layer.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const editParam = request.nextUrl.searchParams.get("edit");
 
   if (editParam === "1" || editParam === "0") {

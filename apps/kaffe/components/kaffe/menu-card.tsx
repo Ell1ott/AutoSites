@@ -1,4 +1,4 @@
-import { EditableImage, EditableText } from "@/lib/cms";
+import { EditableImage, EditableText } from "@autosites/cms/components";
 import { Reveal } from "./reveal";
 
 type MenuCardProps = {

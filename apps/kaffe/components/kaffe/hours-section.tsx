@@ -1,4 +1,4 @@
-import { EditableText } from "@/lib/cms";
+import { EditableText } from "@autosites/cms/components";
 import { Reveal } from "./reveal";
 
 const days = [

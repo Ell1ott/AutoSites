@@ -1,4 +1,4 @@
-import { EditableLink, EditableText } from "@/lib/cms";
+import { EditableLink, EditableText } from "@autosites/cms/components";
 import { MobileNav } from "./mobile-nav";
 
 export function SiteHeader() {

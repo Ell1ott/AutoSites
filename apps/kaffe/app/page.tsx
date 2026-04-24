@@ -7,7 +7,7 @@ import { PhilosophySection } from "@/components/kaffe/philosophy-section";
 import { SiteFooter } from "@/components/kaffe/site-footer";
 import { SiteHeader } from "@/components/kaffe/site-header";
 import { SpaceSection } from "@/components/kaffe/space-section";
-import { EditableImage, EditableLink, EditableText } from "@/lib/cms";
+import { EditableImage, EditableLink, EditableText } from "@autosites/cms/components";
 
 export default function Home() {
   return (

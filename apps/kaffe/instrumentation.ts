@@ -1,13 +1,13 @@
 export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  const { setCmsLogger } = await import("@/lib/cms/logger");
+  const { setCmsLogger } = await import("@autosites/cms/logger");
   const { cmsLogger } = await import("@autosites/analytics/cms-logger");
   setCmsLogger(cmsLogger);
 
   const { setAnalyticsContextResolver } = await import("@autosites/analytics/server");
-  const { getSiteId } = await import("@/lib/cms/server/site");
-  const { createSessionServerClient } = await import("@/lib/cms/server/supabase");
+  const { getSiteId } = await import("@autosites/cms/server/site");
+  const { createSessionServerClient } = await import("@autosites/cms/server/supabase");
   setAnalyticsContextResolver({
     getSiteId,
     async getCurrentUser() {

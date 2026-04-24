@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { EB_Garamond, Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { EditableProvider } from "@/lib/cms/components/EditableProvider";
+import { EditableProvider } from "@autosites/cms/components";
 import { AnalyticsBoot } from "@autosites/analytics/server";
+import { CmsClientLoggerBridge } from "@/components/cms-client-logger-bridge";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body>
         <Suspense fallback={null}>
           <AnalyticsBoot>
+            <CmsClientLoggerBridge />
             <EditableProvider>{children}</EditableProvider>
           </AnalyticsBoot>
         </Suspense>
