@@ -11,6 +11,7 @@
       "dependencies": {
         "@autosites/analytics": "workspace:*",
         "@autosites/cms": "workspace:*",
+        "@autosites/site-shell": "workspace:*",
         "@supabase/ssr": "^0.10.2",
         "@supabase/supabase-js": "^2.103.2",
         "next": "16.2.4",
@@ -73,6 +74,30 @@
         "react-dom": "^19",
       },
     },
+    "packages/site-shell": {
+      "name": "@autosites/site-shell",
+      "version": "0.0.0",
+      "dependencies": {
+        "posthog-js": "^1.369.3",
+      },
+      "devDependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "next": "^16",
+        "react": "^19",
+        "react-dom": "^19",
+        "typescript": "^5",
+      },
+      "peerDependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "next": "^16",
+        "react": "^19",
+        "react-dom": "^19",
+      },
+    },
   },
   "trustedDependencies": [
     "sharp",
@@ -84,6 +109,8 @@
     "@autosites/analytics": ["@autosites/analytics@workspace:packages/analytics"],
 
     "@autosites/cms": ["@autosites/cms@workspace:packages/cms"],
+
+    "@autosites/site-shell": ["@autosites/site-shell@workspace:packages/site-shell"],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
 

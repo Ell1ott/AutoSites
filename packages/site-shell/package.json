@@ -1,0 +1,30 @@
+{
+  "name": "@autosites/site-shell",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./SiteShell": "./src/SiteShell.tsx",
+    "./next-config": "./src/next-config.ts"
+  },
+  "peerDependencies": {
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19",
+    "@autosites/cms": "workspace:*",
+    "@autosites/analytics": "workspace:*"
+  },
+  "dependencies": {
+    "posthog-js": "^1.369.3"
+  },
+  "devDependencies": {
+    "@autosites/analytics": "workspace:*",
+    "@autosites/cms": "workspace:*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19",
+    "typescript": "^5"
+  }
+}
