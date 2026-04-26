@@ -4,18 +4,22 @@ import "./globals.css";
 import { SiteShell } from "@autosites/site-shell/SiteShell";
 
 const dmSans = DM_Sans({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-dm-sans",
 });
 
 const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-bricolage",
 });
 
 export const metadata: Metadata = {
-  title: "Café Luccas",
-  description: "Sourdough pizza from our stone kiln to your table.",
+  title: {
+    default: "Café Luccas · Pizza & grill · Sorø",
+    template: "%s · Café Luccas",
+  },
+  description:
+    "Familievenlig pizza- og grillrestaurant i Sorø. Friske råvarer, frokosttilbud 11–15 og take away. Storgade 38.",
 };
 
 export default function RootLayout({
@@ -24,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${bricolageGrotesque.variable}`}>
+    <html lang="da" className={`${dmSans.variable} ${bricolageGrotesque.variable}`}>
       <body className={dmSans.className}>
         <SiteShell>{children}</SiteShell>
       </body>

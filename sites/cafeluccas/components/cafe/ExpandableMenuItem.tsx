@@ -32,7 +32,7 @@ export function ExpandableMenuItem({
           aria-controls={contentId}
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "read less" : "read more"}
+          {open ? "Læs mindre" : "Læs mere"}
         </button>
       ) : null}
     </div>

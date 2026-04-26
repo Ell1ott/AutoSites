@@ -9,27 +9,27 @@ export function HeroSection() {
     <section id="home" className="hero" aria-labelledby="hero-heading">
       <div className="hero-content">
         <h1 id="hero-heading">
-          sourdough
+          pizza
           <br />
-          pizza.
+          &amp; grill.
         </h1>
         <div
           className="dotted-line"
           style={{ borderColor: "var(--cream)" }}
         />
         <p>
-          From our stone kiln to your table. Naturally leavened, locally
-          sourced, and crafted with the obsessive precision of a Scandinavian
-          winter.
+          Midt i Sorø laver vi hjemmelavet mad med masser af kærlighed og friske
+          råvarer. Pizza, burgere, pasta, salater og grillretter — spis i caféen
+          eller tag maden med hjem.
         </p>
-        <ButtonOutline href="#menu" cream>
-          View Menu
+        <ButtonOutline href="/menu" cream>
+          Se menuen
         </ButtonOutline>
       </div>
       <div className="hero-img">
         <Image
           src={HERO_IMAGE}
-          alt="Wood-fired sourdough pizza fresh from the oven"
+          alt="Varm pizza med ost og friske toppings"
           fill
           sizes="(max-width: 900px) 100vw, 50vw"
           priority
@@ -37,17 +37,17 @@ export function HeroSection() {
       </div>
 
       <div className="badge-price">
-        <span>$14</span>
-        <span>all pizzas</span>
+        <span>11–15</span>
+        <span>frokost</span>
       </div>
       <div className="tape-label">
-        THE BIG CHILL
+        RING &amp; BESTIL
         <br />
-        THE BIG CHILL
+        RING &amp; BESTIL
         <br />
-        THE BIG CHILL
+        RING &amp; BESTIL
       </div>
-      <div className="diagonal-banner">Best in the North</div>
+      <div className="diagonal-banner">Familievenlig café · Sorø</div>
     </section>
   );
 }

@@ -6,26 +6,31 @@ const FEATURED_IMAGE =
 
 export function FeaturedSection() {
   return (
-    <section id="bookings" className="featured" aria-labelledby="featured-heading">
+    <section
+      id="frokost"
+      className="featured"
+      aria-labelledby="featured-heading"
+    >
       <div className="featured-content">
-        <span className="recipe-of-month">recipe of the month</span>
+        <span className="recipe-of-month">Frokosttilbud</span>
         <h2 id="featured-heading">
-          smash
+          tre
           <br />
-          &amp;
+          favorit
           <br />
-          grab.
+          pizzaer.
         </h2>
         <p>
-          Our signature double-patty smash burger with fermented pickles and
-          Swedish cheddar. It&apos;s a mess, but it&apos;s our mess.
+          Hver dag mellem kl. 11 og 15 kan du få særlig pris på skinkepizza,
+          pepperonipizza og calzone. Perfekt til en fyldig frokostpause — se
+          hele menukortet for detaljer.
         </p>
-        <ButtonOutline href="tel:+4520304050">Order for Pickup</ButtonOutline>
+        <ButtonOutline href="tel:+4557834466">Ring og bestil</ButtonOutline>
       </div>
       <div className="featured-img">
         <Image
           src={FEATURED_IMAGE}
-          alt="Smash burger with melted cheese and pickles"
+          alt="Burger med ost og salat"
           fill
           sizes="(max-width: 900px) 100vw, 40vw"
         />

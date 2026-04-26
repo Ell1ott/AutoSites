@@ -1,15 +1,35 @@
+const MAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=Storgade+38,+4180+Sor%C3%B8";
+
 export function FooterMapSection() {
   return (
-    <section id="contact" className="footer-map" aria-label="Location">
+    <section id="contact" className="footer-map" aria-label="Find os">
       <div className="map-overlay">
-        <div className="logo">Luccas HQ</div>
+        <div className="logo">Café Luccas</div>
+        <p className="map-tagline">Pizza &amp; grill · Sorø</p>
         <p className="map-address">
-          122 Nordic Way, Copenhagen
+          Storgade 38
           <br />
-          <a href="tel:+4520304050" className="map-phone">
-            +45 20 30 40 50
+          4180 Sorø
+        </p>
+        <p className="map-phones">
+          <a href="tel:+4557834466" className="map-phone">
+            57 83 44 66
+          </a>
+          <span className="map-phone-sep"> · </span>
+          <a href="tel:+4540241971" className="map-phone">
+            40 24 19 71
           </a>
         </p>
+        <p className="map-hours">Alle dage 11.00 – 22.00</p>
+        <a
+          href={MAPS_URL}
+          className="map-directions-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Vejvisning
+        </a>
       </div>
 
       <svg
@@ -48,7 +68,7 @@ export function FooterMapSection() {
           fontSize={15}
           fill="var(--blue)"
         >
-          WE ARE HERE
+          VI ER HER
         </text>
       </svg>
     </section>

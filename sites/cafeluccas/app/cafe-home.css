@@ -1,10 +1,15 @@
 .cafe-page {
-  --coral: #ff5c4d;
-  --mint: #a2d9c7;
-  --blue: #2f58cd;
-  --peach: #f9d1b7;
-  --cream: #fef9f5;
-  --dark: #3b2f2f;
+  --coral: #e65a4c;     /* Slightly deeper coral */
+  --mint: #d8ede6;      /* Softer mint */
+  --blue: #1e3a8a;      /* Deeper navy blue */
+  --peach: #fdf2e9;     /* Softer peach */
+  --cream: #f9f7f4;     /* Refined cream */
+  --dark: #1a1515;      /* Richer dark */
+  --gold: #c5a059;      /* New accent: sophisticated gold */
+  --text-muted: #6b7280;
+  --border-light: 1px solid rgba(0,0,0,0.08);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-md: 0 12px 24px rgba(0,0,0,0.06);
   --border: 2px solid var(--dark);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   color: var(--dark);
@@ -26,20 +31,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28px 52px;
-  border-bottom: var(--border);
+  padding: 20px 52px;
+  background: rgba(249, 247, 244, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all 0.3s ease;
 }
 
 .cafe-page .logo {
   font-family: var(--font-bricolage), serif;
-  font-size: 31px;
+  font-size: 24px;
   text-transform: uppercase;
-  letter-spacing: -1px;
+  letter-spacing: 1px;
+  font-weight: 800;
+}
+
+.cafe-page .logo-link {
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.cafe-page .logo-link:hover {
+  color: var(--gold);
 }
 
 .cafe-page .nav-links {
   display: flex;
-  gap: 28px;
+  gap: 32px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -48,13 +70,30 @@
   text-decoration: none;
   color: var(--dark);
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 1px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.cafe-page .nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--gold);
+  transition: width 0.3s ease;
 }
 
 .cafe-page .nav-links a:hover {
-  color: var(--coral);
+  color: var(--gold);
+}
+
+.cafe-page .nav-links a:hover::after {
+  width: 100%;
 }
 
 .cafe-page .hero {
@@ -175,6 +214,250 @@
   background-position: left bottom;
   background-size: 100px 24px;
   transform: translateZ(0);
+}
+
+.cafe-page .menu-page {
+  background-color: var(--cream);
+  isolation: isolate;
+}
+
+.cafe-page .menu-hero {
+  position: relative;
+  height: 60vh;
+  min-height: 480px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+  background-color: #000;
+}
+
+.cafe-page .menu-hero-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.65;
+  transition: transform 0.8s ease;
+}
+
+.cafe-page .menu-hero:hover .menu-hero-img {
+  transform: scale(1.05);
+}
+
+.cafe-page .menu-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  max-width: 800px;
+}
+
+.cafe-page .menu-page-eyebrow {
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.8s ease backwards;
+}
+
+.cafe-page .menu-page-title {
+  font-family: var(--font-bricolage), serif;
+  font-size: clamp(3rem, 10vw, 6rem);
+  line-height: 0.9;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.8s ease 0.2s backwards;
+}
+
+.cafe-page .menu-page-lead {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  max-width: 40rem;
+  margin: 0 auto 2.5rem;
+  opacity: 0.9;
+  animation: fadeInUp 0.8s ease 0.4s backwards;
+}
+
+.cafe-page .menu-page-cta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  animation: fadeInUp 0.8s ease 0.6s backwards;
+}
+
+.cafe-page .menu-page-cta .btn-outline {
+  border-color: white;
+  color: white;
+  margin-top: 0;
+}
+
+.cafe-page .menu-page-cta .btn-outline:hover {
+  background-color: white;
+  color: var(--dark);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cafe-page .menu-offer-banner {
+  padding: 4rem 52px;
+  background-color: var(--mint);
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cafe-page .menu-offer-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  max-width: 700px;
+  position: relative;
+  overflow: hidden;
+  border-top: 6px solid var(--coral);
+}
+
+.cafe-page .menu-offer-title {
+  font-family: var(--font-bricolage), serif;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--dark);
+}
+
+.cafe-page .menu-offer-banner p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.cafe-page .menu-offer-banner strong {
+  color: var(--coral);
+  font-weight: 800;
+}
+
+.cafe-page .menu-section {
+  padding: 6rem 52px;
+  border-bottom: var(--border-light);
+}
+
+.cafe-page .menu-section--peach {
+  background-color: var(--peach);
+}
+
+.cafe-page .menu-section-header {
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.cafe-page .menu-section h2 {
+  font-family: var(--font-bricolage), serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  color: var(--dark);
+  position: relative;
+  display: inline-block;
+}
+
+.cafe-page .menu-section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: var(--gold);
+  border-radius: 2px;
+}
+
+.cafe-page .menu-section-intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 36rem;
+  margin: 1rem auto 0;
+  color: var(--text-muted);
+}
+
+.cafe-page .menu-dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cafe-page .menu-dish {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.cafe-page .menu-dish:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-md);
+}
+
+.cafe-page .menu-dish:last-child {
+  margin-bottom: 0;
+}
+
+.cafe-page .menu-dish h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+  color: var(--dark);
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cafe-page .menu-dish-no {
+  color: var(--gold);
+  font-family: var(--font-bricolage), serif;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.cafe-page .menu-dish p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: auto;
+}
+
+.cafe-page .menu-category-list {
+  margin: 20px 0 0;
+  padding-left: 1.2em;
+  font-size: 18px;
+  line-height: 1.8;
+  font-weight: 700;
+}
+
+.cafe-page .menu-section--categories .btn-outline {
+  margin-top: 8px;
 }
 
 .cafe-page .menu-grid {
@@ -312,6 +595,53 @@
   letter-spacing: 1px;
 }
 
+.cafe-page .split-label-spaced {
+  margin-top: 28px;
+}
+
+.cafe-page .split-about-text {
+  margin-top: 14px;
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 36rem;
+}
+
+.cafe-page .split-capacity {
+  margin-top: 18px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.cafe-page .split-menu-link {
+  margin-top: 24px;
+}
+
+.cafe-page .split-phone-block {
+  margin-top: 8px;
+  font-family: var(--font-bricolage), serif;
+  font-size: 26px;
+  line-height: 1.4;
+}
+
+.cafe-page .split-phone-link {
+  color: white;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.cafe-page .split-phone-link:hover {
+  border-bottom-color: white;
+}
+
+.cafe-page .split-maps-btn {
+  margin-top: 24px;
+}
+
+.cafe-page .split-maps-btn:hover {
+  background-color: white;
+  color: var(--blue);
+}
+
 .cafe-page .split-hours-text {
   font-family: var(--font-bricolage), serif;
   font-size: 30px;
@@ -358,8 +688,49 @@
   margin-top: 8px;
 }
 
+.cafe-page .map-tagline {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+  color: var(--coral);
+}
+
 .cafe-page .map-overlay .map-phone {
   color: inherit;
+}
+
+.cafe-page .map-phones {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cafe-page .map-phone-sep {
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.cafe-page .map-hours {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.cafe-page .map-directions-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 2px solid var(--blue);
+}
+
+.cafe-page .map-directions-link:hover {
+  opacity: 0.85;
 }
 
 .cafe-page .svg-map {
@@ -436,6 +807,19 @@
   .cafe-page .featured,
   .cafe-page .split-section {
     grid-template-columns: 1fr;
+  }
+
+  .cafe-page .menu-dishes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cafe-page .menu-section {
+    padding: 4rem 28px;
+  }
+
+  .cafe-page .menu-hero {
+    height: 50vh;
   }
 
   .cafe-page .hero-img {
