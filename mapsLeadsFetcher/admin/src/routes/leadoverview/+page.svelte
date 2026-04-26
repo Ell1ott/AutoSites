@@ -26,7 +26,9 @@
 		Dialog,
 		DialogTitle,
 		DialogPortal,
-		DialogOverlay
+		DialogOverlay,
+		DialogContent,
+		DialogHeader
 	} from '$lib/components/ui/dialog/index.js';
 	import { Dialog as BitsDialog } from 'bits-ui';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
@@ -54,6 +56,8 @@
 	let screenshotOverlayOpen = $state(false);
 	let overlayImageSrc = $state<string | null>(null);
 	let overlayCaption = $state<string | null>(null);
+	let aiContentDialogOpen = $state(false);
+	let aiContentTab = $state<string>('all');
 
 	/** When crawl has both screenshots and links, sidebar uses Tabs between them. */
 	let crawlMediaTab = $state<'screenshots' | 'links'>('screenshots');
@@ -61,6 +65,11 @@
 	$effect(() => {
 		void selected?.id;
 		crawlMediaTab = 'screenshots';
+	});
+
+	$effect(() => {
+		void selected?.id;
+		aiContentTab = 'all';
 	});
 
 	onMount(() => {
@@ -101,6 +110,7 @@
 		screenshotOverlayOpen = false;
 		overlayImageSrc = null;
 		overlayCaption = null;
+		aiContentDialogOpen = false;
 		selected = null;
 	}
 
@@ -320,7 +330,21 @@
 			{#if selected}
 				<div class="border-border flex shrink-0 items-start justify-between gap-3 border-b px-5 py-4">
 					<h2 class="text-[1.05rem] leading-snug font-semibold">{placeTitle(selected)}</h2>
-					<Button variant="outline" size="sm" onclick={closePanel}>Close</Button>
+					<div class="flex shrink-0 items-center gap-2">
+						{#if data.aiTasks.length > 0}
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => {
+									aiContentTab = 'all';
+									aiContentDialogOpen = true;
+								}}
+							>
+								AI content
+							</Button>
+						{/if}
+						<Button variant="outline" size="sm" onclick={closePanel}>Close</Button>
+					</div>
 				</div>
 
 				<ScrollArea class="min-h-0 flex-1" orientation="vertical">
@@ -818,6 +842,103 @@
 					</div>
 				</BitsDialog.Content>
 			</DialogPortal>
+		{/if}
+	</Dialog>
+
+	<Dialog bind:open={aiContentDialogOpen}>
+		{#if selected && data.aiTasks.length > 0}
+			<DialogContent
+				class="flex max-h-[min(90vh,800px)] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+				showCloseButton={true}
+			>
+				<DialogHeader class="border-border shrink-0 space-y-1 border-b px-6 py-5 pr-14">
+					<DialogTitle>AI-generated content</DialogTitle>
+					<p class="text-muted-foreground text-sm font-normal leading-snug">
+						{placeTitle(selected)}
+					</p>
+				</DialogHeader>
+
+				<Tabs bind:value={aiContentTab} class="flex min-h-0 flex-1 flex-col gap-0">
+					<div class="border-border shrink-0 border-b px-6 py-3">
+						<TabsList class="h-auto min-h-9 max-w-full flex-wrap justify-start gap-1">
+							<TabsTrigger value="all">All</TabsTrigger>
+							{#each data.aiTasks as task (task.id)}
+								<TabsTrigger value={task.id}>{task.label}</TabsTrigger>
+							{/each}
+						</TabsList>
+					</div>
+
+					<TabsContent value="all" class="mt-0 min-h-0 flex-1">
+						<ScrollArea class="h-[min(55vh,440px)] px-6 py-4" orientation="vertical">
+							{@const hasAny = data.aiTasks.some(
+								(t) =>
+									placeAiOutput(selected!, t.output_field) !== undefined ||
+									placeAiOutputError(selected!, t.output_field) !== undefined
+							)}
+							<div class="flex flex-col gap-5">
+								{#if !hasAny}
+									<p class="text-muted-foreground m-0 text-sm">
+										No AI output stored for this business yet.
+									</p>
+								{:else}
+									{#each data.aiTasks as task (task.id)}
+										{@const out = placeAiOutput(selected, task.output_field)}
+										{@const errOut = placeAiOutputError(selected, task.output_field)}
+										{#if out !== undefined || errOut !== undefined}
+											<section class="flex flex-col gap-1.5">
+												<h3
+													class="text-muted-foreground text-[0.7rem] font-semibold tracking-wide uppercase"
+												>
+													{task.label}
+												</h3>
+												{#if errOut}
+													<p class="text-destructive m-0 text-[0.8rem] leading-relaxed">{errOut}</p>
+												{/if}
+												{#if out !== undefined}
+													<p
+														class="text-foreground/95 m-0 text-[0.88rem] leading-relaxed whitespace-pre-wrap"
+													>
+														{out}
+													</p>
+												{/if}
+											</section>
+										{/if}
+									{/each}
+								{/if}
+							</div>
+						</ScrollArea>
+					</TabsContent>
+
+					{#each data.aiTasks as task (task.id)}
+						{@const out = placeAiOutput(selected, task.output_field)}
+						{@const errOut = placeAiOutputError(selected, task.output_field)}
+						<TabsContent value={task.id} class="mt-0 min-h-0 flex-1">
+							<ScrollArea class="h-[min(55vh,440px)] px-6 py-4" orientation="vertical">
+								<section class="flex flex-col gap-1.5">
+									<h3
+										class="text-muted-foreground text-[0.7rem] font-semibold tracking-wide uppercase"
+									>
+										{task.label}
+									</h3>
+									{#if errOut}
+										<p class="text-destructive m-0 text-[0.8rem] leading-relaxed">{errOut}</p>
+									{:else if out === undefined}
+										<p class="text-muted-foreground m-0 text-sm">
+											No output stored for this task yet.
+										</p>
+									{:else}
+										<p
+											class="text-foreground/95 m-0 text-[0.88rem] leading-relaxed whitespace-pre-wrap"
+										>
+											{out}
+										</p>
+									{/if}
+								</section>
+							</ScrollArea>
+						</TabsContent>
+					{/each}
+				</Tabs>
+			</DialogContent>
 		{/if}
 	</Dialog>
 </div>

@@ -1,0 +1,45 @@
+{
+  "name": "@autosites/site-test-01",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack --port 4001",
+    "build": "next build",
+    "start": "next start --port 4001",
+    "lint": "eslint",
+    "cms:pull": "bun scripts/cms-sync.ts pull --site",
+    "cms:push": "bun scripts/cms-sync.ts push --site"
+  },
+  "dependencies": {
+    "@autosites/analytics": "workspace:*",
+    "@autosites/cms": "workspace:*",
+    "@autosites/site-shell": "workspace:*",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.2",
+    "next": "16.2.4",
+    "posthog-js": "^1.369.3",
+    "posthog-node": "^5.29.2",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "glob": "^13.0.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
+}

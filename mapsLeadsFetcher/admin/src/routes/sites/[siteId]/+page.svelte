@@ -10,11 +10,14 @@
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import SiteAdminsDataTable from '$lib/components/site-admins-data-table.svelte';
+	import AddSiteAdminDialog from '$lib/components/add-site-admin-dialog.svelte';
 	import type { CmsContentRow } from '$lib/sites.types';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
+	import { ArrowLeft01Icon, UserAdd01Icon } from '@hugeicons/core-free-icons';
 
 	let { data }: { data: PageData } = $props();
+
+	let addAdminOpen = $state(false);
 
 	function formatUpdated(iso: string): string {
 		const d = new Date(iso);
@@ -58,13 +61,25 @@
 
 	<div class="grid gap-6 lg:grid-cols-2">
 		<Card class="flex min-h-[280px] flex-col">
-			<CardHeader>
+			<CardHeader class="flex flex-row items-center justify-between gap-2">
 				<CardTitle class="text-base">Admins</CardTitle>
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={() => {
+						addAdminOpen = true;
+					}}
+				>
+					<HugeiconsIcon icon={UserAdd01Icon} data-icon="inline-start" strokeWidth={2} />
+					Add admin
+				</Button>
 			</CardHeader>
 			<CardContent class="flex-1 pt-0">
 				<SiteAdminsDataTable siteId={data.site.id} admins={data.admins} />
 			</CardContent>
 		</Card>
+
+		<AddSiteAdminDialog siteId={data.site.id} bind:open={addAdminOpen} />
 
 		<Card class="flex min-h-[200px] flex-col">
 			<CardHeader class="pb-2">

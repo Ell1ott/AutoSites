@@ -1,0 +1,487 @@
+.cafe-page {
+  --coral: #ff5c4d;
+  --mint: #a2d9c7;
+  --blue: #2f58cd;
+  --peach: #f9d1b7;
+  --cream: #fef9f5;
+  --dark: #3b2f2f;
+  --border: 2px solid var(--dark);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  color: var(--dark);
+  overflow-x: hidden;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.cafe-page .main-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background-color: var(--cream);
+  border: var(--border);
+  position: relative;
+}
+
+.cafe-page nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 52px;
+  border-bottom: var(--border);
+}
+
+.cafe-page .logo {
+  font-family: var(--font-bricolage), serif;
+  font-size: 31px;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.cafe-page .nav-links {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cafe-page .nav-links a {
+  text-decoration: none;
+  color: var(--dark);
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.cafe-page .nav-links a:hover {
+  color: var(--coral);
+}
+
+.cafe-page .hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 640px;
+  background-color: var(--coral);
+  color: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.cafe-page .hero-content {
+  padding: 80px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cafe-page .hero h1 {
+  font-family: var(--font-bricolage), serif;
+  font-size: 104px;
+  line-height: 0.9;
+  margin-bottom: 28px;
+}
+
+.cafe-page .hero p {
+  max-width: 400px;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 36px;
+  opacity: 0.9;
+}
+
+.cafe-page .hero-img {
+  position: relative;
+  border-left: var(--border);
+}
+
+.cafe-page .hero-img img {
+  object-fit: cover;
+}
+
+.cafe-page .badge-price {
+  position: absolute;
+  top: 72px;
+  right: 46%;
+  width: 128px;
+  height: 128px;
+  background-color: var(--cream);
+  color: var(--coral);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-bricolage), serif;
+  z-index: 10;
+  border: var(--border);
+  transform: rotate(-10deg);
+}
+
+.cafe-page .badge-price span:first-child {
+  font-size: 32px;
+}
+
+.cafe-page .badge-price span:last-child {
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.cafe-page .tape-label {
+  position: absolute;
+  background-color: var(--blue);
+  color: white;
+  padding: 14px 38px;
+  font-family: var(--font-bricolage), serif;
+  font-size: 23px;
+  top: 24px;
+  right: -24px;
+  transform: rotate(5deg);
+  z-index: 5;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.cafe-page .diagonal-banner {
+  position: absolute;
+  background-color: var(--mint);
+  color: var(--dark);
+  padding: 8px 52px;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  bottom: 48px;
+  right: 28px;
+  transform: rotate(-15deg);
+  z-index: 5;
+}
+
+.cafe-page .wave-container {
+  width: 100%;
+  height: 32px;
+  background-color: var(--coral);
+  position: relative;
+  /* Overlap next section slightly to kill subpixel gaps between coral and cream */
+  margin-bottom: -4px;
+}
+
+.cafe-page .wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 6C25 6 25 0 50 0C75 0 75 6 100 6V12H0V6Z' fill='%23FEF9F5'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 100px 24px;
+  transform: translateZ(0);
+}
+
+.cafe-page .menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: var(--border);
+  background-color: var(--cream);
+}
+
+.cafe-page .menu-item {
+  padding: 52px;
+  border-right: var(--border);
+  transition: background 0.3s ease;
+}
+
+.cafe-page .menu-item:last-child {
+  border-right: none;
+}
+
+.cafe-page .menu-item:hover {
+  background-color: #fff;
+}
+
+.cafe-page .menu-item h3 {
+  font-family: var(--font-bricolage), serif;
+  font-size: 42px;
+  margin-bottom: 28px;
+  line-height: 1;
+}
+
+.cafe-page .menu-item p {
+  font-size: 17px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.cafe-page .read-more {
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--coral);
+  border: none;
+  border-bottom: 2px solid var(--coral);
+  padding-bottom: 2px;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cafe-page .read-more:hover {
+  opacity: 0.85;
+}
+
+.cafe-page .featured {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  background-color: var(--peach);
+}
+
+.cafe-page .featured-content {
+  padding: 80px 52px;
+  border-right: var(--border);
+}
+
+.cafe-page .recipe-of-month {
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+
+.cafe-page .featured-content h2 {
+  font-family: var(--font-bricolage), serif;
+  font-size: 78px;
+  color: var(--coral);
+  margin: 14px 0;
+}
+
+.cafe-page .featured-content > p {
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 36rem;
+}
+
+.cafe-page .featured-img {
+  position: relative;
+  min-height: 380px;
+}
+
+.cafe-page .featured-img img {
+  object-fit: cover;
+}
+
+.cafe-page .btn-outline {
+  display: inline-block;
+  padding: 16px 40px;
+  border: var(--border);
+  text-decoration: none;
+  color: var(--dark);
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 15px;
+  margin-top: 28px;
+  transition: all 0.2s;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cafe-page .btn-outline:hover {
+  background-color: var(--dark);
+  color: var(--cream);
+}
+
+.cafe-page .split-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: var(--border);
+}
+
+.cafe-page .split-box {
+  padding: 52px;
+  border-right: var(--border);
+}
+
+.cafe-page .split-box:last-child {
+  border-right: none;
+}
+
+.cafe-page .split-label {
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.cafe-page .split-hours-text {
+  font-family: var(--font-bricolage), serif;
+  font-size: 30px;
+  margin-top: 14px;
+  line-height: 1.35;
+}
+
+.cafe-page .split-newsletter-copy {
+  margin: 18px 0;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.cafe-page .dotted-line {
+  border-top: 2px dotted var(--dark);
+  margin: 28px 0;
+  width: 80px;
+}
+
+.cafe-page .footer-map {
+  height: 400px;
+  background-color: #cbdcf7;
+  position: relative;
+  overflow: hidden;
+  border-top: var(--border);
+}
+
+.cafe-page .map-overlay {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  background: white;
+  padding: 28px;
+  border: var(--border);
+  z-index: 10;
+}
+
+.cafe-page .map-overlay .logo {
+  font-size: 28px;
+}
+
+.cafe-page .map-overlay .map-address {
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.cafe-page .map-overlay .map-phone {
+  color: inherit;
+}
+
+.cafe-page .svg-map {
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+}
+
+.cafe-page .icon-grid {
+  display: flex;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.cafe-page .circle-icon {
+  width: 52px;
+  height: 52px;
+  border: var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cafe-page .circle-icon:hover {
+  background: var(--cream);
+}
+
+.cafe-page .newsletter-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  margin-top: 14px;
+  font-size: 15px;
+}
+
+.cafe-page .newsletter-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cafe-page .newsletter-submit {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px 16px;
+  background: white;
+  color: var(--blue);
+  border: var(--border);
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cafe-page .newsletter-submit:hover {
+  opacity: 0.9;
+}
+
+.cafe-page .newsletter-thanks {
+  margin-top: 16px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .cafe-page .hero,
+  .cafe-page .menu-grid,
+  .cafe-page .featured,
+  .cafe-page .split-section {
+    grid-template-columns: 1fr;
+  }
+
+  .cafe-page .hero-img {
+    height: 400px;
+    border-left: none;
+    border-top: var(--border);
+  }
+
+  .cafe-page .menu-item,
+  .cafe-page .featured-content {
+    border-right: none;
+    border-bottom: var(--border);
+  }
+
+  .cafe-page .badge-price {
+    right: 28px;
+    top: -64px;
+  }
+
+  .cafe-page .hero h1 {
+    font-size: clamp(56px, 14vw, 104px);
+  }
+
+  .cafe-page .featured-content h2 {
+    font-size: clamp(48px, 12vw, 78px);
+  }
+
+  .cafe-page nav {
+    padding: 22px 28px;
+  }
+}
+
+.cafe-page .main-container :target,
+.cafe-page .main-container [id] {
+  scroll-margin-top: 1rem;
+}
+
+.cafe-page ::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cafe-page ::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+.cafe-page ::-webkit-scrollbar-thumb {
+  background: var(--dark);
+  border: 2px solid var(--cream);
+}

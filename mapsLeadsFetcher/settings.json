@@ -13,7 +13,7 @@
     "website_overview": {
       "label": "Website overview",
       "output_field": "website_overview",
-      "meta_prompt": "You are looking at the markdown extract of a business website. Give me all the information of it. Opening times, contact details, products, etc.",
+      "meta_prompt": "You are looking at the markdown extract of a business website. Give me all the information of it. Opening times, contact details, etc.",
       "model": "gemini-3-flash-preview",
       "send_screenshot": true,
       "send_markdown": true,
@@ -83,6 +83,16 @@
       "send_markdown": false,
       "subpage_markdown_mode": "none",
       "recommended_subpages_field": "ai_subpages"
+    },
+    "products": {
+      "label": "Products",
+      "output_field": "products",
+      "meta_prompt": "Give me a full list of EVERY product that this website displays. ",
+      "model": "gemini-3-flash-preview",
+      "send_screenshot": true,
+      "send_markdown": true,
+      "subpage_markdown_mode": "recommended",
+      "recommended_subpages_field": "ai_subpages"
     }
   },
   "ai_task_order": [
@@ -90,6 +100,7 @@
     "website_overview",
     "ai_subpages",
     "desgin_search_queries",
-    "visuel_rating"
+    "visuel_rating",
+    "products"
   ]
 }

@@ -1,6 +1,9 @@
 {
   "name": "autosites",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
-  "packageManager": "bun@1.3.2"
+  "workspaces": ["sites/*", "packages/*"],
+  "packageManager": "bun@1.3.2",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.103.2"
+  }
 }

@@ -1,29 +1,45 @@
 #!/usr/bin/env bun
 /**
- * Scaffold a new site under apps/<slug>.
+ * Scaffold a new site under sites/<slug>.
  *
- *   bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=3001] [--db]
+ *   bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=3001] [--no-db]
  *
  * Themed (default): copies kaffe's theme components + layout + globals.
  * --blank: empty skeleton with no theme, minimal globals, hello-world page.
  *
- * --db: inserts into the Supabase `sites` table using SUPABASE_SERVICE_ROLE_KEY.
- * Without it, the scaffolder prints the SQL for you to run manually.
+ * Inserts/updates `public.sites` for the new slug via @supabase/supabase-js using
+ * NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from sites/blank-demo/.env.local only.
+ * Use --no-db to skip. If that file or keys are missing, prints SQL instead.
+ *
+ * Writes `.env.local` with SITE_SLUG=<slug> and Supabase/PostHog keys copied from
+ * `sites/blank-demo/.env.local` (fallback: `.env.local.example`).
  */
 
 import { $ } from "bun";
+import { createClient } from "@supabase/supabase-js";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "..");
-const KAFFE = resolve(ROOT, "apps/kaffe");
+const SITES = resolve(ROOT, "sites");
+const KAFFE = resolve(SITES, "kaffe");
+const BLANK_DEMO = resolve(SITES, "blank-demo");
+
+/** Keys copied from blank-demo env into each new site's `.env.local` (never copy SITE_SLUG). */
+const INHERIT_ENV_KEYS = [
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "NEXT_PUBLIC_POSTHOG_KEY",
+  "NEXT_PUBLIC_POSTHOG_HOST",
+] as const;
 
 type Args = {
   slug: string;
   blank: boolean;
   theme: string;
   port: number;
-  db: boolean;
+  noDb: boolean;
 };
 
 function parseArgs(argv: string[]): Args {
@@ -31,31 +47,31 @@ function parseArgs(argv: string[]): Args {
   let blank = false;
   let theme = "kaffe";
   let port: number | null = null;
-  let db = false;
+  let noDb = false;
 
   for (const arg of argv) {
     if (arg === "--blank") blank = true;
-    else if (arg === "--db") db = true;
+    else if (arg === "--no-db") noDb = true;
     else if (arg.startsWith("--theme=")) theme = arg.slice("--theme=".length);
     else if (arg.startsWith("--port=")) port = Number(arg.slice("--port=".length));
     else if (!arg.startsWith("--") && !slug) slug = arg;
     else throw new Error(`Unknown argument: ${arg}`);
   }
 
-  if (!slug) throw new Error("Usage: bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=...] [--db]");
+  if (!slug)
+    throw new Error("Usage: bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=...] [--no-db]");
   if (!/^[a-z][a-z0-9-]{1,30}$/.test(slug)) {
     throw new Error(`Slug must match /^[a-z][a-z0-9-]{1,30}$/ — got ${JSON.stringify(slug)}`);
   }
 
-  return { slug, blank, theme, port: port ?? autoPickPort(), db };
+  return { slug, blank, theme, port: port ?? autoPickPort(), noDb };
 }
 
 function autoPickPort(): number {
-  const appsDir = resolve(ROOT, "apps");
-  if (!existsSync(appsDir)) return 3001;
+  if (!existsSync(SITES)) return 3001;
   let max = 3000;
-  for (const entry of readdirSync(appsDir)) {
-    const pkgPath = resolve(appsDir, entry, "package.json");
+  for (const entry of readdirSync(SITES)) {
+    const pkgPath = resolve(SITES, entry, "package.json");
     if (!existsSync(pkgPath)) continue;
     try {
       const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as {
@@ -87,6 +103,85 @@ async function copyDir(src: string, dst: string): Promise<void> {
 
 function capitalize(s: string): string {
   return s.replace(/(^|[-_])(\w)/g, (_, __, c: string) => c.toUpperCase());
+}
+
+function parseDotEnv(raw: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const noExport = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
+    const eq = noExport.indexOf("=");
+    if (eq === -1) continue;
+    const key = noExport.slice(0, eq).trim();
+    let val = noExport.slice(eq + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    out[key] = val;
+  }
+  return out;
+}
+
+/** Read blank-demo env for shared Supabase/PostHog defaults. */
+function loadBlankDemoEnv(): { vars: Record<string, string>; sourceRel: string | null } {
+  const candidates = [".env.local", ".env.local.example"] as const;
+  for (const name of candidates) {
+    const abs = resolve(BLANK_DEMO, name);
+    if (!existsSync(abs)) continue;
+    try {
+      const raw = readFileSync(abs, "utf8");
+      return { vars: parseDotEnv(raw), sourceRel: `sites/blank-demo/${name}` };
+    } catch {
+      /* try next */
+    }
+  }
+  return { vars: {}, sourceRel: null };
+}
+
+function pickInheritedEnv(source: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const key of INHERIT_ENV_KEYS) {
+    out[key] = source[key] ?? "";
+  }
+  return out;
+}
+
+function formatEnvLocal(slug: string, inherited: Record<string, string>): string {
+  const lines: string[] = [`SITE_SLUG=${slug}`];
+  for (const key of INHERIT_ENV_KEYS) {
+    lines.push(`${key}=${inherited[key] ?? ""}`);
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+/**
+ * Supabase client with service role — credentials from sites/blank-demo/.env.local only
+ * (not process.env, not .env.local.example).
+ */
+function createSupabaseAdminFromBlankDemoEnv():
+  | { client: ReturnType<typeof createClient>; sourceRel: string }
+  | null {
+  const name = ".env.local" as const;
+  const abs = resolve(BLANK_DEMO, name);
+  if (!existsSync(abs)) return null;
+  let raw: string;
+  try {
+    raw = readFileSync(abs, "utf8");
+  } catch {
+    return null;
+  }
+  const vars = parseDotEnv(raw);
+  const url = (vars.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+  const key = (vars.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  if (!url || !key) return null;
+  const client = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  return { client, sourceRel: `sites/blank-demo/${name}` };
 }
 
 // ——— Templates ———
@@ -277,26 +372,31 @@ body {
 `;
 
 function envExample(slug: string): string {
-  return `SITE_SLUG=${slug}
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_POSTHOG_KEY=
-NEXT_PUBLIC_POSTHOG_HOST=
-`;
+  return formatEnvLocal(slug, pickInheritedEnv({}));
 }
 
 // ——— Main ———
 
 async function main(): Promise<void> {
   const args = parseArgs(Bun.argv.slice(2));
-  const appDir = resolve(ROOT, "apps", args.slug);
+  const appDir = resolve(SITES, args.slug);
 
   if (existsSync(appDir)) {
-    throw new Error(`apps/${args.slug} already exists — aborting.`);
+    throw new Error(`sites/${args.slug} already exists — aborting.`);
   }
 
-  console.log(`→ Scaffolding apps/${args.slug} (${args.blank ? "blank" : "themed: " + args.theme}) on port ${args.port}`);
+  const { vars: blankDemoVars, sourceRel: blankDemoEnvSource } = loadBlankDemoEnv();
+  const inheritedEnv = pickInheritedEnv(blankDemoVars);
+
+  if (!blankDemoEnvSource) {
+    console.warn(
+      "→ No sites/blank-demo/.env.local or .env.local.example — .env.local will have empty Supabase/PostHog values.",
+    );
+  } else {
+    console.log(`→ Env copied from ${blankDemoEnvSource} (SITE_SLUG=${args.slug})`);
+  }
+
+  console.log(`→ Scaffolding sites/${args.slug} (${args.blank ? "blank" : "themed: " + args.theme}) on port ${args.port}`);
 
   await $`mkdir -p ${appDir}/app/cms/login ${appDir}/app/cms/edit ${appDir}/app/auth/callback ${appDir}/public`.quiet();
 
@@ -309,6 +409,7 @@ async function main(): Promise<void> {
   await writeFile("instrumentation.ts", INSTRUMENTATION, appDir);
   await writeFile("postcss.config.mjs", await readKaffe("postcss.config.mjs"), appDir);
   await writeFile("eslint.config.mjs", await readKaffe("eslint.config.mjs"), appDir);
+  await writeFile(".env.local", formatEnvLocal(args.slug, inheritedEnv), appDir);
   await writeFile(".env.local.example", envExample(args.slug), appDir);
 
   // Admin route stubs
@@ -333,35 +434,33 @@ async function main(): Promise<void> {
     }
   }
 
-  // DB setup — either seed directly via service-role, or print SQL
-  const seedSql = `insert into sites (slug, name) values ('${args.slug}', '${titlePlaceholder}')\n  on conflict (slug) do nothing;\n`;
+  const seedSql = `insert into public.sites (slug, name) values ('${args.slug}', '${titlePlaceholder.replace(/'/g, "''")}')\n  on conflict (slug) do nothing;\n`;
 
-  if (args.db) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) {
-      throw new Error("--db requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.");
-    }
-    const { createClient } = await import("@supabase/supabase-js");
-    const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { error: siteErr } = await admin
-      .from("sites")
-      .upsert({ slug: args.slug, name: titlePlaceholder }, { onConflict: "slug" });
-    if (siteErr) throw new Error(`sites upsert failed: ${siteErr.message}`);
-    console.log(`→ Seeded sites.${args.slug}`);
+  if (args.noDb) {
+    console.log(`→ Skipped DB seed (--no-db). If needed, run:\n\n${seedSql}`);
   } else {
-    console.log(`→ Skipping DB seed. Run this SQL against Supabase:\n\n${seedSql}`);
+    const admin = createSupabaseAdminFromBlankDemoEnv();
+    if (admin) {
+      const { error: siteErr } = await admin.client
+        .from("sites")
+        .upsert({ slug: args.slug, name: titlePlaceholder }, { onConflict: "slug" });
+      if (siteErr) throw new Error(`sites upsert failed: ${siteErr.message}`);
+      console.log(`→ Upserted public.sites for ${args.slug} (Supabase client, ${admin.sourceRel})`);
+    } else {
+      console.warn(
+        "→ No sites/blank-demo/.env.local with NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY — skipped DB seed. Run:\n\n" +
+          seedSql,
+      );
+    }
   }
 
   console.log("→ Running bun install to wire workspace symlinks...");
   await $`bun install`.cwd(ROOT);
 
-  console.log(`\n✓ Scaffolded apps/${args.slug}`);
+  console.log(`\n✓ Scaffolded sites/${args.slug}`);
   console.log("\nNext steps:");
-  console.log(`  cp apps/${args.slug}/.env.local.example apps/${args.slug}/.env.local`);
-  console.log(`  # fill in Supabase + PostHog vars`);
-  if (!args.db) console.log(`  # run the SQL above against Supabase`);
-  console.log(`  bun --cwd apps/${args.slug} dev`);
+  if (!blankDemoEnvSource) console.log(`  # fill in sites/${args.slug}/.env.local (Supabase + PostHog)`);
+  console.log(`  bun --cwd sites/${args.slug} dev`);
   console.log(`  # → http://localhost:${args.port}`);
 }
 

@@ -89,6 +89,84 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
+	addAdmin: async ({ request, params }) => {
+		const siteId = params.siteId?.trim();
+		if (!siteId) {
+			return fail(400, { message: 'Missing site' });
+		}
+
+		const fd = await request.formData();
+		const email = String(fd.get('email') ?? '')
+			.trim()
+			.toLowerCase();
+		if (!email) {
+			return fail(400, { message: 'Email is required' });
+		}
+		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+			return fail(400, { message: 'Invalid email address' });
+		}
+
+		const supabase = getSupabaseAdmin();
+
+		let userId: string | null = null;
+
+		const created = await supabase.auth.admin.createUser({
+			email,
+			email_confirm: true
+		});
+
+		if (created.data?.user?.id) {
+			userId = created.data.user.id;
+		} else if (created.error) {
+			const msg = (created.error.message || '').toLowerCase();
+			const code = (created.error as unknown as { code?: string }).code;
+			const exists =
+				code === 'email_exists' ||
+				msg.includes('already') ||
+				msg.includes('exists') ||
+				msg.includes('registered');
+			if (!exists) {
+				return fail(500, { message: created.error.message });
+			}
+
+			const perPage = 1000;
+			for (let page = 1; page <= 50 && !userId; page++) {
+				const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({
+					page,
+					perPage
+				});
+				if (listErr) {
+					return fail(500, { message: listErr.message });
+				}
+				const found = listData.users.find((u) => (u.email ?? '').toLowerCase() === email);
+				if (found) {
+					userId = found.id;
+					break;
+				}
+				if (listData.users.length < perPage) break;
+			}
+
+			if (!userId) {
+				return fail(404, { message: 'Could not find an existing user with that email' });
+			}
+		} else {
+			return fail(500, { message: 'Failed to create user' });
+		}
+
+		const { error: upErr } = await supabase
+			.from('cms_admins')
+			.upsert(
+				{ site_id: siteId, user_id: userId },
+				{ onConflict: 'user_id,site_id', ignoreDuplicates: true }
+			);
+
+		if (upErr) {
+			return fail(500, { message: upErr.message });
+		}
+
+		return { ok: true };
+	},
+
 	adminLoginLink: async ({ request, params }) => {
 		const siteId = params.siteId?.trim();
 		if (!siteId) {
