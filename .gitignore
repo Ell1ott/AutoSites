@@ -55,6 +55,9 @@ env/
 # uv
 .uv-cache/
 
-# --- Local project data ---
+# --- Local project data (mapsLeadsFetcher: API fetch, crawls, AI runs; keep on disk, not in git) ---
 mapsLeadsFetcher/maps_businesses.csv
 mapsLeadsFetcher/maps_businesses.json
+mapsLeadsFetcher/screenshots/
+mapsLeadsFetcher/runs.json
+mapsLeadsFetcher/runs.json.tmp
