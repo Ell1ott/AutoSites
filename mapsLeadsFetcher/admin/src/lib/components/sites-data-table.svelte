@@ -11,7 +11,7 @@
 		getPaginationRowModel,
 		getSortedRowModel
 	} from '@tanstack/table-core';
-	import type { SiteWithHosts } from '$lib/sites.types';
+	import type { SiteRow } from '$lib/sites.types';
 	import {
 		SITES_TABLE_COLUMNS,
 		defaultSitesVisibleColumns,
@@ -33,25 +33,14 @@
 	import SortableColumnHeader from '$lib/components/lead-overview-column-header.svelte';
 	import SitesTableCell from '$lib/components/sites-table-cell.svelte';
 
-	const SORTABLE: SitesTableColumnId[] = ['name', 'slug', 'hosts', 'created_at'];
+	const SORTABLE: SitesTableColumnId[] = ['name', 'slug', 'created_at'];
 
-	function hostsSortValue(s: SiteWithHosts): string {
-		const rows = s.site_hosts ?? [];
-		if (rows.length === 0) return '';
-		return rows
-			.map((h) => h.host)
-			.sort()
-			.join(', ');
-	}
-
-	function sortValue(colId: SitesTableColumnId, s: SiteWithHosts): string | number {
+	function sortValue(colId: SitesTableColumnId, s: SiteRow): string | number {
 		switch (colId) {
 			case 'name':
 				return s.name;
 			case 'slug':
 				return s.slug;
-			case 'hosts':
-				return hostsSortValue(s);
 			case 'created_at':
 				return new Date(s.created_at).getTime() || 0;
 			default:
@@ -64,7 +53,7 @@
 		visibleColumns = $bindable(),
 		onColumnVisibilityPersist
 	}: {
-		sites: SiteWithHosts[];
+		sites: SiteRow[];
 		visibleColumns: Record<SitesTableColumnId, boolean>;
 		onColumnVisibilityPersist?: () => void;
 	} = $props();
@@ -74,7 +63,7 @@
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
 
-	const columns: ColumnDef<SiteWithHosts>[] = [
+	const columns: ColumnDef<SiteRow>[] = [
 		{
 			id: 'select',
 			header: ({ table }) =>
@@ -94,7 +83,7 @@
 			enableSorting: false,
 			enableHiding: false
 		},
-		...SITES_TABLE_COLUMNS.map((col): ColumnDef<SiteWithHosts> => {
+		...SITES_TABLE_COLUMNS.map((col): ColumnDef<SiteRow> => {
 			const sortable = SORTABLE.includes(col.id);
 			return {
 				id: col.id,

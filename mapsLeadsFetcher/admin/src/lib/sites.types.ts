@@ -1,9 +1,8 @@
-export type SiteWithHosts = {
+export type SiteRow = {
 	id: string;
 	slug: string;
 	name: string;
 	created_at: string;
-	site_hosts: { host: string }[] | null;
 };
 
 export type SiteAdminRow = {

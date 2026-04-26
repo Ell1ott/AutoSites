@@ -1,12 +1,11 @@
 {
-  "name": "@autosites/site-blank-demo",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "next dev --port 3002",
+    "dev": "next dev --turbopack --port 4000",
     "build": "next build",
-    "start": "next start --port 3002",
+    "start": "next start --port 4000",
     "lint": "eslint",
     "cms:pull": "bun scripts/cms-sync.ts pull --site",
     "cms:push": "bun scripts/cms-sync.ts push --site"

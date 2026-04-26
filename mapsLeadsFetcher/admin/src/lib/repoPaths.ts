@@ -1,10 +1,25 @@
-import { join, relative, resolve, sep } from 'node:path';
+import { existsSync } from 'node:fs';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const libDir = fileURLToPath(new URL('.', import.meta.url));
+function findMapsLeadsFetcherRoot(): string {
+	const starts = [fileURLToPath(new URL('.', import.meta.url)), process.cwd()];
+	for (const start of starts) {
+		let dir = start;
+		while (true) {
+			if (existsSync(join(dir, 'pyproject.toml')) && existsSync(join(dir, 'admin'))) {
+				return dir;
+			}
+			const parent = dirname(dir);
+			if (parent === dir) break;
+			dir = parent;
+		}
+	}
+	throw new Error('Could not locate mapsLeadsFetcher repo root');
+}
 
-/** Repo root `mapsLeadsFetcher/` (parent of `leadsOverview/`). */
-export const mapsLeadsFetcherRoot = join(libDir, '../../..');
+/** Repo root `mapsLeadsFetcher/` (parent of `admin/`). */
+export const mapsLeadsFetcherRoot = findMapsLeadsFetcherRoot();
 
 export const mapsBusinessesJsonPath = join(mapsLeadsFetcherRoot, 'maps_businesses.json');
 

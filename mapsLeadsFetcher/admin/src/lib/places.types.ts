@@ -76,6 +76,8 @@ export interface Place {
 	internationalPhoneNumber?: string;
 	formattedAddress?: string;
 	rating?: number;
+	/** AI visual appeal score (1–10), from `visuel_rating` task output. */
+	visuel_rating?: number | string;
 	userRatingCount?: number;
 	googleMapsUri?: string;
 	websiteUri?: string;

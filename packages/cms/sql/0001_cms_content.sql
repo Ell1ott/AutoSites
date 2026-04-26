@@ -1,4 +1,6 @@
--- Multi-site CMS schema: sites, site_hosts, cms_content, cms_admins + RLS.
+-- Multi-site CMS schema: sites, cms_content, cms_admins + RLS.
+-- Each site is identified by a unique slug; the running app picks its site
+-- via the SITE_SLUG env var.
 
 -- Sites
 create table if not exists public.sites (
@@ -13,18 +15,6 @@ alter table public.sites enable row level security;
 drop policy if exists "sites public read" on public.sites;
 create policy "sites public read"
   on public.sites for select using (true);
-
--- Host → site mapping
-create table if not exists public.site_hosts (
-  host    text primary key,
-  site_id uuid not null references public.sites(id) on delete cascade
-);
-
-alter table public.site_hosts enable row level security;
-
-drop policy if exists "site_hosts public read" on public.site_hosts;
-create policy "site_hosts public read"
-  on public.site_hosts for select using (true);
 
 -- CMS content, scoped per site
 create table if not exists public.cms_content (

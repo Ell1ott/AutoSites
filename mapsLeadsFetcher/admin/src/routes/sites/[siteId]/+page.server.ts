@@ -3,7 +3,7 @@ import { env as privateEnv } from '$env/dynamic/private';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getSupabaseAdmin } from '$lib/server/supabase-admin';
-import type { CmsContentRow, SiteAdminRow, SiteWithHosts } from '$lib/sites.types';
+import type { CmsContentRow, SiteAdminRow, SiteRow } from '$lib/sites.types';
 
 /**
  * Origin of the app that serves GET /auth/callback (e.g. http://localhost:3000).
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const { data: siteRow, error: siteErr } = await supabase
 		.from('sites')
-		.select('id, slug, name, created_at, site_hosts(host)')
+		.select('id, slug, name, created_at')
 		.eq('id', siteId)
 		.maybeSingle();
 
@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		error(404, 'Site not found');
 	}
 
-	const site = siteRow as SiteWithHosts;
+	const site = siteRow as SiteRow;
 
 	const { data: adminRows, error: adminsErr } = await supabase
 		.from('cms_admins')

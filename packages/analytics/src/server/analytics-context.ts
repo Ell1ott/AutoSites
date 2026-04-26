@@ -26,12 +26,13 @@ function required(): AnalyticsContextResolver {
 }
 
 export async function getAnalyticsContext(): Promise<AnalyticsContext> {
+  // Await cookies() first: it emits the dynamic-rendering signal so this
+  // subtree is skipped during static prerender (its Suspense fallback is used
+  // instead). Only at request time do we look up the resolver, by which point
+  // instrumentation.ts has registered it.
+  const cookieStore = await cookies();
   const r = required();
-  const [cookieStore, siteId, user] = await Promise.all([
-    cookies(),
-    r.getSiteId(),
-    r.getCurrentUser(),
-  ]);
+  const [siteId, user] = await Promise.all([r.getSiteId(), r.getCurrentUser()]);
 
   return {
     userId: user.id,

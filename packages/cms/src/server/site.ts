@@ -1,21 +1,19 @@
 import { cache } from "react";
-import { headers } from "next/headers";
 import { createPublicServerClient } from "./supabase";
 
 export const getSiteId = cache(async (): Promise<string> => {
-  const h = await headers();
-  const host = h.get("host");
-  if (!host) throw new Error("No Host header — cannot resolve site.");
+  const slug = process.env.SITE_SLUG;
+  if (!slug) throw new Error("SITE_SLUG env var is not set.");
 
   const supabase = createPublicServerClient();
   const { data, error } = await supabase
-    .from("site_hosts")
-    .select("site_id")
-    .eq("host", host)
+    .from("sites")
+    .select("id")
+    .eq("slug", slug)
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error(`Unknown host: ${host}. Register it in site_hosts.`);
+    throw new Error(`Unknown site slug: ${slug}. Insert it into the sites table.`);
   }
-  return data.site_id as string;
+  return data.id as string;
 });

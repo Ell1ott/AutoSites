@@ -1,4 +1,4 @@
-export type SitesTableColumnId = 'name' | 'slug' | 'hosts' | 'created_at';
+export type SitesTableColumnId = 'name' | 'slug' | 'created_at';
 
 export const SITES_TABLE_COLUMNS: {
 	id: SitesTableColumnId;
@@ -7,7 +7,6 @@ export const SITES_TABLE_COLUMNS: {
 }[] = [
 	{ id: 'name', label: 'Name', defaultVisible: true },
 	{ id: 'slug', label: 'Slug', defaultVisible: true },
-	{ id: 'hosts', label: 'Hosts', defaultVisible: true },
 	{ id: 'created_at', label: 'Created', defaultVisible: true }
 ];
 

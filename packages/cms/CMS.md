@@ -1,6 +1,6 @@
 # CMS — minimal integration
 
-**Prereqs:** Copy `lib/cms`, `app/cms/*`, `middleware.ts` (or merge its Supabase session + `?edit=` handling). Apply `lib/cms/schema/*.sql`, create Storage bucket `cms-images` per `0002_storage.sql`. Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Seed `sites`, `site_hosts` (your domain → `site_id`), `cms_admins` (your user id). `next.config`: `images.remotePatterns` for Supabase storage host if you use `EditableImage` with remote URLs.
+**Prereqs:** Copy `lib/cms`, `app/cms/*`, `middleware.ts` (or merge its Supabase session + `?edit=` handling). Apply `lib/cms/schema/*.sql`, create Storage bucket `cms-images` per `0002_storage.sql`. Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SITE_SLUG` (must match a row in `public.sites.slug`). Seed `sites` and `cms_admins` (your user id). `next.config`: `images.remotePatterns` for Supabase storage host if you use `EditableImage` with remote URLs.
 
 **Layout:** Wrap app in `<Suspense><EditableProvider /></Suspense>`; import from `@/lib/cms/components/EditableProvider` (not `@/lib/cms`).
 

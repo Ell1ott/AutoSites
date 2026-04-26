@@ -2,14 +2,13 @@
 /**
  * Scaffold a new site under apps/<slug>.
  *
- *   bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--host=localhost:3001] [--port=3001] [--db]
+ *   bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=3001] [--db]
  *
  * Themed (default): copies kaffe's theme components + layout + globals.
  * --blank: empty skeleton with no theme, minimal globals, hello-world page.
  *
- * --db: inserts into the Supabase `sites` and `site_hosts` tables using
- * SUPABASE_SERVICE_ROLE_KEY. Without it, the scaffolder prints the SQL
- * for you to run manually.
+ * --db: inserts into the Supabase `sites` table using SUPABASE_SERVICE_ROLE_KEY.
+ * Without it, the scaffolder prints the SQL for you to run manually.
  */
 
 import { $ } from "bun";
@@ -23,7 +22,6 @@ type Args = {
   slug: string;
   blank: boolean;
   theme: string;
-  host: string;
   port: number;
   db: boolean;
 };
@@ -32,7 +30,6 @@ function parseArgs(argv: string[]): Args {
   let slug: string | null = null;
   let blank = false;
   let theme = "kaffe";
-  let host: string | null = null;
   let port: number | null = null;
   let db = false;
 
@@ -40,21 +37,17 @@ function parseArgs(argv: string[]): Args {
     if (arg === "--blank") blank = true;
     else if (arg === "--db") db = true;
     else if (arg.startsWith("--theme=")) theme = arg.slice("--theme=".length);
-    else if (arg.startsWith("--host=")) host = arg.slice("--host=".length);
     else if (arg.startsWith("--port=")) port = Number(arg.slice("--port=".length));
     else if (!arg.startsWith("--") && !slug) slug = arg;
     else throw new Error(`Unknown argument: ${arg}`);
   }
 
-  if (!slug) throw new Error("Usage: bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--host=...] [--port=...] [--db]");
+  if (!slug) throw new Error("Usage: bun scripts/create-site.ts <slug> [--blank] [--theme=kaffe] [--port=...] [--db]");
   if (!/^[a-z][a-z0-9-]{1,30}$/.test(slug)) {
     throw new Error(`Slug must match /^[a-z][a-z0-9-]{1,30}$/ — got ${JSON.stringify(slug)}`);
   }
 
-  const resolvedPort = port ?? autoPickPort();
-  const resolvedHost = host ?? `localhost:${resolvedPort}`;
-
-  return { slug, blank, theme, host: resolvedHost, port: resolvedPort, db };
+  return { slug, blank, theme, port: port ?? autoPickPort(), db };
 }
 
 function autoPickPort(): number {
@@ -99,7 +92,7 @@ function capitalize(s: string): string {
 // ——— Templates ———
 
 function pkgJson(args: Args, kaffePkg: Record<string, unknown>): string {
-  const devScript = `next dev --port ${args.port}`;
+  const devScript = `next dev --turbopack --port ${args.port}`;
   return (
     JSON.stringify(
       {
@@ -283,8 +276,9 @@ body {
 }
 `;
 
-function envExample(): string {
-  return `NEXT_PUBLIC_SUPABASE_URL=
+function envExample(slug: string): string {
+  return `SITE_SLUG=${slug}
+NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_POSTHOG_KEY=
@@ -315,7 +309,7 @@ async function main(): Promise<void> {
   await writeFile("instrumentation.ts", INSTRUMENTATION, appDir);
   await writeFile("postcss.config.mjs", await readKaffe("postcss.config.mjs"), appDir);
   await writeFile("eslint.config.mjs", await readKaffe("eslint.config.mjs"), appDir);
-  await writeFile(".env.local.example", envExample(), appDir);
+  await writeFile(".env.local.example", envExample(args.slug), appDir);
 
   // Admin route stubs
   await writeFile("app/cms/login/page.tsx", STUB_LOGIN_PAGE, appDir);
@@ -340,7 +334,7 @@ async function main(): Promise<void> {
   }
 
   // DB setup — either seed directly via service-role, or print SQL
-  const seedSql = `insert into sites (slug, name) values ('${args.slug}', '${titlePlaceholder}')\n  on conflict (slug) do nothing\n  returning id;\ninsert into site_hosts (host, site_id)\n  select '${args.host}', id from sites where slug = '${args.slug}'\n  on conflict (host) do nothing;\n`;
+  const seedSql = `insert into sites (slug, name) values ('${args.slug}', '${titlePlaceholder}')\n  on conflict (slug) do nothing;\n`;
 
   if (args.db) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -350,17 +344,11 @@ async function main(): Promise<void> {
     }
     const { createClient } = await import("@supabase/supabase-js");
     const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { data: siteRow, error: siteErr } = await admin
+    const { error: siteErr } = await admin
       .from("sites")
-      .upsert({ slug: args.slug, name: titlePlaceholder }, { onConflict: "slug" })
-      .select("id")
-      .single();
+      .upsert({ slug: args.slug, name: titlePlaceholder }, { onConflict: "slug" });
     if (siteErr) throw new Error(`sites upsert failed: ${siteErr.message}`);
-    const { error: hostErr } = await admin
-      .from("site_hosts")
-      .upsert({ host: args.host, site_id: siteRow.id }, { onConflict: "host" });
-    if (hostErr) throw new Error(`site_hosts upsert failed: ${hostErr.message}`);
-    console.log(`→ Seeded sites.${args.slug} and site_hosts.${args.host}`);
+    console.log(`→ Seeded sites.${args.slug}`);
   } else {
     console.log(`→ Skipping DB seed. Run this SQL against Supabase:\n\n${seedSql}`);
   }
@@ -374,7 +362,7 @@ async function main(): Promise<void> {
   console.log(`  # fill in Supabase + PostHog vars`);
   if (!args.db) console.log(`  # run the SQL above against Supabase`);
   console.log(`  bun --cwd apps/${args.slug} dev`);
-  console.log(`  # → http://${args.host}`);
+  console.log(`  # → http://localhost:${args.port}`);
 }
 
 main().catch((err) => {

@@ -6,11 +6,6 @@ insert into public.sites (id, slug, name)
 values ('11111111-1111-1111-1111-111111111111', 'kaffemere', 'Kaffe&mere')
 on conflict (id) do nothing;
 
--- Dev host
-insert into public.site_hosts (host, site_id)
-values ('localhost:3000', '11111111-1111-1111-1111-111111111111')
-on conflict (host) do nothing;
-
 -- Content (all scoped to the kaffemere site)
 insert into public.cms_content (site_id, key, kind, value) values
   -- Brand

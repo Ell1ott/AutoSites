@@ -6,6 +6,7 @@ export type TableColumnId =
 	| 'address'
 	| 'phone'
 	| 'rating'
+	| 'visuel_rating'
 	| 'status'
 	| 'open_now'
 	| 'hours'
@@ -23,6 +24,7 @@ export const TABLE_COLUMNS: { id: TableColumnId; label: string; defaultVisible: 
 	{ id: 'type', label: 'Type', defaultVisible: true },
 	{ id: 'address', label: 'Address', defaultVisible: true },
 	{ id: 'rating', label: 'Rating', defaultVisible: true },
+	{ id: 'visuel_rating', label: 'Visuel rating', defaultVisible: true },
 	{ id: 'website', label: 'Website', defaultVisible: true },
 	{ id: 'maps', label: 'Maps', defaultVisible: true },
 	{ id: 'open_now', label: 'Open now', defaultVisible: true },

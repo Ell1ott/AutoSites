@@ -63,11 +63,33 @@
           "subpages"
         ]
       }
+    },
+    "desgin_search_queries": {
+      "label": "Desgin Search Queries",
+      "output_field": "desgin_search_queries",
+      "meta_prompt": "I wanna build a new and improved design for this website. Give me a few search queries to find examples of simular websites",
+      "model": "gemma-4-31b-it",
+      "send_screenshot": true,
+      "send_markdown": true,
+      "subpage_markdown_mode": "none",
+      "recommended_subpages_field": "ai_subpages"
+    },
+    "visuel_rating": {
+      "label": "Visuel Rating",
+      "output_field": "visuel_rating",
+      "meta_prompt": "You are looking at a screenshot of a website. Rate it from 1-10 based on how visually appealing it is. \n\nrespond with just the number from 1-10\n",
+      "model": "gemma-4-31b-it",
+      "send_screenshot": true,
+      "send_markdown": false,
+      "subpage_markdown_mode": "none",
+      "recommended_subpages_field": "ai_subpages"
     }
   },
   "ai_task_order": [
     "design_prompt",
     "website_overview",
-    "ai_subpages"
+    "ai_subpages",
+    "desgin_search_queries",
+    "visuel_rating"
   ]
 }

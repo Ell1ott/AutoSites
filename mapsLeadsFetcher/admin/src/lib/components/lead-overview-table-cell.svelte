@@ -116,6 +116,12 @@
 	<span class="block min-w-0 truncate">{p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? ''}</span>
 {:else if colId === 'rating'}
 	<span class="block min-w-0 truncate">{ratingLabel(p)}</span>
+{:else if colId === 'visuel_rating'}
+	{#if p.visuel_rating != null && String(p.visuel_rating).trim() !== ''}
+		<span class="tabular-nums">{String(p.visuel_rating).trim()}</span>
+	{:else}
+		<span class="text-muted-foreground">—</span>
+	{/if}
 {:else if colId === 'status'}
 	<span class="block min-w-0 truncate">{p.businessStatus ?? ''}</span>
 {:else if colId === 'open_now'}

@@ -47,6 +47,7 @@
 		'address',
 		'phone',
 		'rating',
+		'visuel_rating',
 		'status',
 		'open_now',
 		'price'
@@ -66,6 +67,16 @@
 				return p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? '';
 			case 'rating':
 				return p.rating ?? -1;
+			case 'visuel_rating': {
+				const v = p.visuel_rating;
+				if (v == null) return -1;
+				if (typeof v === 'number' && !Number.isNaN(v)) return v;
+				if (typeof v === 'string') {
+					const n = parseFloat(v.trim());
+					if (!Number.isNaN(n)) return n;
+				}
+				return -1;
+			}
 			case 'status':
 				return p.businessStatus ?? '';
 			case 'open_now': {

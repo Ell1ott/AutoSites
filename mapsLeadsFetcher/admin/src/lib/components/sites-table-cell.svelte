@@ -1,14 +1,8 @@
 <script lang="ts">
-	import type { SiteWithHosts } from '$lib/sites.types';
+	import type { SiteRow } from '$lib/sites.types';
 	import type { SitesTableColumnId } from '$lib/sitesTableColumns';
 
-	let { site, colId }: { site: SiteWithHosts; colId: SitesTableColumnId } = $props();
-
-	function hostsList(s: SiteWithHosts): string {
-		const rows = s.site_hosts ?? [];
-		if (rows.length === 0) return '—';
-		return rows.map((h) => h.host).join(', ');
-	}
+	let { site, colId }: { site: SiteRow; colId: SitesTableColumnId } = $props();
 
 	function formatCreated(iso: string): string {
 		const d = new Date(iso);
@@ -29,8 +23,6 @@
 	</a>
 {:else if colId === 'slug'}
 	<span class="text-muted-foreground block min-w-0 truncate font-mono text-xs">{site.slug}</span>
-{:else if colId === 'hosts'}
-	<span class="max-w-72 truncate" title={hostsList(site)}>{hostsList(site)}</span>
 {:else if colId === 'created_at'}
 	<span class="text-muted-foreground text-xs">{formatCreated(site.created_at)}</span>
 {/if}
