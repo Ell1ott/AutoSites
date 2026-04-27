@@ -2,21 +2,15 @@
 	import type { ColumnDef } from '@tanstack/table-core';
 	import {
 		type ColumnFiltersState,
-		type PaginationState,
 		type RowSelectionState,
 		type SortingState,
 		type VisibilityState,
 		getCoreRowModel,
 		getFilteredRowModel,
-		getPaginationRowModel,
 		getSortedRowModel
 	} from '@tanstack/table-core';
 	import type { Place } from '$lib/places.types';
-	import {
-		TABLE_COLUMNS,
-		defaultVisibleColumns,
-		type TableColumnId
-	} from '$lib/leadoverviewTableColumns';
+	import { TABLE_COLUMNS, type TableColumnId } from '$lib/leadoverviewTableColumns';
 	import { placeTitle } from '$lib/places';
 	import { cn } from '$lib/utils.js';
 	import {
@@ -25,11 +19,6 @@
 		renderComponent
 	} from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 	import DataTableCheckbox from '$lib/components/data-table-checkbox.svelte';
 	import LeadOverviewColumnHeader from '$lib/components/lead-overview-column-header.svelte';
 	import LeadOverviewTableCell from '$lib/components/lead-overview-table-cell.svelte';
@@ -112,7 +101,6 @@
 		onColumnVisibilityPersist?: () => void;
 	} = $props();
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
 	let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
@@ -180,9 +168,6 @@
 			};
 		},
 		state: {
-			get pagination() {
-				return pagination;
-			},
 			get sorting() {
 				return sorting;
 			},
@@ -197,16 +182,8 @@
 			}
 		},
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
-		onPaginationChange: (updater) => {
-			if (typeof updater === 'function') {
-				pagination = updater(pagination);
-			} else {
-				pagination = updater;
-			}
-		},
 		onSortingChange: (updater) => {
 			if (typeof updater === 'function') {
 				sorting = updater(sorting);
@@ -238,25 +215,6 @@
 		}
 	});
 
-	function selectAllColumnsFn() {
-		const next = { ...visibleColumns };
-		for (const c of TABLE_COLUMNS) next[c.id] = true;
-		visibleColumns = next;
-		onColumnVisibilityPersist?.();
-	}
-
-	function clearAllColumnsFn() {
-		const next = { ...visibleColumns };
-		for (const c of TABLE_COLUMNS) next[c.id] = false;
-		visibleColumns = next;
-		onColumnVisibilityPersist?.();
-	}
-
-	function resetColumnDefaultsFn() {
-		visibleColumns = defaultVisibleColumns();
-		onColumnVisibilityPersist?.();
-	}
-
 	function rowActivateClick(e: MouseEvent, p: Place) {
 		const el = e.target as HTMLElement | null;
 		if (el?.closest('button, a, [data-slot=checkbox], [role=checkbox]')) return;
@@ -264,73 +222,29 @@
 	}
 </script>
 
-<div class="-mb-8 w-full">
-	<div class="flex flex-wrap items-center gap-3 py-4">
-		<Input
-			placeholder="Filter by name..."
-			value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-			oninput={(e) => table.getColumn('name')?.setFilterValue(e.currentTarget.value)}
-			onchange={(e) => table.getColumn('name')?.setFilterValue(e.currentTarget.value)}
-			class="max-w-sm"
-		/>
-		<div class="ms-auto">
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
-				{#snippet child({ props })}
-					<Button {...props} variant="outline">
-						Columns
-						<HugeiconsIcon icon={ArrowDown01Icon} data-icon="inline-end" strokeWidth={2} />
-					</Button>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="w-56" align="end">
-				<DropdownMenu.Label>Column visibility</DropdownMenu.Label>
-				<DropdownMenu.Item onclick={selectAllColumnsFn}>Select all</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={clearAllColumnsFn}>Clear</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={resetColumnDefaultsFn}>Defaults</DropdownMenu.Item>
-				<DropdownMenu.Separator />
-				{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column.id)}
-					{@const colDef = TABLE_COLUMNS.find((c) => c.id === column.id)}
-					<DropdownMenu.CheckboxItem
-						closeOnSelect={false}
-						bind:checked={
-							() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
-						}
-					>
-						{colDef?.label ?? column.id}
-					</DropdownMenu.CheckboxItem>
-				{/each}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
-		</div>
-	</div>
-	<div class="border-border overflow-hidden rounded-md border">
-		<Table.Root>
-			<Table.Header>
-				{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-					<Table.Row class="hover:bg-transparent">
-						{#each headerGroup.headers as header, hi (header.id)}
-							<Table.Head
-								colspan={header.colSpan}
-								class={cn(
-									'bg-card [&:has([role=checkbox])]:ps-3 border-border sticky top-0 z-[1] border-b font-semibold',
-									hi === 0 && 'rounded-tl-md',
-									hi === headerGroup.headers.length - 1 && 'rounded-tr-md'
-								)}
-							>
-								{#if !header.isPlaceholder}
-									<FlexRender
-										content={header.column.columnDef.header}
-										context={header.getContext()}
-									/>
-								{/if}
-							</Table.Head>
-						{/each}
+<div class="flex w-full min-w-0 flex-col">
+	<Table.Root class="min-w-0">
+		<Table.Header>
+			{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
+				<Table.Row class="hover:bg-transparent">
+					{#each headerGroup.headers as header (header.id)}
+						<Table.Head
+							colspan={header.colSpan}
+							class="bg-card [&:has([role=checkbox])]:ps-3 border-border sticky top-0 z-[1] border-b font-semibold"
+						>
+							{#if !header.isPlaceholder}
+								<FlexRender
+									content={header.column.columnDef.header}
+									context={header.getContext()}
+								/>
+							{/if}
+						</Table.Head>
+					{/each}
 					</Table.Row>
 				{/each}
 			</Table.Header>
 			<Table.Body>
-				{#each table.getRowModel().rows as row, ri (row.id)}
+				{#each table.getRowModel().rows as row (row.id)}
 					<Table.Row
 						data-state={row.getIsSelected() || selectedId === row.original.id
 							? 'selected'
@@ -351,15 +265,11 @@
 						tabindex={0}
 						role="button"
 					>
-						{#each row.getVisibleCells() as cell, ci (cell.id)}
+						{#each row.getVisibleCells() as cell (cell.id)}
 							<Table.Cell
 								class={cn(
 									'[&:has([role=checkbox])]:ps-3 max-w-72 align-middle',
-									cell.column.id !== 'screenshot' && 'min-w-0 truncate',
-									ri === table.getRowModel().rows.length - 1 && ci === 0 && 'rounded-bl-md',
-									ri === table.getRowModel().rows.length - 1 &&
-										ci === row.getVisibleCells().length - 1 &&
-										'rounded-br-md'
+									cell.column.id !== 'screenshot' && 'min-w-0 truncate'
 								)}
 							>
 								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
@@ -368,36 +278,18 @@
 					</Table.Row>
 				{:else}
 					<Table.Row>
-						<Table.Cell colspan={columns.length} class="h-24 rounded-b-md text-center">
+						<Table.Cell colspan={columns.length} class="h-24 text-center">
 							No results.
 						</Table.Cell>
 					</Table.Row>
 				{/each}
 			</Table.Body>
 		</Table.Root>
-	</div>
-	<div class="flex flex-col items-stretch gap-3 pt-4 sm:flex-row sm:items-center sm:justify-end">
-		<div class="text-muted-foreground text-sm">
-			{table.getFilteredSelectedRowModel().rows.length} of
-			{table.getFilteredRowModel().rows.length} row(s) selected.
-		</div>
-		<div class="flex items-center gap-2">
-			<Button
-				variant="outline"
-				size="sm"
-				onclick={() => table.previousPage()}
-				disabled={!table.getCanPreviousPage()}
-			>
-				Previous
-			</Button>
-			<Button
-				variant="outline"
-				size="sm"
-				onclick={() => table.nextPage()}
-				disabled={!table.getCanNextPage()}
-			>
-				Next
-			</Button>
-		</div>
+	<div
+		class="text-muted-foreground border-t border-border px-5 pt-4 text-sm"
+		aria-live="polite"
+	>
+		{table.getFilteredSelectedRowModel().rows.length} of
+		{table.getFilteredRowModel().rows.length} row(s) selected.
 	</div>
 </div>

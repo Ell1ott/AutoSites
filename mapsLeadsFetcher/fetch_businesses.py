@@ -10,6 +10,9 @@ Loads .env.local from this script's directory if present (then os.environ).
 
 Run: uv run fetch_businesses.py [--query ...] [--output maps_businesses.json]
 
+`--json-events` emits one NDJSON object per line on stdout for admin live logs
+(stderr remains human-readable). Optional `--run-id` is included in events.
+
 Defaults bias the search around Sorø, Denmark and rank by distance (Places API).
 CSV defaults to maps_businesses.csv next to the JSON; use --no-csv to skip.
 """
@@ -35,6 +38,13 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 # Sorø town center (Denmark) — used as default search bias for distance ranking.
 SORO_LAT = 55.4318
 SORO_LNG = 11.5555
+
+
+def _emit_json_event(enabled: bool, payload: dict[str, Any]) -> None:
+    if not enabled:
+        return
+    line = json.dumps(payload, ensure_ascii=False)
+    print(line, flush=True)
 
 
 def search_businesses(
@@ -321,6 +331,17 @@ def main() -> None:
             "Example narrow mask: places.displayName,places.formattedAddress,places.rating"
         ),
     )
+    parser.add_argument(
+        "--json-events",
+        action="store_true",
+        help="Emit NDJSON progress events on stdout (admin dashboard live stream).",
+    )
+    parser.add_argument(
+        "--run-id",
+        default=None,
+        metavar="STR",
+        help="Optional id forwarded in json-events for correlation.",
+    )
     args = parser.parse_args()
 
     load_dotenv(_SCRIPT_DIR / ".env.local")
@@ -337,20 +358,53 @@ def main() -> None:
 
     use_bias = not args.no_distance_rank
 
-    payload = search_businesses(
-        api_key=api_key,
-        text_query=args.query,
-        max_results=n,
-        field_mask=args.field_mask,
-        latitude=args.lat,
-        longitude=args.lng,
-        radius_m=args.radius_m,
-        rank_by_distance=use_bias,
-        region_code=args.region_code or None,
-        language_code=args.language_code or None,
+    _emit_json_event(
+        args.json_events,
+        {
+            "type": "fetch_started",
+            "run_id": args.run_id,
+            "query": args.query,
+            "lat": args.lat,
+            "lng": args.lng,
+            "radius_m": args.radius_m,
+            "rank_by_distance": use_bias,
+            "region_code": args.region_code or None,
+            "language_code": args.language_code or None,
+            "count": n,
+            "output": str(args.output),
+        },
     )
 
+    try:
+        payload = search_businesses(
+            api_key=api_key,
+            text_query=args.query,
+            max_results=n,
+            field_mask=args.field_mask,
+            latitude=args.lat,
+            longitude=args.lng,
+            radius_m=args.radius_m,
+            rank_by_distance=use_bias,
+            region_code=args.region_code or None,
+            language_code=args.language_code or None,
+        )
+    except RuntimeError as e:
+        _emit_json_event(
+            args.json_events,
+            {"type": "fetch_error", "run_id": args.run_id, "message": str(e)},
+        )
+        print(str(e), file=sys.stderr)
+        sys.exit(1)
+
     places = payload.get("places") or []
+    _emit_json_event(
+        args.json_events,
+        {
+            "type": "fetch_api_ok",
+            "run_id": args.run_id,
+            "returned_count": len(places),
+        },
+    )
     existing = _load_existing_places(args.output)
     existing_ids = {
         str(p["id"])
@@ -399,10 +453,36 @@ def main() -> None:
         file=sys.stderr,
     )
 
+    _emit_json_event(
+        args.json_events,
+        {
+            "type": "fetch_saved",
+            "run_id": args.run_id,
+            "added_count": len(new_places),
+            "skipped_existing_count": skipped,
+            "total_places": len(merged_places),
+            "output": str(args.output.resolve()),
+        },
+    )
+
     if not args.no_csv:
         csv_path = args.csv_output if args.csv_output is not None else args.output.with_suffix(".csv")
         n_csv = write_places_csv(csv_path, record)
         print(f"Wrote {n_csv} row(s) to {csv_path.resolve()}", file=sys.stderr)
+        _emit_json_event(
+            args.json_events,
+            {
+                "type": "fetch_csv_saved",
+                "run_id": args.run_id,
+                "path": str(csv_path.resolve()),
+                "rows": n_csv,
+            },
+        )
+
+    _emit_json_event(
+        args.json_events,
+        {"type": "fetch_finished", "run_id": args.run_id, "ok": True},
+    )
 
 
 if __name__ == "__main__":

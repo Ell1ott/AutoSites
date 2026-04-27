@@ -7,32 +7,22 @@ const UDVALG_COPY =
 const GÆSTER_COPY =
   "Vi har plads til op til 34 gæster i caféen — perfekt til en hurtig frokost, en burger med vennerne eller en aften med familien. Vil du hellere spise hjemme? Ring og bestil, så er maden klar, når du henter den.";
 
-export function MenuGridSection() {
+export async function MenuGridSection() {
   return (
     <section id="udvalg" className="menu-grid" aria-label="Udvalg og café">
       <ExpandableMenuItem
-        title={
-          <>
-            friske
-            <br />
-            råvarer.
-          </>
-        }
-      >
-        {UDVALG_COPY}
-      </ExpandableMenuItem>
+        titleCmsKey="menugrid.udvalg.title"
+        titleFallback="friske<br />råvarer."
+        bodyCmsKey="menugrid.udvalg.body"
+        bodyFallback={UDVALG_COPY}
+      />
       <MenuPizzaGraphic />
       <ExpandableMenuItem
-        title={
-          <>
-            spis her
-            <br />
-            eller tag med.
-          </>
-        }
-      >
-        {GÆSTER_COPY}
-      </ExpandableMenuItem>
+        titleCmsKey="menugrid.gæster.title"
+        titleFallback="spis her<br />eller tag med."
+        bodyCmsKey="menugrid.gæster.body"
+        bodyFallback={GÆSTER_COPY}
+      />
     </section>
   );
 }

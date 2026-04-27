@@ -1,35 +1,53 @@
+import { EditableLink, EditableText } from "@autosites/cms/components";
+
 const MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Storgade+38,+4180+Sor%C3%B8";
 
-export function FooterMapSection() {
+export async function FooterMapSection() {
   return (
     <section id="contact" className="footer-map" aria-label="Find os">
       <div className="map-overlay">
-        <div className="logo">Café Luccas</div>
-        <p className="map-tagline">Pizza &amp; grill · Sorø</p>
-        <p className="map-address">
-          Storgade 38
-          <br />
-          4180 Sorø
-        </p>
+        <div className="logo">
+          <EditableText cmsKey="footer.brand" fallback="Café Luccas" as="span" />
+        </div>
+        <EditableText
+          cmsKey="footer.tagline"
+          fallback="Pizza &amp; grill · Sorø"
+          as="p"
+          className="map-tagline"
+        />
+        <EditableText
+          cmsKey="footer.address"
+          fallback="Storgade 38<br />4180 Sorø"
+          as="p"
+          className="map-address"
+        />
         <p className="map-phones">
-          <a href="tel:+4557834466" className="map-phone">
-            57 83 44 66
-          </a>
+          <EditableLink
+            cmsKey="footer.phone.primary"
+            fallback={{ href: "tel:+4557834466", label: "57 83 44 66" }}
+            className="map-phone"
+          />
           <span className="map-phone-sep"> · </span>
-          <a href="tel:+4540241971" className="map-phone">
-            40 24 19 71
-          </a>
+          <EditableLink
+            cmsKey="footer.phone.secondary"
+            fallback={{ href: "tel:+4540241971", label: "40 24 19 71" }}
+            className="map-phone"
+          />
         </p>
-        <p className="map-hours">Alle dage 11.00 – 22.00</p>
-        <a
-          href={MAPS_URL}
+        <EditableText
+          cmsKey="footer.hours"
+          fallback="Alle dage 11.00 – 22.00"
+          as="p"
+          className="map-hours"
+        />
+        <EditableLink
+          cmsKey="footer.directions"
+          fallback={{ href: MAPS_URL, label: "Vejvisning" }}
           className="map-directions-link"
           target="_blank"
           rel="noopener noreferrer"
-        >
-          Vejvisning
-        </a>
+        />
       </div>
 
       <svg
@@ -61,15 +79,25 @@ export function FooterMapSection() {
           fill="none"
         />
         <circle cx={450} cy={140} r={10} fill="var(--coral)" />
-        <text
-          x={468}
-          y={146}
-          fontFamily="var(--font-bricolage), serif"
-          fontSize={15}
-          fill="var(--blue)"
-        >
-          VI ER HER
-        </text>
+        <foreignObject x={460} y={125} width={200} height={40}>
+          <div
+            {...({
+              xmlns: "http://www.w3.org/1999/xhtml",
+              style: {
+                fontFamily: "var(--font-bricolage), serif",
+                fontSize: 15,
+                color: "var(--blue)",
+                fontWeight: 700,
+              },
+            } as Record<string, unknown>)}
+          >
+            <EditableText
+              cmsKey="footer.map.marker"
+              fallback="VI ER HER"
+              as="span"
+            />
+          </div>
+        </foreignObject>
       </svg>
     </section>
   );

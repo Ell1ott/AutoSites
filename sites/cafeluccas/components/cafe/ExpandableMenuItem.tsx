@@ -1,40 +1,35 @@
-"use client";
-
-import { useId, useState, type ReactNode } from "react";
+import { EditableText } from "@autosites/cms/components";
+import { ExpandableMenuBody } from "./ExpandableMenuBody";
 
 type ExpandableMenuItemProps = {
-  title: ReactNode;
-  children: string;
+  titleCmsKey: string;
+  titleFallback: string;
+  bodyCmsKey: string;
+  bodyFallback: string;
   previewLen?: number;
 };
 
-export function ExpandableMenuItem({
-  title,
-  children,
-  previewLen = 150,
+export async function ExpandableMenuItem({
+  titleCmsKey,
+  titleFallback,
+  bodyCmsKey,
+  bodyFallback,
+  previewLen,
 }: ExpandableMenuItemProps) {
-  const [open, setOpen] = useState(false);
-  const contentId = useId();
-  const needsToggle = children.length > previewLen;
-  const preview = `${children.slice(0, previewLen).trim()}…`;
-
   return (
     <div className="menu-item">
-      <h3>{title}</h3>
-      <p id={contentId}>
-        {open || !needsToggle ? children : preview}
-      </p>
-      {needsToggle ? (
-        <button
-          type="button"
-          className="read-more"
-          aria-expanded={open}
-          aria-controls={contentId}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? "Læs mindre" : "Læs mere"}
-        </button>
-      ) : null}
+      <EditableText
+        cmsKey={titleCmsKey}
+        fallback={titleFallback}
+        as="h3"
+      />
+      <ExpandableMenuBody measureText={bodyFallback} previewLen={previewLen}>
+        <EditableText
+          cmsKey={bodyCmsKey}
+          fallback={bodyFallback}
+          as="span"
+        />
+      </ExpandableMenuBody>
     </div>
   );
 }

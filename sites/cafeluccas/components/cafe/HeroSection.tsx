@@ -1,35 +1,48 @@
-import Image from "next/image";
-import { ButtonOutline } from "./ButtonOutline";
+import {
+  EditableImage,
+  EditableLink,
+  EditableText,
+} from "@autosites/cms/components";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1000";
 
-export function HeroSection() {
+export async function HeroSection() {
   return (
     <section id="home" className="hero" aria-labelledby="hero-heading">
       <div className="hero-content">
         <h1 id="hero-heading">
-          pizza
-          <br />
-          &amp; grill.
+          <EditableText
+            cmsKey="hero.heading"
+            fallback="pizza<br />&amp; grill."
+            as="span"
+          />
         </h1>
         <div
           className="dotted-line"
           style={{ borderColor: "var(--cream)" }}
         />
         <p>
-          Midt i Sorø laver vi hjemmelavet mad med masser af kærlighed og friske
-          råvarer. Pizza, burgere, pasta, salater og grillretter — spis i caféen
-          eller tag maden med hjem.
+          <EditableText
+            cmsKey="hero.intro"
+            fallback="Midt i Sorø laver vi hjemmelavet mad med masser af kærlighed og friske råvarer. Pizza, burgere, pasta, salater og grillretter — spis i caféen eller tag maden med hjem."
+            as="span"
+          />
         </p>
-        <ButtonOutline href="/menu" cream>
-          Se menuen
-        </ButtonOutline>
+        <EditableLink
+          cmsKey="hero.ctaMenu"
+          fallback={{ href: "/menu", label: "Se menuen" }}
+          className="btn-outline"
+          style={{ borderColor: "var(--cream)", color: "var(--cream)" }}
+        />
       </div>
       <div className="hero-img">
-        <Image
-          src={HERO_IMAGE}
-          alt="Varm pizza med ost og friske toppings"
+        <EditableImage
+          cmsKey="hero.image"
+          fallback={{
+            src: HERO_IMAGE,
+            alt: "Varm pizza med ost og friske toppings",
+          }}
           fill
           sizes="(max-width: 900px) 100vw, 50vw"
           priority
@@ -37,17 +50,23 @@ export function HeroSection() {
       </div>
 
       <div className="badge-price">
-        <span>11–15</span>
-        <span>frokost</span>
+        <EditableText cmsKey="hero.badgeTime" fallback="11–15" as="span" />
+        <EditableText cmsKey="hero.badgeLabel" fallback="frokost" as="span" />
       </div>
       <div className="tape-label">
-        RING &amp; BESTIL
-        <br />
-        RING &amp; BESTIL
-        <br />
-        RING &amp; BESTIL
+        <EditableText
+          cmsKey="hero.tape"
+          fallback="RING &amp; BESTIL<br />RING &amp; BESTIL<br />RING &amp; BESTIL"
+          as="span"
+        />
       </div>
-      <div className="diagonal-banner">Familievenlig café · Sorø</div>
+      <div className="diagonal-banner">
+        <EditableText
+          cmsKey="hero.banner"
+          fallback="Familievenlig café · Sorø"
+          as="span"
+        />
+      </div>
     </section>
   );
 }

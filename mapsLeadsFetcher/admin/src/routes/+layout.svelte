@@ -12,6 +12,7 @@
 
 	const nav = [
 		{ href: '/leadoverview', label: 'Lead overview' },
+		{ href: '/leads/fetch', label: 'Leads · Find new' },
 		{ href: '/sites', label: 'Sites' },
 		{ href: '/ai/design-prompts', label: 'AI · Website briefs' }
 	] as const;
@@ -31,7 +32,9 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="bg-background flex min-h-svh flex-col">
+<div
+	class="bg-background flex h-dvh min-h-0 max-h-dvh flex-col overflow-hidden"
+>
 	<header
 		class="border-border bg-background/95 supports-backdrop-filter:bg-background/80 flex h-14 shrink-0 items-center border-b px-4 backdrop-blur"
 	>
@@ -59,7 +62,7 @@
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</header>
-	<main class="flex min-h-0 flex-1 flex-col">
+	<main class="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-gutter:stable]">
 		{@render children()}
 	</main>
 </div>

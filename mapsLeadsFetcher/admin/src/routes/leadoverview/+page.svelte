@@ -20,8 +20,28 @@
 		TabsList,
 		TabsTrigger
 	} from '$lib/components/ui/tabs/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import {
+		ToggleGroup,
+		ToggleGroupItem
+	} from '$lib/components/ui/toggle-group/index.js';
+	import {
+		Select,
+		SelectContent,
+		SelectItem,
+		SelectTrigger
+	} from '$lib/components/ui/select/index.js';
+	import { Select as SelectBits } from 'bits-ui';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import {
+		filterPlaces,
+		isFilterActive,
+		type CrawlFilter,
+		type OpenNowFilter,
+		type WebsiteFilter
+	} from '$lib/leadOverviewFilters';
 	import {
 		Dialog,
 		DialogTitle,
@@ -38,7 +58,8 @@
 		Image01Icon,
 		LayoutGridIcon,
 		Link01Icon,
-		TableIcon
+		TableIcon,
+		ArrowDown01Icon
 	} from '@hugeicons/core-free-icons';
 
 	let { data }: { data: PageData } = $props();
@@ -61,6 +82,48 @@
 
 	/** When crawl has both screenshots and links, sidebar uses Tabs between them. */
 	let crawlMediaTab = $state<'screenshots' | 'links'>('screenshots');
+
+	let searchQuery = $state('');
+	let websiteFilter = $state<WebsiteFilter>('all');
+	let crawlFilter = $state<CrawlFilter>('all');
+	let minRating = $state('any');
+	let openNowFilter = $state<OpenNowFilter>('all');
+
+	const filteredPlaces = $derived(
+		filterPlaces(data.places, {
+			search: searchQuery,
+			website: websiteFilter,
+			crawl: crawlFilter,
+			minRating: minRating === 'any' ? '' : minRating,
+			openNow: openNowFilter
+		})
+	);
+
+	const anyFilterOn = $derived(
+		isFilterActive({
+			search: searchQuery,
+			website: websiteFilter,
+			crawl: crawlFilter,
+			minRating: minRating === 'any' ? '' : minRating,
+			openNow: openNowFilter
+		})
+	);
+
+	function clearFilters() {
+		searchQuery = '';
+		websiteFilter = 'all';
+		crawlFilter = 'all';
+		minRating = 'any';
+		openNowFilter = 'all';
+	}
+
+	$effect(() => {
+		const s = selected;
+		if (!s) return;
+		if (!filteredPlaces.some((p) => p.id === s.id)) {
+			selected = null;
+		}
+	});
 
 	$effect(() => {
 		void selected?.id;
@@ -100,6 +163,25 @@
 
 	function persistColumns() {
 		if (browser) localStorage.setItem(COLS_STORAGE_KEY, JSON.stringify(visibleColumns));
+	}
+
+	function selectAllTableColumns() {
+		const next = { ...visibleColumns };
+		for (const c of TABLE_COLUMNS) next[c.id] = true;
+		visibleColumns = next;
+		persistColumns();
+	}
+
+	function clearTableColumns() {
+		const next = { ...visibleColumns };
+		for (const c of TABLE_COLUMNS) next[c.id] = false;
+		visibleColumns = next;
+		persistColumns();
+	}
+
+	function resetTableColumnDefaults() {
+		visibleColumns = defaultVisibleColumns();
+		persistColumns();
 	}
 
 	function selectPlace(p: Place) {
@@ -187,7 +269,9 @@
 	<title>Lead overview</title>
 </svelte:head>
 
-<div class="bg-background text-foreground flex min-h-screen flex-col">
+<div
+	class="bg-background text-foreground flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
+>
 	<header class="bg-card border-border flex shrink-0 flex-col border-b">
 		<div class="max-w-full px-5 py-4">
 			<h1 class="text-xl leading-none font-semibold tracking-tight">Lead overview</h1>
@@ -199,35 +283,182 @@
 						Fetched {data.meta.fetched_at}
 					{/if}
 					<span class="mx-1.5">·</span>
-					{data.places.length} places
+					{#if anyFilterOn}
+						<strong class="text-foreground">{filteredPlaces.length}</strong> of
+						{data.places.length} places
+					{:else}
+						{data.places.length} places
+					{/if}
 				</p>
 			{/if}
-			<div class="mt-3.5 flex flex-wrap items-center gap-3">
-				<Tabs bind:value={viewMode} onValueChange={() => persistViewMode()} aria-label="Layout">
-					<TabsList>
-						<TabsTrigger value="smallGrid">
-							<HugeiconsIcon icon={Grid02Icon} data-icon="inline-start" strokeWidth={2} />
-							Small grid
-						</TabsTrigger>
-						<TabsTrigger value="bigGrid">
-							<HugeiconsIcon icon={LayoutGridIcon} data-icon="inline-start" strokeWidth={2} />
-							Big grid
-						</TabsTrigger>
-						<TabsTrigger value="table">
-							<HugeiconsIcon icon={TableIcon} data-icon="inline-start" strokeWidth={2} />
-							Table
-						</TabsTrigger>
-					</TabsList>
-				</Tabs>
+			<div class="mt-3.5 flex flex-wrap items-end gap-3" aria-label="Layout and filters">
+				<div class="w-fit shrink-0">
+					<Tabs
+						bind:value={viewMode}
+						onValueChange={() => persistViewMode()}
+						aria-label="Layout"
+					>
+						<TabsList>
+							<TabsTrigger value="smallGrid">
+								<HugeiconsIcon icon={Grid02Icon} data-icon="inline-start" strokeWidth={2} />
+								Small grid
+							</TabsTrigger>
+							<TabsTrigger value="bigGrid">
+								<HugeiconsIcon
+									icon={LayoutGridIcon}
+									data-icon="inline-start"
+									strokeWidth={2}
+								/>
+								Big grid
+							</TabsTrigger>
+							<TabsTrigger value="table">
+								<HugeiconsIcon icon={TableIcon} data-icon="inline-start" strokeWidth={2} />
+								Table
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
+				<Separator
+					orientation="vertical"
+					class="bg-border hidden h-9 w-px shrink-0 self-center sm:block"
+				/>
+				{#if viewMode === 'table'}
+					<div class="flex w-fit min-w-0 shrink-0 self-end">
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger>
+								{#snippet child({ props })}
+									<Button {...props} variant="outline" size="sm" class="h-8 gap-1.5">
+										Columns
+										<HugeiconsIcon
+											icon={ArrowDown01Icon}
+											data-icon="inline-end"
+											strokeWidth={2}
+										/>
+									</Button>
+								{/snippet}
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content class="w-56" align="start">
+								<DropdownMenu.Label>Column visibility</DropdownMenu.Label>
+								<DropdownMenu.Item onclick={selectAllTableColumns}>Select all</DropdownMenu.Item>
+								<DropdownMenu.Item onclick={clearTableColumns}>Clear</DropdownMenu.Item>
+								<DropdownMenu.Item onclick={resetTableColumnDefaults}>Defaults</DropdownMenu.Item>
+								<DropdownMenu.Separator />
+								{#each TABLE_COLUMNS as col (col.id)}
+									<DropdownMenu.CheckboxItem
+										closeOnSelect={false}
+										bind:checked={
+											() => visibleColumns[col.id],
+											(v) => {
+												visibleColumns = { ...visibleColumns, [col.id]: v };
+												persistColumns();
+											}
+										}
+									>
+										{col.label}
+									</DropdownMenu.CheckboxItem>
+								{/each}
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
+					</div>
+					<Separator
+						orientation="vertical"
+						class="bg-border hidden h-9 w-px shrink-0 self-center sm:block"
+					/>
+				{/if}
+				<div class="flex min-w-0 flex-1 flex-wrap items-end gap-3 [min-width:min(100%,0)]">
+					<div class="flex min-w-[12rem] max-w-md flex-1 flex-col gap-1.5">
+						<span class="text-muted-foreground text-xs font-medium">Search</span>
+						<Input
+							type="search"
+							placeholder="Name, address, or category"
+							bind:value={searchQuery}
+							class="w-full min-w-0"
+							autocomplete="off"
+						/>
+					</div>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-muted-foreground text-xs font-medium">Website</span>
+						<ToggleGroup
+							type="single"
+							bind:value={websiteFilter}
+							variant="outline"
+							spacing={0}
+						>
+							<ToggleGroupItem value="all" aria-label="All websites">All</ToggleGroupItem>
+							<ToggleGroupItem value="with" aria-label="With website">With</ToggleGroupItem>
+							<ToggleGroupItem value="without" aria-label="Without website">Without</ToggleGroupItem>
+						</ToggleGroup>
+					</div>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-muted-foreground text-xs font-medium">Crawl</span>
+						<ToggleGroup type="single" bind:value={crawlFilter} variant="outline" spacing={0}>
+							<ToggleGroupItem value="all" aria-label="Any crawl data">All</ToggleGroupItem>
+							<ToggleGroupItem value="multi" aria-label="At least two pages crawled"
+								>2+ pages</ToggleGroupItem>
+							<ToggleGroupItem value="none" aria-label="Not a multi-page crawl">Not 2+</ToggleGroupItem>
+						</ToggleGroup>
+					</div>
+					<div class="flex min-w-0 flex-col gap-1.5">
+						<span class="text-muted-foreground text-xs font-medium" id="lo-min-rating">Min rating</span>
+						<Select type="single" bind:value={minRating}>
+							<SelectTrigger
+								size="sm"
+								class="w-[9.5rem] min-w-0"
+								aria-labelledby="lo-min-rating"
+							>
+								<SelectBits.Value placeholder="Min rating" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="any" label="Any" />
+								<SelectItem value="3" label="3+ stars" />
+								<SelectItem value="3.5" label="3.5+ stars" />
+								<SelectItem value="4" label="4+ stars" />
+								<SelectItem value="4.5" label="4.5+ stars" />
+								<SelectItem value="5" label="5 stars" />
+							</SelectContent>
+						</Select>
+					</div>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-muted-foreground text-xs font-medium">Open now</span>
+						<ToggleGroup
+							type="single"
+							bind:value={openNowFilter}
+							variant="outline"
+							spacing={0}
+						>
+							<ToggleGroupItem value="all" aria-label="Any hours">All</ToggleGroupItem>
+							<ToggleGroupItem value="open" aria-label="Open now">Open</ToggleGroupItem>
+							<ToggleGroupItem value="closed" aria-label="Closed now">Closed</ToggleGroupItem>
+						</ToggleGroup>
+					</div>
+					{#if anyFilterOn}
+						<Button
+							type="button"
+							variant="secondary"
+							size="sm"
+							class="self-end"
+							onclick={clearFilters}
+						>
+							Reset
+						</Button>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</header>
 
-	<div class="flex min-h-0 flex-1 flex-col md:flex-row">
-		<main class="min-h-0 min-w-0 flex-1 overflow-auto px-5 py-4 pb-8">
+	<div
+		class="flex w-full min-w-0 min-h-0 flex-1 flex-col overflow-hidden md:flex-row md:items-stretch"
+	>
+		<main
+			class="min-h-0 min-w-0 flex-1 basis-0 overflow-y-auto overflow-x-hidden {viewMode ===
+			'table'
+				? 'px-0 py-0'
+				: 'px-5 py-4 pb-8'}"
+		>
 			{#if viewMode === 'table'}
 				<LeadOverviewDataTable
-					places={data.places}
+					places={filteredPlaces}
 					bind:visibleColumns
 					selectedId={selected?.id ?? null}
 					{failedScreenshots}
@@ -243,7 +474,7 @@
 					class:md:[grid-template-columns:repeat(auto-fill,minmax(400px,1fr))]={viewMode ===
 						'bigGrid'}
 				>
-					{#each data.places as p (p.id)}
+					{#each filteredPlaces as p (p.id)}
 						<Card
 							class={cn(
 								'cursor-pointer gap-0 py-0 transition-colors',
@@ -324,7 +555,7 @@
 		</main>
 
 		<aside
-			class="border-border bg-card flex max-h-[45vh] min-h-0 w-full shrink-0 flex-col border-t md:max-h-none md:w-[min(420px,40vw)] md:border-t-0 md:border-l"
+			class="border-border bg-card flex max-h-[45vh] min-h-0 w-full shrink-0 flex-col border-t md:max-h-none md:min-h-0 md:overflow-hidden md:w-[min(420px,40vw)] md:border-t-0 md:border-l"
 			aria-label="Business details"
 		>
 			{#if selected}

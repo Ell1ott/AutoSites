@@ -12,11 +12,7 @@
 		getSortedRowModel
 	} from '@tanstack/table-core';
 	import type { SiteRow } from '$lib/sites.types';
-	import {
-		SITES_TABLE_COLUMNS,
-		defaultSitesVisibleColumns,
-		type SitesTableColumnId
-	} from '$lib/sitesTableColumns';
+	import { SITES_TABLE_COLUMNS, type SitesTableColumnId } from '$lib/sitesTableColumns';
 	import { cn } from '$lib/utils.js';
 	import {
 		createSvelteTable,
@@ -25,10 +21,7 @@
 	} from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
-	import { HugeiconsIcon } from '@hugeicons/svelte';
-	import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 	import DataTableCheckbox from '$lib/components/data-table-checkbox.svelte';
 	import SortableColumnHeader from '$lib/components/lead-overview-column-header.svelte';
 	import SitesTableCell from '$lib/components/sites-table-cell.svelte';
@@ -174,25 +167,6 @@
 			}
 		}
 	});
-
-	function selectAllColumnsFn() {
-		const next = { ...visibleColumns };
-		for (const c of SITES_TABLE_COLUMNS) next[c.id] = true;
-		visibleColumns = next;
-		onColumnVisibilityPersist?.();
-	}
-
-	function clearAllColumnsFn() {
-		const next = { ...visibleColumns };
-		for (const c of SITES_TABLE_COLUMNS) next[c.id] = false;
-		visibleColumns = next;
-		onColumnVisibilityPersist?.();
-	}
-
-	function resetColumnDefaultsFn() {
-		visibleColumns = defaultSitesVisibleColumns();
-		onColumnVisibilityPersist?.();
-	}
 </script>
 
 <div class="-mb-8 w-full">
@@ -204,36 +178,6 @@
 			onchange={(e) => table.getColumn('name')?.setFilterValue(e.currentTarget.value)}
 			class="max-w-sm"
 		/>
-		<div class="ms-auto">
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					{#snippet child({ props })}
-						<Button {...props} variant="outline">
-							Columns
-							<HugeiconsIcon icon={ArrowDown01Icon} data-icon="inline-end" strokeWidth={2} />
-						</Button>
-					{/snippet}
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="w-56" align="end">
-					<DropdownMenu.Label>Column visibility</DropdownMenu.Label>
-					<DropdownMenu.Item onclick={selectAllColumnsFn}>Select all</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={clearAllColumnsFn}>Clear</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={resetColumnDefaultsFn}>Defaults</DropdownMenu.Item>
-					<DropdownMenu.Separator />
-					{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column.id)}
-						{@const colDef = SITES_TABLE_COLUMNS.find((c) => c.id === column.id)}
-						<DropdownMenu.CheckboxItem
-							closeOnSelect={false}
-							bind:checked={
-								() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
-							}
-						>
-							{colDef?.label ?? column.id}
-						</DropdownMenu.CheckboxItem>
-					{/each}
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
-		</div>
 	</div>
 	<div class="border-border overflow-hidden rounded-md border">
 		<Table.Root>
