@@ -5,20 +5,37 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { HugeiconsIcon } from '@hugeicons/svelte';
 	import { ArrowExpandDiagonal01Icon } from '@hugeicons/core-free-icons';
+	import { cn } from '$lib/utils.js';
 
 	let {
 		place: p,
 		colId,
 		failedScreenshot,
+		leadRating,
 		onImgError,
-		onExpandScreenshot
+		onExpandScreenshot,
+		setRating
 	}: {
 		place: Place;
 		colId: TableColumnId;
 		failedScreenshot: boolean;
+		leadRating?: number;
 		onImgError: () => void;
 		onExpandScreenshot: () => void;
+		setRating?: (value: number | null) => void;
 	} = $props();
+
+	/** Strong orange/amber at 1 → strong green at 10 (readable contrast). */
+	function scoreHeatStyle(score: number | undefined): string | undefined {
+		if (score == null || Number.isNaN(score)) return undefined;
+		const n = Math.min(10, Math.max(1, Math.round(score)));
+		const t = (n - 1) / 9;
+		const h = 28 + t * 96;
+		const s = 92 - t * 10;
+		const l = 34 + t * 14;
+		const edge = Math.max(l - 16, 22);
+		return `background-color: hsl(${h} ${s}% ${l}%); color: rgb(250 250 250); box-shadow: inset 0 0 0 1px hsl(${h} ${Math.min(s + 6, 98)}% ${edge}%);`;
+	}
 
 	function openNowValue(place: Place): boolean | undefined {
 		const reg = place.regularOpeningHours?.openNow;
@@ -93,6 +110,42 @@
 		>
 			<HugeiconsIcon icon={ArrowExpandDiagonal01Icon} strokeWidth={2} />
 		</Button>
+	</div>
+{:else if colId === 'interested'}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="flex justify-center px-0.5" onclick={(e) => e.stopPropagation()}>
+		<input
+			type="number"
+			min="1"
+			max="10"
+			step="1"
+			inputmode="numeric"
+			aria-label="Your score from 1 to 10"
+			data-slot="input"
+			class={cn(
+				'size-8 shrink-0 rounded-lg border p-0 text-center text-sm font-semibold tabular-nums outline-none transition-[background-color,box-shadow,color,border-color]',
+				'[-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+				'focus-visible:ring-2 focus-visible:ring-ring/55',
+				leadRating == null || Number.isNaN(leadRating)
+					? 'bg-muted/60 border-border text-foreground'
+					: 'border-transparent'
+			)}
+			style={scoreHeatStyle(leadRating)}
+			value={leadRating != null && !Number.isNaN(leadRating) ? String(leadRating) : ''}
+			oninput={(e) => {
+				const raw = e.currentTarget.value.trim();
+				if (raw === '') {
+					setRating?.(null);
+					return;
+				}
+				const n = Number(raw);
+				if (!Number.isFinite(n)) return;
+				setRating?.(n);
+			}}
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+		/>
 	</div>
 {:else if colId === 'name'}
 	<span class="block min-w-0 truncate font-semibold text-foreground">{placeTitle(p)}</span>

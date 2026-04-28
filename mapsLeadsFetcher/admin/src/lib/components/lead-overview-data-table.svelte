@@ -25,11 +25,14 @@
 
 	type LeadOverviewMeta = {
 		failedScreenshots: Record<string, boolean>;
+		leadRatingByPlaceId: Record<string, number>;
 		onImgError: (id: string) => void;
 		onExpandScreenshot: (p: Place) => void;
+		setLeadRating: (id: string, value: number | null) => void;
 	};
 
 	const SORTABLE: TableColumnId[] = [
+		'interested',
 		'name',
 		'added',
 		'type',
@@ -42,8 +45,14 @@
 		'price'
 	];
 
-	function sortValue(colId: TableColumnId, p: Place): string | number {
+	function sortValue(
+		colId: TableColumnId,
+		p: Place,
+		leadRatingByPlaceId: Record<string, number>
+	): string | number {
 		switch (colId) {
+			case 'interested':
+				return leadRatingByPlaceId[p.id] ?? -1;
 			case 'name':
 				return placeTitle(p);
 			case 'added':
@@ -86,18 +95,22 @@
 		visibleColumns = $bindable(),
 		selectedId,
 		failedScreenshots,
+		leadRatingByPlaceId,
 		onSelectPlace,
 		onImgError,
 		onExpandScreenshot,
+		setLeadRating,
 		onColumnVisibilityPersist
 	}: {
 		places: Place[];
 		visibleColumns: Record<TableColumnId, boolean>;
 		selectedId: string | null;
 		failedScreenshots: Record<string, boolean>;
+		leadRatingByPlaceId: Record<string, number>;
 		onSelectPlace: (p: Place) => void;
 		onImgError: (id: string) => void;
 		onExpandScreenshot: (p: Place) => void;
+		setLeadRating: (id: string, value: number | null) => void;
 		onColumnVisibilityPersist?: () => void;
 	} = $props();
 
@@ -105,7 +118,7 @@
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
 
-	const columns: ColumnDef<Place>[] = [
+	const columns = $derived.by((): ColumnDef<Place>[] => [
 		{
 			id: 'select',
 			header: ({ table }) =>
@@ -129,7 +142,7 @@
 			const sortable = SORTABLE.includes(col.id);
 			return {
 				id: col.id,
-				accessorFn: (row) => sortValue(col.id, row),
+				accessorFn: (row) => sortValue(col.id, row, leadRatingByPlaceId),
 				header: sortable
 					? ({ column }) =>
 							renderComponent(LeadOverviewColumnHeader, {
@@ -146,25 +159,31 @@
 						place: row.original,
 						colId: col.id,
 						failedScreenshot: !!meta.failedScreenshots[row.original.id],
+						leadRating: meta.leadRatingByPlaceId[row.original.id],
 						onImgError: () => meta.onImgError(row.original.id),
-						onExpandScreenshot: () => meta.onExpandScreenshot(row.original)
+						onExpandScreenshot: () => meta.onExpandScreenshot(row.original),
+						setRating: (value) => meta.setLeadRating(row.original.id, value)
 					});
 				}
 			};
 		})
-	];
+	]);
 
 	const table = createSvelteTable({
 		get data() {
 			return places;
 		},
-		columns,
+		get columns() {
+			return columns;
+		},
 		getRowId: (row) => row.id,
 		get meta(): LeadOverviewMeta {
 			return {
 				failedScreenshots,
+				leadRatingByPlaceId,
 				onImgError,
-				onExpandScreenshot
+				onExpandScreenshot,
+				setLeadRating
 			};
 		},
 		state: {
@@ -217,7 +236,12 @@
 
 	function rowActivateClick(e: MouseEvent, p: Place) {
 		const el = e.target as HTMLElement | null;
-		if (el?.closest('button, a, [data-slot=checkbox], [role=checkbox]')) return;
+		if (
+			el?.closest(
+				'button, a, input, textarea, select, [data-slot=checkbox], [data-slot=input], [role=checkbox]'
+			)
+		)
+			return;
 		onSelectPlace(p);
 	}
 </script>
@@ -258,7 +282,12 @@
 							if (e.key === 'Enter' || e.key === ' ') {
 								e.preventDefault();
 								const t = e.target as HTMLElement | null;
-								if (t?.closest('button, a, [data-slot=checkbox], [role=checkbox]')) return;
+								if (
+									t?.closest(
+										'button, a, input, textarea, select, [data-slot=checkbox], [data-slot=input], [role=checkbox]'
+									)
+								)
+									return;
 								onSelectPlace(row.original);
 							}
 						}}
@@ -269,7 +298,9 @@
 							<Table.Cell
 								class={cn(
 									'[&:has([role=checkbox])]:ps-3 max-w-72 align-middle',
-									cell.column.id !== 'screenshot' && 'min-w-0 truncate'
+									cell.column.id !== 'screenshot' &&
+										cell.column.id !== 'interested' &&
+										'min-w-0 truncate'
 								)}
 							>
 								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />

@@ -35,6 +35,16 @@ export function matchesSearch(p: Place, q: string): boolean {
 	return name.includes(t) || addr.includes(t) || type.includes(t) || types.includes(t);
 }
 
+/** User score (1–10) from lead overview; coerced for comparison. */
+function leadScore(
+	p: Place,
+	byId: Record<string, number>
+): number | undefined {
+	const raw = byId[p.id];
+	if (typeof raw !== 'number' || Number.isNaN(raw)) return undefined;
+	return raw;
+}
+
 export function filterPlaces(
 	places: Place[],
 	opts: {
@@ -42,6 +52,9 @@ export function filterPlaces(
 		website: WebsiteFilter;
 		crawl: CrawlFilter;
 		minRating: string;
+		minReviewCount: string;
+		leadScoreGreaterThan: string;
+		leadRatingByPlaceId: Record<string, number>;
 		openNow: OpenNowFilter;
 	}
 ): Place[] {
@@ -57,6 +70,22 @@ export function filterPlaces(
 		if (opts.minRating) {
 			const min = parseFloat(opts.minRating);
 			if (Number.isNaN(min) || p.rating == null || p.rating < min) return false;
+		}
+
+		if (opts.minReviewCount) {
+			const min = parseInt(opts.minReviewCount, 10);
+			if (!Number.isNaN(min)) {
+				const n = p.userRatingCount;
+				if (n == null || typeof n !== 'number' || n < min) return false;
+			}
+		}
+
+		if (opts.leadScoreGreaterThan !== '') {
+			const gt = parseFloat(opts.leadScoreGreaterThan);
+			if (!Number.isNaN(gt)) {
+				const s = leadScore(p, opts.leadRatingByPlaceId);
+				if (s == null || s <= gt) return false;
+			}
 		}
 
 		if (opts.openNow === 'open') {
@@ -75,6 +104,8 @@ export function isFilterActive(opts: {
 	website: WebsiteFilter;
 	crawl: CrawlFilter;
 	minRating: string;
+	minReviewCount: string;
+	leadScoreGreaterThan: string;
 	openNow: OpenNowFilter;
 }): boolean {
 	return (
@@ -82,6 +113,8 @@ export function isFilterActive(opts: {
 		opts.website !== 'all' ||
 		opts.crawl !== 'all' ||
 		opts.minRating !== '' ||
+		opts.minReviewCount !== '' ||
+		opts.leadScoreGreaterThan !== '' ||
 		opts.openNow !== 'all'
 	);
 }

@@ -58,6 +58,7 @@
 		Image01Icon,
 		LayoutGridIcon,
 		Link01Icon,
+		MoreHorizontalIcon,
 		TableIcon,
 		ArrowDown01Icon
 	} from '@hugeicons/core-free-icons';
@@ -68,9 +69,13 @@
 
 	const VIEW_STORAGE_KEY = 'leadoverview.viewMode';
 	const COLS_STORAGE_KEY = 'leadoverview.tableColumns';
+	const LEAD_RATING_STORAGE_KEY = 'leadoverview.leadRating';
+	const LEGACY_INTERESTED_STORAGE_KEY = 'leadoverview.interested';
 
 	let viewMode = $state<ViewMode>('smallGrid');
 	let visibleColumns = $state<Record<TableColumnId, boolean>>(defaultVisibleColumns());
+	/** Per–place id, 1–10; persisted in localStorage (browser only). */
+	let leadRatingByPlaceId = $state<Record<string, number>>({});
 
 	let selected = $state<Place | null>(null);
 	let failedScreenshots = $state<Record<string, boolean>>({});
@@ -87,6 +92,8 @@
 	let websiteFilter = $state<WebsiteFilter>('all');
 	let crawlFilter = $state<CrawlFilter>('all');
 	let minRating = $state('any');
+	let minReviewCount = $state('any');
+	let leadScoreGreaterThan = $state('any');
 	let openNowFilter = $state<OpenNowFilter>('all');
 
 	const filteredPlaces = $derived(
@@ -95,6 +102,9 @@
 			website: websiteFilter,
 			crawl: crawlFilter,
 			minRating: minRating === 'any' ? '' : minRating,
+			minReviewCount: minReviewCount === 'any' ? '' : minReviewCount,
+			leadScoreGreaterThan: leadScoreGreaterThan === 'any' ? '' : leadScoreGreaterThan,
+			leadRatingByPlaceId,
 			openNow: openNowFilter
 		})
 	);
@@ -105,15 +115,51 @@
 			website: websiteFilter,
 			crawl: crawlFilter,
 			minRating: minRating === 'any' ? '' : minRating,
+			minReviewCount: minReviewCount === 'any' ? '' : minReviewCount,
+			leadScoreGreaterThan: leadScoreGreaterThan === 'any' ? '' : leadScoreGreaterThan,
 			openNow: openNowFilter
 		})
 	);
+
+	const secondaryFiltersActive = $derived(
+		crawlFilter !== 'all' ||
+			minRating !== 'any' ||
+			minReviewCount !== 'any' ||
+			leadScoreGreaterThan !== 'any' ||
+			openNowFilter !== 'all'
+	);
+
+	let moreFiltersOpen = $state(false);
+	let moreFiltersRoot = $state<HTMLDivElement | null>(null);
+
+	$effect(() => {
+		if (!browser || !moreFiltersOpen) return;
+		const closeOnPointerDown = (e: PointerEvent) => {
+			const el = e.target;
+			if (!(el instanceof Element)) return;
+			if (moreFiltersRoot?.contains(el)) return;
+			/* Select portals outside this subtree */
+			if (el.closest('[data-slot="select-content"]')) return;
+			moreFiltersOpen = false;
+		};
+		const onEscape = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') moreFiltersOpen = false;
+		};
+		document.addEventListener('pointerdown', closeOnPointerDown, true);
+		document.addEventListener('keydown', onEscape);
+		return () => {
+			document.removeEventListener('pointerdown', closeOnPointerDown, true);
+			document.removeEventListener('keydown', onEscape);
+		};
+	});
 
 	function clearFilters() {
 		searchQuery = '';
 		websiteFilter = 'all';
 		crawlFilter = 'all';
 		minRating = 'any';
+		minReviewCount = 'any';
+		leadScoreGreaterThan = 'any';
 		openNowFilter = 'all';
 	}
 
@@ -155,7 +201,54 @@
 				/* ignore */
 			}
 		}
+		const rawRatings = localStorage.getItem(LEAD_RATING_STORAGE_KEY);
+		if (rawRatings) {
+			try {
+				const parsed = JSON.parse(rawRatings) as Record<string, unknown>;
+				const next: Record<string, number> = {};
+				for (const [k, v] of Object.entries(parsed)) {
+					if (typeof v === 'number' && v >= 1 && v <= 10 && Number.isInteger(v)) next[k] = v;
+				}
+				leadRatingByPlaceId = next;
+			} catch {
+				/* ignore */
+			}
+		} else {
+			const rawLegacy = localStorage.getItem(LEGACY_INTERESTED_STORAGE_KEY);
+			if (rawLegacy) {
+				try {
+					const parsed = JSON.parse(rawLegacy) as Record<string, unknown>;
+					const next: Record<string, number> = {};
+					for (const [k, v] of Object.entries(parsed)) {
+						if (v === true) next[k] = 10;
+					}
+					if (Object.keys(next).length > 0) {
+						leadRatingByPlaceId = next;
+						localStorage.setItem(LEAD_RATING_STORAGE_KEY, JSON.stringify(next));
+					}
+				} catch {
+					/* ignore */
+				}
+			}
+		}
 	});
+
+	function persistLeadRatings() {
+		if (browser) localStorage.setItem(LEAD_RATING_STORAGE_KEY, JSON.stringify(leadRatingByPlaceId));
+	}
+
+	function clampLeadRating(n: number): number {
+		return Math.min(10, Math.max(1, Math.round(n)));
+	}
+
+	/** `null` clears the score. */
+	function setLeadRating(id: string, value: number | null) {
+		const next = { ...leadRatingByPlaceId };
+		if (value == null || Number.isNaN(value)) delete next[id];
+		else next[id] = clampLeadRating(value);
+		leadRatingByPlaceId = next;
+		persistLeadRatings();
+	}
 
 	function persistViewMode() {
 		if (browser) localStorage.setItem(VIEW_STORAGE_KEY, viewMode);
@@ -389,47 +482,150 @@
 							<ToggleGroupItem value="without" aria-label="Without website">Without</ToggleGroupItem>
 						</ToggleGroup>
 					</div>
-					<div class="flex flex-col gap-1.5">
-						<span class="text-muted-foreground text-xs font-medium">Crawl</span>
-						<ToggleGroup type="single" bind:value={crawlFilter} variant="outline" spacing={0}>
-							<ToggleGroupItem value="all" aria-label="Any crawl data">All</ToggleGroupItem>
-							<ToggleGroupItem value="multi" aria-label="At least two pages crawled"
-								>2+ pages</ToggleGroupItem>
-							<ToggleGroupItem value="none" aria-label="Not a multi-page crawl">Not 2+</ToggleGroupItem>
-						</ToggleGroup>
-					</div>
-					<div class="flex min-w-0 flex-col gap-1.5">
-						<span class="text-muted-foreground text-xs font-medium" id="lo-min-rating">Min rating</span>
-						<Select type="single" bind:value={minRating}>
-							<SelectTrigger
-								size="sm"
-								class="w-[9.5rem] min-w-0"
-								aria-labelledby="lo-min-rating"
-							>
-								<SelectBits.Value placeholder="Min rating" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="any" label="Any" />
-								<SelectItem value="3" label="3+ stars" />
-								<SelectItem value="3.5" label="3.5+ stars" />
-								<SelectItem value="4" label="4+ stars" />
-								<SelectItem value="4.5" label="4.5+ stars" />
-								<SelectItem value="5" label="5 stars" />
-							</SelectContent>
-						</Select>
-					</div>
-					<div class="flex flex-col gap-1.5">
-						<span class="text-muted-foreground text-xs font-medium">Open now</span>
-						<ToggleGroup
-							type="single"
-							bind:value={openNowFilter}
-							variant="outline"
-							spacing={0}
+					<div
+						class="relative flex shrink-0 flex-col gap-1.5 self-end"
+						bind:this={moreFiltersRoot}
+					>
+						<label
+							for="leadoverview-more-filters-trigger"
+							class={cn(
+								'text-xs font-medium',
+								moreFiltersOpen || secondaryFiltersActive ? 'text-foreground' : 'text-muted-foreground'
+							)}
 						>
-							<ToggleGroupItem value="all" aria-label="Any hours">All</ToggleGroupItem>
-							<ToggleGroupItem value="open" aria-label="Open now">Open</ToggleGroupItem>
-							<ToggleGroupItem value="closed" aria-label="Closed now">Closed</ToggleGroupItem>
-						</ToggleGroup>
+							More filters
+						</label>
+						<Button
+							type="button"
+							id="leadoverview-more-filters-trigger"
+							variant="outline"
+							size="sm"
+							class={cn(
+								'h-8 w-[2.625rem] p-0',
+								secondaryFiltersActive && !moreFiltersOpen
+									? 'border-primary/40 bg-primary/5'
+									: undefined
+							)}
+							onclick={() => (moreFiltersOpen = !moreFiltersOpen)}
+							aria-expanded={moreFiltersOpen}
+							aria-haspopup="dialog"
+							aria-controls="leadoverview-more-filters-popup"
+						>
+							<HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+						</Button>
+						{#if moreFiltersOpen}
+							<div
+								class="border-border bg-popover text-popover-foreground ring-foreground/5 dark:ring-foreground/10 absolute top-full left-0 z-[100] mt-1 flex max-h-[min(70vh,24rem)] w-[min(100vw-2rem,21rem)] min-w-[18rem] flex-col gap-3 overflow-y-auto rounded-3xl border p-3 shadow-lg ring-1 outline-none"
+								id="leadoverview-more-filters-popup"
+								role="dialog"
+								aria-label="More filters"
+								tabindex="-1"
+							>
+								<div class="flex flex-col gap-1.5">
+									<span class="text-muted-foreground text-xs font-medium">Crawl</span>
+									<ToggleGroup type="single" bind:value={crawlFilter} variant="outline" spacing={0}>
+										<ToggleGroupItem value="all" aria-label="Any crawl data">All</ToggleGroupItem>
+										<ToggleGroupItem value="multi" aria-label="At least two pages crawled">
+											2+ pages
+										</ToggleGroupItem>
+										<ToggleGroupItem value="none" aria-label="Not a multi-page crawl">
+											Not 2+
+										</ToggleGroupItem>
+									</ToggleGroup>
+								</div>
+								<div class="flex min-w-0 flex-col gap-1.5">
+									<span class="text-muted-foreground text-xs font-medium" id="lo-min-rating">
+										Min rating
+									</span>
+									<Select type="single" bind:value={minRating}>
+										<SelectTrigger
+											size="sm"
+											class="w-full min-w-0 max-w-none"
+											aria-labelledby="lo-min-rating"
+										>
+											<SelectBits.Value placeholder="Min rating" />
+										</SelectTrigger>
+										<SelectContent
+											side="top"
+											sideOffset={4}
+											class="z-[120]"
+										>
+											<SelectItem value="any" label="Any" />
+											<SelectItem value="3" label="3+ stars" />
+											<SelectItem value="3.5" label="3.5+ stars" />
+											<SelectItem value="4" label="4+ stars" />
+											<SelectItem value="4.5" label="4.5+ stars" />
+											<SelectItem value="5" label="5 stars" />
+										</SelectContent>
+									</Select>
+								</div>
+								<div class="flex min-w-0 flex-col gap-1.5">
+									<span class="text-muted-foreground text-xs font-medium" id="lo-min-reviews">
+										Review count
+									</span>
+									<Select type="single" bind:value={minReviewCount}>
+										<SelectTrigger
+											size="sm"
+											class="w-full min-w-0 max-w-none"
+											aria-labelledby="lo-min-reviews"
+										>
+											<SelectBits.Value placeholder="Review count" />
+										</SelectTrigger>
+										<SelectContent
+											side="top"
+											sideOffset={4}
+											class="z-[120]"
+										>
+											<SelectItem value="any" label="Any" />
+											<SelectItem value="5" label="5+ reviews" />
+											<SelectItem value="10" label="10+ reviews" />
+											<SelectItem value="25" label="25+ reviews" />
+											<SelectItem value="50" label="50+ reviews" />
+											<SelectItem value="100" label="100+ reviews" />
+											<SelectItem value="250" label="250+ reviews" />
+											<SelectItem value="500" label="500+ reviews" />
+										</SelectContent>
+									</Select>
+								</div>
+								<div class="flex min-w-0 flex-col gap-1.5">
+									<span class="text-muted-foreground text-xs font-medium" id="lo-score-gt">
+										Score &gt;
+									</span>
+									<Select type="single" bind:value={leadScoreGreaterThan}>
+										<SelectTrigger
+											size="sm"
+											class="w-full min-w-0 max-w-none"
+											aria-labelledby="lo-score-gt"
+										>
+											<SelectBits.Value placeholder="Score threshold" />
+										</SelectTrigger>
+										<SelectContent
+											side="top"
+											sideOffset={4}
+											class="z-[120]"
+										>
+											<SelectItem value="any" label="Any" />
+											{#each [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as n (n)}
+												<SelectItem value={String(n)} label={`> ${n}`} />
+											{/each}
+										</SelectContent>
+									</Select>
+								</div>
+								<div class="flex flex-col gap-1.5">
+									<span class="text-muted-foreground text-xs font-medium">Open now</span>
+									<ToggleGroup
+										type="single"
+										bind:value={openNowFilter}
+										variant="outline"
+										spacing={0}
+									>
+										<ToggleGroupItem value="all" aria-label="Any hours">All</ToggleGroupItem>
+										<ToggleGroupItem value="open" aria-label="Open now">Open</ToggleGroupItem>
+										<ToggleGroupItem value="closed" aria-label="Closed now">Closed</ToggleGroupItem>
+									</ToggleGroup>
+								</div>
+							</div>
+						{/if}
 					</div>
 					{#if anyFilterOn}
 						<Button
@@ -462,9 +658,11 @@
 					bind:visibleColumns
 					selectedId={selected?.id ?? null}
 					{failedScreenshots}
+					{leadRatingByPlaceId}
 					onSelectPlace={selectPlace}
 					onImgError={onImgError}
 					onExpandScreenshot={openScreenshotOverlayFor}
+					{setLeadRating}
 					onColumnVisibilityPersist={persistColumns}
 				/>
 			{:else}

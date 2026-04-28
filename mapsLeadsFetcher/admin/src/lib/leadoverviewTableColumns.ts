@@ -1,5 +1,6 @@
 export type TableColumnId =
 	| 'screenshot'
+	| 'interested'
 	| 'name'
 	| 'added'
 	| 'type'
@@ -19,6 +20,7 @@ export type TableColumnId =
 
 export const TABLE_COLUMNS: { id: TableColumnId; label: string; defaultVisible: boolean }[] = [
 	{ id: 'screenshot', label: 'Screenshot', defaultVisible: true },
+	{ id: 'interested', label: 'Score', defaultVisible: true },
 	{ id: 'name', label: 'Name', defaultVisible: true },
 	{ id: 'added', label: 'Added', defaultVisible: true },
 	{ id: 'type', label: 'Type', defaultVisible: true },
