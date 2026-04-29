@@ -408,6 +408,15 @@ def _write_run_entry(base_dir: Path, entry: dict[str, Any]) -> None:
     tmp.replace(runs_path)
 
 
+def _persist_maps_json(json_path: Path, record: dict[str, Any]) -> None:
+    """Atomic write so partial files are never left if the process is interrupted mid-write."""
+    tmp = json_path.with_suffix(".json.tmp")
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    tmp.replace(json_path)
+
+
 def _parse_place_ids(raw: str) -> list[str]:
     ids = [x.strip() for x in raw.split(",") if x.strip()]
     if not ids:
@@ -1044,6 +1053,13 @@ def main() -> None:
                             fail_evt["inputs_used"] = out.inputs_used
                         ev("place_failed", fail_evt)
                         logger.error("%s %s — failed: %s", prefix, label, err)
+
+                    try:
+                        _persist_maps_json(json_path, record)
+                    except OSError as exc:
+                        logger.error("Could not persist %s after %s — %s", json_path, wi.place_id, exc)
+                        raise
+
                 if args.limit is not None and counts["generated"] >= args.limit:
                     if work_queue:
                         logger.info(
@@ -1060,9 +1076,10 @@ def main() -> None:
             status = "ok"
 
     finally:
-        with json_path.open("w", encoding="utf-8") as f:
-            json.dump(record, f, indent=2, ensure_ascii=False)
-            f.write("\n")
+        try:
+            _persist_maps_json(json_path, record)
+        except OSError as exc:
+            logger.error("Final persist failed for %s — %s", json_path, exc)
 
         finished_at = _now_iso()
         run_entry = {

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+

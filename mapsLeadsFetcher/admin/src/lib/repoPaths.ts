@@ -23,6 +23,9 @@ export const mapsLeadsFetcherRoot = findMapsLeadsFetcherRoot();
 
 export const mapsBusinessesJsonPath = join(mapsLeadsFetcherRoot, 'maps_businesses.json');
 
+/** User lead scores (1–10) keyed by place id; written by the admin UI. */
+export const leadRatingsJsonPath = join(mapsLeadsFetcherRoot, 'lead_ratings.json');
+
 export const settingsJsonPath = join(mapsLeadsFetcherRoot, 'settings.json');
 
 export const runsJsonPath = join(mapsLeadsFetcherRoot, 'runs.json');

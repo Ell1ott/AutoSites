@@ -74,8 +74,8 @@
 
 	let viewMode = $state<ViewMode>('smallGrid');
 	let visibleColumns = $state<Record<TableColumnId, boolean>>(defaultVisibleColumns());
-	/** Per–place id, 1–10; persisted in localStorage (browser only). */
-	let leadRatingByPlaceId = $state<Record<string, number>>({});
+	/** Snapshot from server load; persists via POST to `lead_ratings.json`. */
+	let leadRatingByPlaceId = $state<Record<string, number>>({ ...data.leadRatingByPlaceId });
 
 	let selected = $state<Place | null>(null);
 	let failedScreenshots = $state<Record<string, boolean>>({});
@@ -181,6 +181,34 @@
 		aiContentTab = 'all';
 	});
 
+	/** Reads legacy `leadoverview.leadRating` + `leadoverview.interested` (true → 10). */
+	function parseLeadRatingsFromLocalStorage(): Record<string, number> {
+		const out: Record<string, number> = {};
+		try {
+			const rawRatings = localStorage.getItem(LEAD_RATING_STORAGE_KEY);
+			if (rawRatings) {
+				const parsed = JSON.parse(rawRatings) as Record<string, unknown>;
+				for (const [k, v] of Object.entries(parsed)) {
+					if (typeof v === 'number' && v >= 1 && v <= 10 && Number.isInteger(v)) out[k] = v;
+				}
+			}
+		} catch {
+			/* ignore */
+		}
+		try {
+			const rawLegacy = localStorage.getItem(LEGACY_INTERESTED_STORAGE_KEY);
+			if (rawLegacy) {
+				const parsed = JSON.parse(rawLegacy) as Record<string, unknown>;
+				for (const [k, v] of Object.entries(parsed)) {
+					if (v === true && out[k] === undefined) out[k] = 10;
+				}
+			}
+		} catch {
+			/* ignore */
+		}
+		return out;
+	}
+
 	onMount(() => {
 		const v = localStorage.getItem(VIEW_STORAGE_KEY);
 		if (v === 'smallGrid' || v === 'bigGrid' || v === 'table') {
@@ -201,40 +229,33 @@
 				/* ignore */
 			}
 		}
-		const rawRatings = localStorage.getItem(LEAD_RATING_STORAGE_KEY);
-		if (rawRatings) {
-			try {
-				const parsed = JSON.parse(rawRatings) as Record<string, unknown>;
-				const next: Record<string, number> = {};
-				for (const [k, v] of Object.entries(parsed)) {
-					if (typeof v === 'number' && v >= 1 && v <= 10 && Number.isInteger(v)) next[k] = v;
-				}
-				leadRatingByPlaceId = next;
-			} catch {
-				/* ignore */
-			}
-		} else {
-			const rawLegacy = localStorage.getItem(LEGACY_INTERESTED_STORAGE_KEY);
-			if (rawLegacy) {
-				try {
-					const parsed = JSON.parse(rawLegacy) as Record<string, unknown>;
-					const next: Record<string, number> = {};
-					for (const [k, v] of Object.entries(parsed)) {
-						if (v === true) next[k] = 10;
-					}
-					if (Object.keys(next).length > 0) {
-						leadRatingByPlaceId = next;
-						localStorage.setItem(LEAD_RATING_STORAGE_KEY, JSON.stringify(next));
-					}
-				} catch {
-					/* ignore */
-				}
-			}
+
+		const hadLeadKeys =
+			localStorage.getItem(LEAD_RATING_STORAGE_KEY) !== null ||
+			localStorage.getItem(LEGACY_INTERESTED_STORAGE_KEY) !== null;
+		if (!hadLeadKeys) return;
+
+		const fromBrowser = parseLeadRatingsFromLocalStorage();
+		if (Object.keys(fromBrowser).length > 0) {
+			leadRatingByPlaceId = { ...leadRatingByPlaceId, ...fromBrowser };
+			void persistLeadRatings();
 		}
+		localStorage.removeItem(LEAD_RATING_STORAGE_KEY);
+		localStorage.removeItem(LEGACY_INTERESTED_STORAGE_KEY);
 	});
 
-	function persistLeadRatings() {
-		if (browser) localStorage.setItem(LEAD_RATING_STORAGE_KEY, JSON.stringify(leadRatingByPlaceId));
+	async function persistLeadRatings() {
+		if (!browser) return;
+		try {
+			const res = await fetch('/api/lead-ratings', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(leadRatingByPlaceId)
+			});
+			if (!res.ok) console.error('Failed to save lead ratings:', await res.text());
+		} catch (e) {
+			console.error(e);
+		}
 	}
 
 	function clampLeadRating(n: number): number {

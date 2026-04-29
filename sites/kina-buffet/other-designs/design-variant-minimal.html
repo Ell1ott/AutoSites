@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINA BUFFET — Authentic &amp; Modern Asian Dining</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+
+        :root {
+            --paper: #faf8f5;
+            --charcoal: #141414;
+            --accent: #c44633;
+            --rule: rgba(20, 20, 20, 0.18);
+            --font-sans: "Instrument Sans", system-ui, -apple-system, sans-serif;
+            --font-display: "Shippori Mincho", "Times New Roman", serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            .hero-animate {
+                animation: none !important;
+                opacity: 1 !important;
+            }
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--charcoal);
+            font-family: var(--font-sans);
+            font-weight: 400;
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .skip {
+            position: absolute;
+            left: -9999px;
+            top: 0.75rem;
+            z-index: 1000;
+            padding: 0.5rem 1rem;
+            background: var(--charcoal);
+            color: var(--paper);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .skip:focus {
+            left: 0.75rem;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        :is(button, input, select):focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(1rem, 3vw, 1.5rem) clamp(1.25rem, 4vw, 2.5rem);
+            border-bottom: 1px solid var(--rule);
+            background: var(--paper);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        .logo-main {
+            font-weight: 600;
+            font-size: clamp(0.95rem, 2vw, 1.125rem);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-size: 0.65rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.5rem, 2vw, 1.5rem);
+            justify-content: flex-end;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            font-size: 0.6875rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a.nav-cta {
+            color: var(--accent);
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 2px;
+        }
+
+        .hero {
+            padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem) clamp(4rem, 12vw, 7rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(2rem, 5vw, 3.5rem);
+        }
+
+        .hero-billboard {
+            width: 100%;
+            max-width: 1400px;
+            min-height: clamp(320px, 62vh, 720px);
+            background-image: linear-gradient(rgba(20, 20, 20, 0.25), rgba(20, 20, 20, 0.25)),
+                url("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=2000");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px solid var(--rule);
+        }
+
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(0.5rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-animate {
+            animation: heroFadeIn 1.25s ease-out forwards;
+            opacity: 0;
+        }
+
+        .hero-animate-delay {
+            animation-delay: 0.22s;
+        }
+
+        .hero-inner {
+            text-align: center;
+            padding: clamp(1.5rem, 4vw, 3rem);
+        }
+
+        .hero-inner h1 {
+            color: #fff;
+            font-family: var(--font-sans);
+            font-size: clamp(2.25rem, 8vw, 5.5rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.02;
+        }
+
+        .hero-line {
+            display: inline-block;
+        }
+
+        .hero-kicker {
+            display: block;
+            margin-top: 1.25rem;
+            font-family: var(--font-display);
+            font-weight: 400;
+            font-size: clamp(1rem, 2.4vw, 1.5rem);
+            letter-spacing: 0.02em;
+            color: var(--paper);
+        }
+
+        .hero-badge {
+            position: absolute;
+            top: clamp(1rem, 3vw, 1.75rem);
+            right: clamp(1rem, 3vw, 1.75rem);
+            width: 4.5rem;
+            height: 4.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.45rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #fff;
+            line-height: 1.35;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: clamp(1.5rem, 4vw, 2.75rem);
+            padding: 0 clamp(1.25rem, 4vw, 2.5rem) clamp(5rem, 14vw, 9rem);
+        }
+
+        .section-label {
+            grid-column: 1 / -1;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--rule);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .section-label h2 {
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            letter-spacing: 0.06em;
+        }
+
+        .card-meta {
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card-frame {
+            border: 1px solid var(--charcoal);
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            background: var(--paper);
+        }
+
+        .card-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-size: 1.0625rem;
+            letter-spacing: 0.04em;
+        }
+
+        .portal-section {
+            grid-column: 1 / -1;
+            background: var(--charcoal);
+            color: var(--paper);
+            padding: clamp(2.5rem, 7vw, 4.5rem);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(2rem, 6vw, 4rem);
+            margin-top: 0;
+            border: 1px solid var(--charcoal);
+        }
+
+        .portal-kicker {
+            font-family: var(--font-display);
+            font-size: clamp(0.95rem, 2vw, 1.2rem);
+            font-weight: 400;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .portal-content h3 {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: clamp(1.75rem, 4vw, 2.75rem);
+            letter-spacing: -0.02em;
+            line-height: 1.12;
+        }
+
+        .portal-content p.lede {
+            opacity: 0.82;
+            margin-top: 1.25rem;
+            font-size: 0.9375rem;
+            max-width: 36ch;
+        }
+
+        .hours-row {
+            margin-top: clamp(1.75rem, 4vw, 2.5rem);
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(1.25rem, 4vw, 2.5rem);
+        }
+
+        .hours-block .logo-main {
+            font-size: 0.8125rem;
+            color: var(--paper);
+        }
+
+        .hours-block .logo-sub {
+            color: rgba(250, 248, 245, 0.65);
+            margin-top: 0.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            margin-bottom: 0.5rem;
+            color: rgba(250, 248, 245, 0.55);
+        }
+
+        input,
+        select {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(250, 248, 245, 0.28);
+            padding: 0.875rem 1rem;
+            color: var(--paper);
+            font-family: inherit;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: 0;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .form-inline {
+            display: flex;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+        }
+
+        .form-inline > * {
+            flex: 1;
+            min-width: 8rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--paper);
+            border: 1px solid var(--accent);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            font-family: inherit;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        .form-alt {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .form-alt a {
+            color: rgba(250, 248, 245, 0.7);
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-decoration: none;
+        }
+
+        .form-alt a:hover {
+            color: var(--accent);
+        }
+
+        .catering-visual {
+            grid-column: span 7;
+        }
+
+        .catering-visual .wide-frame {
+            border: 1px solid var(--charcoal);
+            height: clamp(240px, 38vw, 400px);
+            overflow: hidden;
+        }
+
+        .catering-visual .wide-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .catering-copy {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .catering-copy .lede {
+            font-size: clamp(1.0625rem, 2vw, 1.375rem);
+            font-weight: 500;
+            line-height: 1.35;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .feature-num {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+        }
+
+        .feature-grid h5 {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 0.35rem;
+        }
+
+        .feature-grid p {
+            font-size: 0.75rem;
+            opacity: 0.72;
+            margin-top: 0.25rem;
+        }
+
+        footer {
+            background: var(--paper);
+            color: var(--charcoal);
+            padding: clamp(2.5rem, 7vw, 4rem) clamp(1.25rem, 4vw, 2.5rem);
+            border-top: 1px solid var(--rule);
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 1.4fr repeat(3, 1fr);
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+        }
+
+        footer .logo-main {
+            font-family: var(--font-display);
+            font-size: clamp(1.75rem, 3vw, 2.25rem);
+            letter-spacing: 0.12em;
+        }
+
+        footer .logo-sub {
+            margin-top: 0.35rem;
+            display: inline-block;
+            padding: 0.15rem 0.35rem;
+            border: 1px solid var(--rule);
+            color: var(--charcoal);
+        }
+
+        .footer-col h4 {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            margin-bottom: 0.65rem;
+            opacity: 0.55;
+            font-weight: 600;
+        }
+
+        .footer-col p {
+            font-weight: 500;
+            font-size: 0.9375rem;
+            line-height: 1.35;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--rule);
+            padding-top: 1.25rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 0.6rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom a {
+            color: var(--charcoal);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 1024px) {
+            .card {
+                grid-column: span 6;
+            }
+
+            .portal-section {
+                grid-template-columns: 1fr;
+            }
+
+            .catering-visual,
+            .catering-copy {
+                grid-column: 1 / -1;
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .card {
+                grid-column: 1 / -1;
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-badge {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <a class="skip" href="#main">Skip to main content</a>
+
+    <header>
+        <div class="logo-block">
+            <div class="logo-main">Kina Buffet</div>
+            <div class="logo-sub">Est. 1994 • Authentic Asian</div>
+        </div>
+        <nav aria-label="Primary">
+            <a href="#menu">The Menu</a>
+            <a href="#catering">Catering</a>
+            <a href="#takeaway">Takeaway</a>
+            <a class="nav-cta" href="#reserve">Book a Table</a>
+        </nav>
+    </header>
+
+    <main id="main">
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="hero-billboard">
+                <div class="hero-badge" aria-hidden="true">Fresh<br>Every Day<br>Since &rsquo;94</div>
+                <div class="hero-inner">
+                    <h1 id="hero-heading">
+                        <span class="hero-line hero-animate">Asian,</span><br>
+                        <span class="hero-line hero-animate hero-animate-delay">done right.</span>
+                    </h1>
+                    <p class="hero-kicker hero-animate" style="animation-delay: 0.4s;">Restaurant Kina</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-container" id="menu" aria-labelledby="experience-heading">
+            <div class="section-label">
+                <h2 id="experience-heading">The Experience</h2>
+                <div class="card-meta">Selection of 120+ Dishes</div>
+            </div>
+
+            <article class="card">
+                <div class="card-frame">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3a16d?auto=format&amp;fit=crop&amp;q=80&amp;w=800" width="800" height="1000" alt="Steamed dim sum in bamboo baskets.">
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Traditional Dim Sum</h3>
+                    <p class="card-meta">Hand-rolled daily</p>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-frame">
+                    <img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&amp;fit=crop&amp;q=80&amp;w=800" width="800" height="1000" alt="Spicy Sichuan dishes with chili and peppercorns.">
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Sichuan Specials</h3>
+                    <p class="card-meta">Authentic spice</p>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-frame">
+                    <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;q=80&amp;w=800" width="800" height="1000" alt="Assorted sushi and sashimi on a platter.">
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">Sushi Bar</h3>
+                    <p class="card-meta">Premium grade</p>
+                </div>
+            </article>
+        </section>
+
+        <section class="grid-container" id="reserve" style="padding-top: 0;" aria-labelledby="reserve-heading">
+            <div class="portal-section">
+                <div class="portal-content">
+                    <p class="portal-kicker">The Buffet Awaits</p>
+                    <h3 id="reserve-heading">Secure Your Table.</h3>
+                    <p class="lede">Large groups, corporate events, or family dinners. Kina offers the space and the flavor for every occasion.</p>
+
+                    <div class="hours-row">
+                        <div class="hours-block logo-block">
+                            <div class="logo-main">Lunch Buffet</div>
+                            <div class="logo-sub">11:00 — 15:00</div>
+                        </div>
+                        <div class="hours-block logo-block">
+                            <div class="logo-main">Dinner Buffet</div>
+                            <div class="logo-sub">17:00 — 22:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="booking-form" aria-label="Reservation request">
+                    <div class="form-group">
+                        <label class="form-label" for="res-date">Date &amp; Time</label>
+                        <div class="form-inline">
+                            <input id="res-date" type="date" value="2023-10-25" name="date" autocomplete="off">
+                            <label class="visually-hidden" for="res-time">Time</label>
+                            <select id="res-time" name="time" aria-label="Reservation time">
+                                <option>18:30</option>
+                                <option>19:00</option>
+                                <option>19:30</option>
+                                <option>20:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="res-guests">Guests</label>
+                        <select id="res-guests" name="guests">
+                            <option>2 People</option>
+                            <option>4 People</option>
+                            <option>6-10 People</option>
+                            <option>Large Event (10+)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" type="button">Confirm Reservation</button>
+                    <div class="form-alt" id="takeaway">
+                        <a href="#">Order Takeaway Instead →</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="grid-container" id="catering" aria-labelledby="catering-heading">
+            <div class="section-label">
+                <h2 id="catering-heading">Catering &amp; Events</h2>
+                <div class="card-meta">Full Service Setup</div>
+            </div>
+            <div class="catering-visual">
+                <div class="wide-frame">
+                    <img src="https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" width="1200" height="800" alt="Catering spread of plated dishes on a long table.">
+                </div>
+            </div>
+            <div class="catering-copy">
+                <p class="lede">Bring the Kina Buffet experience to your venue. From corporate lunches to wedding banquets.</p>
+                <div class="feature-grid">
+                    <div>
+                        <span class="feature-num">01.</span>
+                        <h5>Hot Stations</h5>
+                        <p>Live cooking and serving.</p>
+                    </div>
+                    <div>
+                        <span class="feature-num">02.</span>
+                        <h5>Custom Menus</h5>
+                        <p>Tailored to your needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            <div class="logo-block">
+                <div class="logo-main">KINA</div>
+                <div class="logo-sub">EST. 1994</div>
+            </div>
+            <div class="footer-col">
+                <h4>Location</h4>
+                <p>128 East Dragon Rd.<br>Metropolis City, CP 4500</p>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>+45 88 92 10 00<br>hello@kinabuffet.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Hours</h4>
+                <p>Mon-Sun: 11:00 — 22:00</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>© 2023 Kina Buffet Group. All Rights Reserved.</div>
+            <div class="footer-links">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Careers</a>
+            </div>
+            <div>Built for the love of Asian Cuisine.</div>
+        </div>
+    </footer>
+
+</body>
+</html>

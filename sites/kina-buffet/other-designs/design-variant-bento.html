@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINA BUFFET — Authentic &amp; Modern Asian Dining</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #E8453A;
+            --accent-soft: rgba(232, 69, 58, 0.15);
+            --accent-glow: rgba(232, 69, 58, 0.45);
+            --cream: #F4F2ED;
+            --cream-deep: #E8E4DC;
+            --dark: #141218;
+            --muted: rgba(20, 18, 24, 0.65);
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --radius-pill: 9999px;
+            --radius-card: 1.25rem;
+            --lift: translateY(-6px);
+            --shadow-lift:
+                0 20px 40px rgba(20, 18, 24, 0.12),
+                0 8px 16px rgba(232, 69, 58, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            --shadow-rest:
+                0 4px 24px rgba(20, 18, 24, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', system-ui, sans-serif;
+            background:
+                radial-gradient(1200px 600px at 10% 0%, rgba(232, 69, 58, 0.06), transparent 50%),
+                radial-gradient(800px 400px at 100% 30%, rgba(232, 69, 58, 0.05), transparent 45%),
+                linear-gradient(180deg, var(--cream) 0%, var(--cream-deep) 100%);
+            color: var(--dark);
+            overflow-x: hidden;
+            line-height: 1.45;
+            padding-top: 5.5rem;
+        }
+
+        /* Floating pill nav */
+        .site-header {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: clamp(1rem, 4vw, 2.5rem);
+            padding: 0.65rem 1.25rem 0.65rem 1.5rem;
+            max-width: calc(100% - 2rem);
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-pill);
+            box-shadow:
+                0 8px 32px rgba(20, 18, 24, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            line-height: 1.1;
+        }
+
+        .logo-main {
+            font-weight: 800;
+            font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-size: 0.55rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .site-header nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.25rem 0.75rem;
+        }
+
+        .site-header nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.45rem 0.85rem;
+            border-radius: var(--radius-pill);
+            transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .site-header nav a:hover {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .site-header nav a.cta {
+            background: linear-gradient(135deg, var(--accent) 0%, #C73A32 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .site-header nav a.cta:hover {
+            color: #fff;
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        /* Hero — mesh + same image URL */
+        .hero {
+            margin: 0 1rem 2rem;
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            min-height: min(78vh, 720px);
+            position: relative;
+            isolation: isolate;
+            box-shadow: var(--shadow-rest);
+        }
+
+        .hero-billboard {
+            width: 100%;
+            min-height: min(78vh, 720px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: var(--dark);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 20% 30%, rgba(255, 120, 100, 0.45) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 50% at 85% 70%, rgba(232, 69, 58, 0.5) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 40% at 50% 100%, rgba(80, 20, 30, 0.35) 0%, transparent 55%),
+                linear-gradient(125deg, rgba(20, 18, 24, 0.55) 0%, rgba(232, 69, 58, 0.25) 45%, rgba(20, 18, 24, 0.45) 100%),
+                url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=2000');
+            background-size: auto, auto, auto, auto, cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-text {
+            color: #fff;
+            font-size: clamp(2.5rem, 10vw, 7rem);
+            font-weight: 900;
+            letter-spacing: -0.045em;
+            text-align: center;
+            line-height: 0.88;
+            z-index: 2;
+            text-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .stamp {
+            position: absolute;
+            right: clamp(1rem, 4vw, 2.5rem);
+            top: clamp(1rem, 4vw, 2.5rem);
+            width: 5.5rem;
+            height: 5.5rem;
+            border: 2px dashed rgba(255, 255, 255, 0.75);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.48rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #fff;
+            transform: rotate(-12deg);
+            z-index: 10;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-script {
+            position: absolute;
+            bottom: clamp(1rem, 3vw, 2rem);
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: clamp(1.1rem, 3vw, 1.85rem);
+            z-index: 5;
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-pill);
+            background: rgba(20, 18, 24, 0.35);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Section shell */
+        .section-inner {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: clamp(1rem, 4vw, 2.5rem);
+            padding-right: clamp(1rem, 4vw, 2.5rem);
+        }
+
+        .section-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(20, 18, 24, 0.12);
+        }
+
+        .frost-strip {
+            height: 3px;
+            border-radius: var(--radius-pill);
+            background: linear-gradient(90deg, transparent, var(--accent-soft), rgba(232, 69, 58, 0.35), var(--accent-soft), transparent);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                0 2px 8px rgba(232, 69, 58, 0.15);
+        }
+
+        .section-label h2 {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: clamp(1.35rem, 3vw, 2rem);
+            letter-spacing: -0.03em;
+        }
+
+        .card-meta {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+        }
+
+        /* Bento grid */
+        .bento {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: clamp(0.85rem, 2vw, 1.35rem);
+            padding-top: clamp(2rem, 5vw, 4rem);
+            padding-bottom: clamp(2rem, 5vw, 4rem);
+        }
+
+        /* Inner grid — row 1 / 2 are only for cards (no overlap with section label) */
+        .bento-cards {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: clamp(0.85rem, 2vw, 1.35rem);
+        }
+
+        .bento-card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: var(--shadow-rest);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+        }
+
+        .bento-card:hover {
+            transform: var(--lift);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .bento-card--tall {
+            grid-column: 1 / 9;
+            grid-row: span 2;
+        }
+
+        .bento-card--sm-a {
+            grid-column: 9 / 13;
+            grid-row: 1;
+        }
+
+        .bento-card--sm-b {
+            grid-column: 9 / 13;
+            grid-row: 2;
+        }
+
+        .bento-card-img {
+            flex: 1;
+            min-height: 12rem;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid rgba(20, 18, 24, 0.06);
+        }
+
+        .bento-card--tall .bento-card-img {
+            min-height: clamp(260px, 38vh, 420px);
+        }
+
+        .bento-card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.15rem 1.2rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(244, 242, 237, 0.85) 100%);
+        }
+
+        .card-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: clamp(1rem, 1.8vw, 1.15rem);
+            letter-spacing: -0.02em;
+        }
+
+        /* Booking — glass portal */
+        .booking-wrap {
+            padding-top: 0;
+            padding-bottom: clamp(2rem, 5vw, 4rem);
+        }
+
+        .portal-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(1.5rem, 4vw, 3rem);
+            padding: clamp(1.75rem, 5vw, 3.25rem);
+            border-radius: var(--radius-card);
+            background: rgba(20, 18, 24, 0.88);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 24px 60px rgba(20, 18, 24, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            color: var(--cream);
+        }
+
+        .portal-kicker {
+            font-weight: 600;
+            font-style: italic;
+            color: #E8C47A;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portal-content h3 {
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.95;
+            margin-bottom: 1rem;
+        }
+
+        .portal-content p {
+            opacity: 0.88;
+            font-size: 0.95rem;
+            max-width: 36ch;
+        }
+
+        .hours-row {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem 2rem;
+        }
+
+        .hours-row .logo-main {
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .hours-row .logo-sub {
+            color: #E8C47A;
+        }
+
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+
+        .form-label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.45rem;
+            color: #E8C47A;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        input,
+        select {
+            flex: 1;
+            min-width: 0;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.65rem;
+            padding: 0.85rem 1rem;
+            color: #fff;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #B8322A 100%);
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px var(--accent-glow);
+        }
+
+        .takeaway-link {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .takeaway-link a {
+            color: #E8C47A;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-decoration: none;
+        }
+
+        .takeaway-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Catering bento row */
+        .catering-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: clamp(1rem, 3vw, 1.75rem);
+            align-items: stretch;
+            padding-top: clamp(2rem, 5vw, 3.5rem);
+            padding-bottom: clamp(3rem, 7vw, 5rem);
+        }
+
+        .catering-visual {
+            grid-column: span 7;
+            border-radius: var(--radius-card);
+            min-height: 280px;
+            background: url('https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=1200') center/cover;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: var(--shadow-rest);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+        }
+
+        .catering-visual:hover {
+            transform: var(--lift);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .catering-copy {
+            grid-column: span 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1.75rem;
+            border-radius: var(--radius-card);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow:
+                inset 4px 4px 12px rgba(255, 255, 255, 0.85),
+                inset -4px -4px 12px rgba(20, 18, 24, 0.06),
+                var(--shadow-rest);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+        }
+
+        .catering-copy:hover {
+            transform: var(--lift);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .catering-copy > p.lead {
+            font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .catering-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .catering-mini h5 {
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+        }
+
+        .catering-mini p {
+            font-size: 0.72rem;
+            opacity: 0.75;
+            margin-top: 0.25rem;
+        }
+
+        .catering-mini .num {
+            font-weight: 900;
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+
+        footer {
+            background: linear-gradient(165deg, #1a1215 0%, var(--accent) 55%, #9a2a24 100%);
+            color: #fff;
+            padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .footer-col h4 {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-bottom: 0.75rem;
+            opacity: 0.75;
+        }
+
+        .footer-col p {
+            font-weight: 600;
+            font-size: 1.05rem;
+            line-height: 1.35;
+        }
+
+        .footer-brand .logo-main {
+            color: #fff;
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+
+        .footer-brand .logo-sub {
+            color: var(--dark);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.2rem 0.5rem;
+            width: fit-content;
+            border-radius: 0.35rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            padding-top: 1.25rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-bottom a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding-top: 5rem;
+            }
+
+            .site-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.85rem 1rem;
+                border-radius: var(--radius-card);
+            }
+
+            .site-header nav {
+                justify-content: center;
+            }
+
+            .bento-card--tall,
+            .bento-card--sm-a,
+            .bento-card--sm-b {
+                grid-column: 1 / -1;
+                grid-row: auto;
+            }
+
+            .bento-card--tall .bento-card-img {
+                min-height: 220px;
+            }
+
+            .portal-section {
+                grid-template-columns: 1fr;
+            }
+
+            .catering-visual,
+            .catering-copy {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .catering-mini {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+
+            .footer-bottom > div:last-child {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="logo-block">
+            <div class="logo-main">Kina Buffet</div>
+            <div class="logo-sub">Est. 1994 • Authentic Asian</div>
+        </div>
+        <nav>
+            <a href="#menu">The Menu</a>
+            <a href="#catering">Catering</a>
+            <a href="#takeaway">Takeaway</a>
+            <a href="#reserve" class="cta">Book a Table</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-billboard">
+                <div class="stamp">Fresh<br>Every Day<br>Since '94</div>
+                <h1 class="hero-text">ASIAN,<br>DONE RIGHT.</h1>
+                <div class="hero-script">Restaurant Kina</div>
+            </div>
+        </section>
+
+        <section class="section-inner bento" id="menu">
+            <div class="section-label" style="grid-column: 1 / -1;">
+                <h2>The Experience</h2>
+                <div class="card-meta">Selection of 120+ Dishes</div>
+            </div>
+            <div class="frost-strip" style="grid-column: 1 / -1; margin-top: -0.5rem; margin-bottom: 0.25rem;"></div>
+
+            <div class="bento-cards">
+            <article class="bento-card bento-card--tall">
+                <div class="bento-card-img" style="background-image: url('https://images.unsplash.com/photo-1563245372-f21724e3a16d?auto=format&fit=crop&q=80&w=800');"></div>
+                <div class="bento-card-info">
+                    <div class="card-title">Traditional Dim Sum</div>
+                    <div class="card-meta">Hand-rolled daily</div>
+                </div>
+            </article>
+
+            <article class="bento-card bento-card--sm-a">
+                <div class="bento-card-img" style="background-image: url('https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800'); min-height: 10rem;"></div>
+                <div class="bento-card-info">
+                    <div class="card-title">Sichuan Specials</div>
+                    <div class="card-meta">Authentic spice</div>
+                </div>
+            </article>
+
+            <article class="bento-card bento-card--sm-b">
+                <div class="bento-card-img" style="background-image: url('https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&q=80&w=800'); min-height: 10rem;"></div>
+                <div class="bento-card-info">
+                    <div class="card-title">Sushi Bar</div>
+                    <div class="card-meta">Premium grade</div>
+                </div>
+            </article>
+            </div>
+        </section>
+
+        <section class="section-inner booking-wrap" id="reserve">
+            <div class="portal-section">
+                <div class="portal-content">
+                    <div class="portal-kicker">The Buffet Awaits</div>
+                    <h3>Secure Your Table.</h3>
+                    <p>Large groups, corporate events, or family dinners. Kina offers the space and the flavor for every occasion.</p>
+
+                    <div class="hours-row">
+                        <div class="logo-block">
+                            <div class="logo-main">Lunch Buffet</div>
+                            <div class="logo-sub">11:00 — 15:00</div>
+                        </div>
+                        <div class="logo-block">
+                            <div class="logo-main">Dinner Buffet</div>
+                            <div class="logo-sub">17:00 — 22:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-form">
+                    <div class="form-group">
+                        <label class="form-label">Date &amp; Time</label>
+                        <div class="form-row">
+                            <input type="date" value="2023-10-25">
+                            <select>
+                                <option>18:30</option>
+                                <option>19:00</option>
+                                <option>19:30</option>
+                                <option>20:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Guests</label>
+                        <select>
+                            <option>2 People</option>
+                            <option>4 People</option>
+                            <option>6-10 People</option>
+                            <option>Large Event (10+)</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-primary">Confirm Reservation</button>
+                    <div class="takeaway-link" id="takeaway">
+                        <a href="#">Order Takeaway Instead →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-inner catering-grid" id="catering">
+            <div class="section-label" style="grid-column: 1 / -1; border: none; margin-bottom: 0;">
+                <h2>Catering &amp; Events</h2>
+                <div class="card-meta">Full Service Setup</div>
+            </div>
+            <div class="frost-strip" style="grid-column: 1 / -1; margin-top: -0.75rem;"></div>
+
+            <div class="catering-visual"></div>
+            <div class="catering-copy">
+                <p class="lead">Bring the Kina Buffet experience to your venue. From corporate lunches to wedding banquets.</p>
+                <div class="catering-mini">
+                    <div>
+                        <span class="num">01.</span>
+                        <h5>Hot Stations</h5>
+                        <p>Live cooking and serving.</p>
+                    </div>
+                    <div>
+                        <span class="num">02.</span>
+                        <h5>Custom Menus</h5>
+                        <p>Tailored to your needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-top">
+            <div class="logo-block footer-brand">
+                <div class="logo-main">KINA</div>
+                <div class="logo-sub">EST. 1994</div>
+            </div>
+            <div class="footer-col">
+                <h4>Location</h4>
+                <p>128 East Dragon Rd.<br>Metropolis City, CP 4500</p>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>+45 88 92 10 00<br>hello@kinabuffet.com</p>
+            </div>
+            <div class="footer-col">
+                <h4>Hours</h4>
+                <p>Mon-Sun: 11:00 — 22:00</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>© 2023 Kina Buffet Group. All Rights Reserved.</div>
+            <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center;">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Careers</a>
+            </div>
+            <div>Built for the love of Asian Cuisine.</div>
+        </div>
+    </footer>
+
+</body>
+</html>

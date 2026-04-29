@@ -1,0 +1,582 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">KINA BUFFET — Authentic &amp; Modern Asian Dining | Hero V3 Cinematic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;family=Playfair+Display+SC:ital,wght@1,700&amp;family=Homemade+Apple&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+        
+
+        :root {
+            --red: #E32B25;
+            --cream: #F9F7F2;
+            --dark: #1A1A1A;
+            --gold: #C5A059;
+            --frame-radius: 40px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--dark);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        
+
+        .notched-frame {
+            position: relative;
+            border: 2px solid var(--dark);
+            background-clip: padding-box;
+            mask: radial-gradient(circle at 0 0, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 0 0 / 51% 51% no-repeat,
+                  radial-gradient(circle at 100% 0, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 100% 0 / 51% 51% no-repeat,
+                  radial-gradient(circle at 0 100%, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 0 100% / 51% 51% no-repeat,
+                  radial-gradient(circle at 100% 100%, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 100% 100% / 51% 51% no-repeat;
+            -webkit-mask: radial-gradient(circle at 0 0, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 0 0 / 51% 51% no-repeat,
+                          radial-gradient(circle at 100% 0, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 100% 0 / 51% 51% no-repeat,
+                          radial-gradient(circle at 0 100%, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 0 100% / 51% 51% no-repeat,
+                          radial-gradient(circle at 100% 100%, transparent var(--frame-radius), black calc(var(--frame-radius) + 1px)) 100% 100% / 51% 51% no-repeat;
+        }
+
+        
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--dark);
+            background: var(--cream);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-main {
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-left: 30px;
+            letter-spacing: 0.05em;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--red);
+        }
+
+        
+        .hero {
+            position: relative;
+            background: var(--dark);
+            padding: 0;
+        }
+
+        .hero-visual {
+            position: relative;
+            width: 100%;
+            margin-top: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .hero-media {
+            margin: 0;
+            display: block;
+            width: 100%;
+            height: clamp(420px, 78vh, 940px);
+            background-image:
+                linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.72) 100%),
+                url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=82&w=2000');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-copy {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            gap: clamp(1rem, 2.8vw, 2.25rem);
+            padding: clamp(2rem, 6vw, 5.5rem);
+            padding-right: clamp(1.5rem, 5vw, 4rem);
+            max-width: min(100%, 56rem);
+        }
+
+        .hero-flair {
+            flex-shrink: 0;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: clamp(0.58rem, 0.95vw, 0.68rem);
+            font-weight: 700;
+            letter-spacing: 0.42em;
+            text-transform: uppercase;
+            color: rgba(249, 247, 242, 0.45);
+            border-right: 1px solid rgba(249, 247, 242, 0.22);
+            padding-right: clamp(0.65rem, 1.4vw, 1rem);
+            line-height: 1.9;
+            max-height: clamp(9rem, 22vh, 14rem);
+            white-space: nowrap;
+        }
+
+        .hero-copy-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            gap: clamp(0.85rem, 2vw, 1.35rem);
+        }
+
+        .hero-kicker {
+            font-family: inherit;
+            font-size: clamp(0.62rem, 0.95vw, 0.72rem);
+            font-weight: 700;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: rgba(249, 247, 242, 0.55);
+            margin: 0;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px solid rgba(229, 43, 37, 0.55);
+        }
+
+        .hero-headline {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-style: normal;
+            font-size: clamp(2.85rem, 9.25vw, 6.5rem);
+            letter-spacing: -0.045em;
+            line-height: 0.95;
+            color: var(--cream);
+            margin: 0;
+            text-wrap: balance;
+        }
+
+        .hero-headline span {
+            font-weight: 700;
+            color: rgba(249, 247, 242, 0.96);
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            border-bottom: 1px solid rgba(249, 247, 242, 0.28);
+        }
+
+        .hero-lede {
+            font-size: clamp(0.88rem, 1.35vw, 1.08rem);
+            font-weight: 400;
+            color: rgba(249, 247, 242, 0.78);
+            line-height: 1.6;
+            max-width: 32em;
+            margin: 0;
+            padding-top: clamp(0.35rem, 1vw, 0.65rem);
+            border-left: 1px solid rgba(249, 247, 242, 0.2);
+            padding-left: clamp(1rem, 2.5vw, 1.5rem);
+        }
+
+        .hero-lede strong {
+            font-weight: 700;
+            color: var(--cream);
+        }
+
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 40px;
+            padding: 80px 40px;
+        }
+
+        .section-label {
+            grid-column: span 12;
+            border-bottom: 2px solid var(--dark);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .section-label h2 {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card-img {
+            aspect-ratio: 4/5;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--dark);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card-img:hover {
+            transform: scale(0.98);
+        }
+
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-title {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        .card-meta {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--red);
+        }
+
+        
+        .portal-section {
+            grid-column: span 12;
+            background: var(--dark);
+            color: var(--cream);
+            padding: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .portal-content h3 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--gold);
+        }
+
+        input, select {
+            width: 100%;
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--red);
+        }
+
+        .btn-primary {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #be221d;
+        }
+
+        
+        footer {
+            background: var(--red);
+            color: white;
+            padding: 40px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .footer-col p {
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.2;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        
+        @media (max-width: 1024px) {
+            .grid-container { gap: 20px; }
+            .card { grid-column: span 6; }
+            .portal-section { grid-template-columns: 1fr; }
+            .hero-media {
+                height: clamp(340px, 70vh, 760px);
+            }
+            .hero-copy {
+                max-width: 100%;
+            }
+            .hero-flair {
+                max-height: clamp(7rem, 18vh, 11rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-flair {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body vid="9">
+
+    <header vid="10">
+        <div class="logo-block" vid="11">
+            <div class="logo-main" vid="12">Kina Buffet</div>
+            <div class="logo-sub" vid="13">Est. 1994 • Authentic Asian</div>
+        </div>
+        <nav vid="14">
+            <a href="#menu" vid="15">The Menu</a>
+            <a href="#catering" vid="16">Catering</a>
+            <a href="#takeaway" vid="17">Takeaway</a>
+            <a href="#reserve" style="color: var(--red); border-bottom: 2px solid var(--red);" vid="18">Book a Table</a>
+        </nav>
+    </header>
+
+    <main vid="19">
+        <section class="hero" vid="20">
+            <div class="hero-visual" vid="21">
+                <figure class="hero-media" role="img" aria-label="Fresh Asian dishes at Kina Buffet" vid="22"></figure>
+                <div class="hero-copy" vid="23">
+                    <p class="hero-flair" vid="24" aria-hidden="true">Authentic since 1994</p>
+                    <div class="hero-copy-inner" vid="25">
+                        <p class="hero-kicker" vid="26">Restaurant Kina</p>
+                        <h1 class="hero-headline" vid="27">Asian, <span vid="28">done right.</span></h1>
+                        <p class="hero-lede" vid="29"><strong vid="30">Fresh every day since ’94.</strong> Authentic buffet, dim sum, catering &amp; takeaway — modern dining without losing the classics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-container" id="menu" vid="28">
+            <div class="section-label" vid="29">
+                <h2 vid="30">The Experience</h2>
+                <div class="card-meta" vid="31">Selection of 120+ Dishes</div>
+            </div>
+
+            <div class="card" vid="32">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&amp;fit=crop&amp;q=80&amp;w=800');" vid="33"></div>
+                <div class="card-info" vid="34">
+                    <div class="card-title" vid="35">Traditional Dim Sum</div>
+                    <div class="card-meta" vid="36">Hand-rolled daily</div>
+                </div>
+            </div>
+
+            <div class="card" vid="37">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&amp;fit=crop&amp;q=80&amp;w=800');" vid="38"></div>
+                <div class="card-info" vid="39">
+                    <div class="card-title" vid="40">Sichuan Specials</div>
+                    <div class="card-meta" vid="41">Authentic spice</div>
+                </div>
+            </div>
+
+            <div class="card" vid="42">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&amp;fit=crop&amp;q=80&amp;w=800');" vid="43"></div>
+                <div class="card-info" vid="44">
+                    <div class="card-title" vid="45">Sushi Bar</div>
+                    <div class="card-meta" vid="46">Premium grade</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-container" id="reserve" style="padding-top: 0;" vid="47">
+            <div class="notched-frame portal-section" vid="48">
+                <div class="portal-content" vid="49">
+                    <div style="font-family: 'Homemade Apple', cursive; color: var(--gold); font-size: 1.5rem; margin-bottom: 10px;" vid="50">The Buffet Awaits</div>
+                    <h3 vid="51">Secure Your Table.</h3>
+                    <p style="opacity: 0.8; margin-top: 20px; font-size: 0.9rem;" vid="52">Large groups, corporate events, or family dinners. Kina offers the space and the flavor for every occasion.</p>
+                    
+                    <div style="margin-top: 40px; display: flex; gap: 20px;" vid="53">
+                        <div class="logo-block" vid="54">
+                            <div class="logo-main" style="color: white; font-size: 1rem;" vid="55">Lunch Buffet</div>
+                            <div class="logo-sub" style="color: var(--gold);" vid="56">11:00 — 15:00</div>
+                        </div>
+                        <div class="logo-block" vid="57">
+                            <div class="logo-main" style="color: white; font-size: 1rem;" vid="58">Dinner Buffet</div>
+                            <div class="logo-sub" style="color: var(--gold);" vid="59">17:00 — 22:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-form" vid="60">
+                    <div class="form-group" vid="61">
+                        <label class="form-label" vid="62">Date &amp; Time</label>
+                        <div style="display: flex; gap: 10px;" vid="63">
+                            <input type="date" value="2023-10-25" vid="64">
+                            <select vid="65">
+                                <option vid="66">18:30</option>
+                                <option vid="67">19:00</option>
+                                <option vid="68">19:30</option>
+                                <option vid="69">20:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" vid="70">
+                        <label class="form-label" vid="71">Guests</label>
+                        <select vid="72">
+                            <option vid="73">2 People</option>
+                            <option vid="74">4 People</option>
+                            <option vid="75">6-10 People</option>
+                            <option vid="76">Large Event (10+)</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" vid="77">Confirm Reservation</button>
+                    <div style="margin-top: 15px; text-align: center;" vid="78">
+                        <a href="#" style="color: var(--gold); text-transform: uppercase; font-size: 0.6rem; font-weight: 700; text-decoration: none;" vid="79">Order Takeaway Instead →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-container" id="catering" vid="80">
+            <div class="section-label" vid="81">
+                <h2 vid="82">Catering &amp; Events</h2>
+                <div class="card-meta" vid="83">Full Service Setup</div>
+            </div>
+            <div style="grid-column: span 7;" vid="84">
+                <div class="notched-frame" style="height: 400px; background: url('https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&amp;fit=crop&amp;q=80&amp;w=1200') center/cover;" vid="85"></div>
+            </div>
+            <div style="grid-column: span 5; display: flex; flex-direction: column; justify-content: center;" vid="86">
+                <p style="font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 20px;" vid="87">Bring the Kina Buffet experience to your venue. From corporate lunches to wedding banquets.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" vid="88">
+                    <div vid="89">
+                        <span style="font-weight: 900; color: var(--red);" vid="90">01.</span>
+                        <h5 style="text-transform: uppercase; font-weight: 900; margin-top: 5px;" vid="91">Hot Stations</h5>
+                        <p style="font-size: 0.7rem; opacity: 0.7;" vid="92">Live cooking and serving.</p>
+                    </div>
+                    <div vid="93">
+                        <span style="font-weight: 900; color: var(--red);" vid="94">02.</span>
+                        <h5 style="text-transform: uppercase; font-weight: 900; margin-top: 5px;" vid="95">Custom Menus</h5>
+                        <p style="font-size: 0.7rem; opacity: 0.7;" vid="96">Tailored to your needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer vid="97">
+        <div class="footer-top" vid="98">
+            <div class="logo-block" vid="99">
+                <div class="logo-main" style="color: white; font-size: 3rem;" vid="100">KINA</div>
+                <div class="logo-sub" style="color: var(--dark); background: white; padding: 2px 5px; width: fit-content;" vid="101">EST. 1994</div>
+            </div>
+            <div class="footer-col" vid="102">
+                <h4 vid="103">Location</h4>
+                <p vid="104">128 East Dragon Rd.<br vid="105">Metropolis City, CP 4500</p>
+            </div>
+            <div class="footer-col" vid="106">
+                <h4 vid="107">Contact</h4>
+                <p vid="108">+45 88 92 10 00<br vid="109">hello@kinabuffet.com</p>
+            </div>
+            <div class="footer-col" vid="110">
+                <h4 vid="111">Hours</h4>
+                <p vid="112">Mon-Sun: 11:00 — 22:00</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom" vid="113">
+            <div vid="114">© 2023 Kina Buffet Group. All Rights Reserved.</div>
+            <div style="display: flex; gap: 20px;" vid="115">
+                <a href="#" style="color: white; text-decoration: none;" vid="116">Instagram</a>
+                <a href="#" style="color: white; text-decoration: none;" vid="117">Facebook</a>
+                <a href="#" style="color: white; text-decoration: none;" vid="118">Careers</a>
+            </div>
+            <div vid="119">Built for the love of Asian Cuisine.</div>
+        </div>
+    </footer>
+
+    <script vid="120">
+        
+        document.querySelectorAll('.card-img').forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.transform = 'scale(1.05)';
+            });
+            img.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+
+</body></html>

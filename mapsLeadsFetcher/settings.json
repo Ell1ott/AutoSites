@@ -13,7 +13,7 @@
     "website_overview": {
       "label": "Website overview",
       "output_field": "website_overview",
-      "meta_prompt": "You are looking at the markdown extract of a business website. Give me all the information of it. Opening times, contact details, etc.",
+      "meta_prompt": "You are given a Markdown extract of a business website.\n\nExtract and return all relevant business information found in the text. Only include information that is explicitly present—do not infer or guess.\n\nStructure the output clearly using labeled fields. Include only the fields that are available in the content. Possible fields include (but are not limited to):\n\nIdentity & story\n\n## Business name (legal + display/brand name)\nTagline / slogan\n\"About us\" / founder story / history\nMission, values, philosophy\nYear established\nOwner/founder names\nContact\n\n## Street address (and any secondary locations)\nPhone number(s) — main, booking, support\nEmail address(es)\nContact form fields/labels\nWhatsApp / messenger links\nSocial media handles (Instagram, Facebook, TikTok, LinkedIn, YouTube)\n\n## Hours\nRegular weekly opening hours\nHoliday/seasonal hours\nKitchen vs venue hours (if different)\nSpecial event hours\n\"Closed on\" notes\nOfferings\n\n## Service list with descriptions\nMenu items with descriptions and prices\nProduct catalog (name, price, description, variants)\nPackages / bundles\nPricing tiers\nDuration of services (e.g. \"haircut – 30 min\")\nSpecial diets / allergens / certifications (vegan, halal, organic, gluten-free)\nLanguages spoken\nTeam\n\n## Staff names, roles, bios\nSpecializations per staff member\nPhotos (URLs)\nSocial proof\n\n## Testimonials / customer quotes\nPress mentions / \"as seen in\"\nAwards, certifications, memberships\nYears in business\nNumber of customers served / \"X happy clients\"\nPractical info\n\nFAQ entries (question + answer)\nBlog/news post titles, dates, summaries\nEvent listings (date, title, description)",
       "model": "gemini-3-flash-preview",
       "send_screenshot": true,
       "send_markdown": true,
@@ -24,7 +24,7 @@
       "label": "Ai Subpages",
       "output_field": "ai_subpages",
       "meta_prompt": "You are looking at the markdown extract of a business website. Identify the most important subpages or sections a reader should open to learn about the business (e.g. hours, contact, menu, booking, products, locations). For each item, give a short human-readable name and one line on what information that page likely contains. Prefer paths or labels implied by the markdown; if unknown, infer from context. Order by usefulness. Skip generic pages that add nothing beyond the home view.",
-      "model": "gemini-3-flash-preview",
+      "model": "gemma-4-31b-it",
       "send_screenshot": true,
       "send_markdown": true,
       "subpage_markdown_mode": "none",

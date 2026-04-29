@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINA BUFFET — Authentic &amp; Modern Asian Dining</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0d0d0d;
+            --paper: #f6f2ea;
+            --paper-deep: #ebe4d8;
+            --accent: #c41e1a;
+            --accent-hover: #9e1815;
+            --cream-text: #1a1814;
+            --muted: #3d3a35;
+            --line: rgba(13, 13, 13, 0.14);
+            --max: 1180px;
+            --sans: "Newsreader", "Georgia", serif;
+            --display: "Fraunces", "Palatino", "Book Antiqua", serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            font-size: 1.0625rem;
+            line-height: 1.55;
+            color: var(--cream-text);
+            background-color: var(--paper);
+            background-image:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, transparent 42%),
+                radial-gradient(ellipse 120% 80% at 10% -10%, rgba(235, 228, 216, 0.9) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 60% at 100% 20%, rgba(196, 30, 26, 0.04) 0%, transparent 50%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(13, 13, 13, 0.018) 1px,
+                    rgba(13, 13, 13, 0.018) 2px
+                );
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0.75rem;
+            z-index: 200;
+            padding: 0.5rem 1rem;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            left: 0.75rem;
+        }
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem 2rem;
+            padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+            border-bottom: 1px solid var(--line);
+            background: color-mix(in srgb, var(--paper) 94%, transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .brand-name {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+
+        .brand-tag {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .site-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.25rem;
+            justify-content: flex-end;
+        }
+
+        .site-nav a {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--ink);
+            padding: 0.35rem 0;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .site-nav a:hover {
+            color: var(--accent);
+        }
+
+        .site-nav a.is-primary {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        main {
+            overflow-x: hidden;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            padding: clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3rem, 8vw, 5rem);
+        }
+
+        .hero-inner {
+            max-width: var(--max);
+            margin-inline: auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        @media (min-width: 860px) {
+            .hero-inner {
+                grid-template-columns: 1.05fr 0.95fr;
+                align-items: end;
+            }
+        }
+
+        .hero-kicker {
+            font-family: var(--display);
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+            color: var(--muted);
+            margin: 0 0 0.5rem;
+            max-width: 14em;
+        }
+
+        .hero-title {
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(2.75rem, 9vw, 5.75rem);
+            line-height: 0.92;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+            margin: 0;
+            max-width: 9ch;
+        }
+
+        .hero-title span {
+            display: block;
+        }
+
+        .hero-title span:last-child {
+            color: var(--accent);
+        }
+
+        .hero-aside {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        @media (min-width: 860px) {
+            .hero-aside {
+                align-items: flex-end;
+                text-align: right;
+                padding-bottom: 0.35rem;
+            }
+        }
+
+        .hero-figure {
+            margin: 0;
+            width: 100%;
+            position: relative;
+        }
+
+        .hero-photo {
+            display: block;
+            width: 100%;
+            min-height: clamp(220px, 42vw, 420px);
+            background-image:
+                linear-gradient(135deg, rgba(13, 13, 13, 0.45) 0%, transparent 55%),
+                url("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=2000");
+            background-size: cover;
+            background-position: 35% 45%;
+            border: 1px solid var(--line);
+            clip-path: polygon(0 0, 100% 6%, 100% 100%, 0 94%);
+        }
+
+        @media (min-width: 860px) {
+            .hero-photo {
+                clip-path: polygon(8% 0, 100% 0, 100% 88%, 0 100%);
+            }
+        }
+
+        .hero-badge {
+            position: absolute;
+            inset: auto auto 1rem 1rem;
+            padding: 0.65rem 1rem;
+            max-width: 9rem;
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.35;
+            color: var(--paper);
+            background: var(--ink);
+            border: 1px dashed color-mix(in srgb, var(--paper) 55%, transparent);
+            transform: rotate(-8deg);
+        }
+
+        @media (min-width: 860px) {
+            .hero-badge {
+                inset: 1.25rem 1.25rem auto auto;
+                left: auto;
+            }
+        }
+
+        .hero-script {
+            font-family: var(--display);
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.25rem, 2.5vw, 1.85rem);
+            color: var(--muted);
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin: 0;
+            max-width: 18rem;
+        }
+
+        @media (min-width: 860px) {
+            .hero-script {
+                border-left: none;
+                border-right: 3px solid var(--accent);
+                padding-left: 0;
+                padding-right: 1rem;
+            }
+        }
+
+        .section {
+            padding: clamp(2.5rem, 7vw, 5rem) clamp(1.25rem, 4vw, 2.5rem);
+            border-top: 1px solid var(--line);
+        }
+
+        .section-inner {
+            max-width: var(--max);
+            margin-inline: auto;
+        }
+
+        .section-head {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+        }
+
+        @media (min-width: 720px) {
+            .section-head {
+                grid-template-columns: auto 1fr;
+                align-items: end;
+            }
+        }
+
+        .section-num {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(3rem, 10vw, 5rem);
+            line-height: 0.85;
+            color: color-mix(in srgb, var(--accent) 22%, var(--paper));
+            letter-spacing: -0.04em;
+        }
+
+        .section-title-wrap {
+            padding-bottom: 0.35rem;
+            border-bottom: 2px solid var(--ink);
+        }
+
+        .section-title {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(1.75rem, 4vw, 2.75rem);
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: var(--ink);
+        }
+
+        .section-meta {
+            margin: 0.35rem 0 0;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .experience-grid {
+            display: grid;
+            gap: clamp(1.5rem, 4vw, 2.25rem);
+        }
+
+        @media (min-width: 900px) {
+            .experience-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+                align-items: start;
+            }
+        }
+
+        .cards {
+            display: grid;
+            gap: clamp(1.5rem, 3vw, 2rem);
+        }
+
+        @media (min-width: 640px) {
+            .cards {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .card-media {
+            aspect-ratio: 3 / 4;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--line);
+            transition: transform 0.35s ease;
+        }
+
+        .card:hover .card-media,
+        .card:focus-within .card-media {
+            transform: scale(0.985);
+        }
+
+        .card:nth-child(1) .card-media {
+            background-image: url("https://images.unsplash.com/photo-1563245372-f21724e3a16d?auto=format&fit=crop&q=80&w=800");
+            clip-path: inset(0 0 0 0 round 0 32% 0 0);
+        }
+
+        .card:nth-child(2) .card-media {
+            background-image: url("https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800");
+            clip-path: polygon(0 6%, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .card:nth-child(3) .card-media {
+            background-image: url("https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&q=80&w=800");
+            clip-path: inset(8% 0 0 12% round 0 0 28% 0);
+        }
+
+        .card-body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.35rem 1rem;
+            align-items: baseline;
+        }
+
+        .card-title {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: -0.01em;
+            margin: 0;
+            color: var(--ink);
+        }
+
+        .card-meta {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .pull-quote {
+            margin: 0;
+            padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1rem, 3vw, 1.5rem);
+            background: linear-gradient(160deg, var(--paper-deep) 0%, color-mix(in srgb, var(--paper) 70%, white) 100%);
+            border-inline-start: 4px solid var(--accent);
+            position: relative;
+            align-self: stretch;
+        }
+
+        .pull-quote::before {
+            content: "“";
+            font-family: var(--display);
+            font-size: 3.5rem;
+            line-height: 0;
+            color: color-mix(in srgb, var(--accent) 35%, transparent);
+            position: absolute;
+            top: 1.5rem;
+            left: 0.85rem;
+        }
+
+        .pull-quote p {
+            margin: 1.5rem 0 0;
+            font-family: var(--display);
+            font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.35;
+            color: var(--ink);
+        }
+
+        .pull-quote cite {
+            display: block;
+            margin-top: 1rem;
+            font-style: normal;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .reserve {
+            background: var(--ink);
+            color: var(--paper);
+            border-top: none;
+            position: relative;
+            background-image:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
+                repeating-linear-gradient(
+                    -12deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.02) 2px,
+                    rgba(255, 255, 255, 0.02) 3px
+                );
+        }
+
+        .reserve-inner {
+            max-width: var(--max);
+            margin-inline: auto;
+            display: grid;
+            gap: clamp(2rem, 5vw, 3rem);
+        }
+
+        @media (min-width: 880px) {
+            .reserve-inner {
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+        }
+
+        .reserve-kicker {
+            font-family: var(--display);
+            font-style: italic;
+            font-weight: 500;
+            color: color-mix(in srgb, var(--paper) 75%, var(--accent));
+            font-size: 1.2rem;
+            margin: 0 0 0.35rem;
+        }
+
+        .reserve-title {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin: 0;
+            max-width: 12ch;
+        }
+
+        .reserve-lede {
+            margin: 1.25rem 0 0;
+            opacity: 0.88;
+            max-width: 36em;
+        }
+
+        .hours-pair {
+            display: grid;
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 480px) {
+            .hours-pair {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .hours-block dt {
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0;
+            color: var(--paper);
+        }
+
+        .hours-block dd {
+            margin: 0.35rem 0 0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: color-mix(in srgb, var(--paper) 72%, var(--accent));
+        }
+
+        .booking-form {
+            padding-top: 0.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: color-mix(in srgb, var(--paper) 65%, var(--accent));
+            margin-bottom: 0.45rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+        }
+
+        .form-row > * {
+            flex: 1 1 120px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.85rem 0.9rem;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--paper);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .btn-primary {
+            width: 100%;
+            margin-top: 0.35rem;
+            padding: 1rem 1.25rem;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--paper);
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 2px solid var(--paper);
+            outline-offset: 3px;
+        }
+
+        .takeaway-note {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .takeaway-note a {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: color-mix(in srgb, var(--paper) 72%, var(--accent));
+        }
+
+        .takeaway-note a:hover {
+            color: var(--paper);
+        }
+
+        .catering-layout {
+            display: grid;
+            gap: clamp(1.75rem, 4vw, 2.5rem);
+        }
+
+        @media (min-width: 800px) {
+            .catering-layout {
+                grid-template-columns: 1.1fr 0.9fr;
+                align-items: center;
+            }
+        }
+
+        .catering-photo-wrap {
+            margin: 0;
+            position: relative;
+        }
+
+        .catering-photo {
+            display: block;
+            width: 100%;
+            min-height: clamp(260px, 38vw, 400px);
+            background: url("https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=1200") 45% 55% / cover;
+            border: 1px solid var(--line);
+            clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
+        }
+
+        .catering-copy {
+            padding-left: 0;
+        }
+
+        @media (min-width: 800px) {
+            .catering-copy {
+                padding-left: clamp(0.5rem, 2vw, 1.5rem);
+                border-left: 1px solid var(--line);
+            }
+        }
+
+        .catering-lede {
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: clamp(1.25rem, 2.8vw, 1.65rem);
+            line-height: 1.28;
+            margin: 0 0 1.75rem;
+            color: var(--ink);
+        }
+
+        .numbered {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 520px) {
+            .numbered {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .numbered-item {
+            border-top: 1px solid var(--line);
+            padding-top: 0.85rem;
+        }
+
+        .numbered-item span {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 1.85rem;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .numbered-item h3 {
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin: 0.4rem 0 0.25rem;
+            color: var(--ink);
+        }
+
+        .numbered-item p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .site-footer {
+            background: var(--accent);
+            color: var(--paper);
+            padding: clamp(2.5rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem);
+            background-image:
+                linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, transparent 45%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(0, 0, 0, 0.04) 1px,
+                    rgba(0, 0, 0, 0.04) 2px
+                );
+        }
+
+        .footer-top {
+            max-width: var(--max);
+            margin-inline: auto;
+            display: grid;
+            gap: clamp(1.75rem, 4vw, 2.5rem);
+        }
+
+        @media (min-width: 768px) {
+            .footer-top {
+                grid-template-columns: 1.1fr repeat(3, 1fr);
+                align-items: start;
+            }
+        }
+
+        .footer-brand .footer-mark {
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(2.25rem, 5vw, 3.25rem);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin: 0;
+        }
+
+        .footer-brand .footer-est {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.2rem 0.45rem;
+        }
+
+        .footer-col h2 {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            opacity: 0.82;
+            margin: 0 0 0.65rem;
+        }
+
+        .footer-col p {
+            margin: 0;
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 1.05rem;
+            line-height: 1.35;
+        }
+
+        .footer-col a {
+            color: var(--paper);
+        }
+
+        .footer-bottom {
+            max-width: var(--max);
+            margin: clamp(2rem, 5vw, 2.75rem) auto 0;
+            padding-top: 1.25rem;
+            border-top: 1px solid color-mix(in srgb, var(--paper) 35%, transparent);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem 1.5rem;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--paper);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="brand">
+            <span class="brand-name">Kina Buffet</span>
+            <span class="brand-tag">Est. 1994 • Authentic Asian</span>
+        </div>
+        <nav class="site-nav" aria-label="Primary">
+            <a href="#menu">The Menu</a>
+            <a href="#catering">Catering</a>
+            <a href="#takeaway">Takeaway</a>
+            <a href="#reserve" class="is-primary">Book a Table</a>
+        </nav>
+    </header>
+
+    <main id="main">
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="hero-inner">
+                <div>
+                    <p class="hero-kicker">Restaurant Kina</p>
+                    <h1 id="hero-heading" class="hero-title">
+                        <span>Asian,</span>
+                        <span>done right.</span>
+                    </h1>
+                </div>
+                <div class="hero-aside">
+                    <figure class="hero-figure">
+                        <div class="hero-photo" role="img" aria-label="Fresh colorful Asian cuisine spread"></div>
+                        <div class="hero-badge">Fresh Every Day Since &rsquo;94</div>
+                    </figure>
+                    <blockquote class="hero-script">
+                        A hundred-twenty plates, one table at a time.
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section id="menu" class="section" aria-labelledby="menu-heading">
+            <div class="section-inner">
+                <header class="section-head">
+                    <span class="section-num" aria-hidden="true">01</span>
+                    <div class="section-title-wrap">
+                        <h2 id="menu-heading" class="section-title">The Experience</h2>
+                        <p class="section-meta">Selection of 120+ Dishes</p>
+                    </div>
+                </header>
+
+                <div class="experience-grid">
+                    <div class="cards">
+                        <article class="card">
+                            <div class="card-media" role="img" aria-label="Traditional dim sum"></div>
+                            <div class="card-body">
+                                <h3 class="card-title">Traditional Dim Sum</h3>
+                                <span class="card-meta">Hand-rolled daily</span>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-media" role="img" aria-label="Sichuan dishes"></div>
+                            <div class="card-body">
+                                <h3 class="card-title">Sichuan Specials</h3>
+                                <span class="card-meta">Authentic spice</span>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-media" role="img" aria-label="Sushi bar selection"></div>
+                            <div class="card-body">
+                                <h3 class="card-title">Sushi Bar</h3>
+                                <span class="card-meta">Premium grade</span>
+                            </div>
+                        </article>
+                    </div>
+
+                    <aside class="pull-quote" aria-label="Editorial note">
+                        <p>We still roll the dumplings before service. The buffet is a ritual, not a shortcut.</p>
+                        <cite>Kina Buffet kitchen ethos</cite>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section id="reserve" class="section reserve" aria-labelledby="reserve-heading">
+            <div class="reserve-inner">
+                <div>
+                    <p class="reserve-kicker">The Buffet Awaits</p>
+                    <h2 id="reserve-heading" class="reserve-title">Secure Your Table.</h2>
+                    <p class="reserve-lede">Large groups, corporate events, or family dinners. Kina offers the space and the flavor for every occasion.</p>
+
+                    <dl class="hours-pair">
+                        <div class="hours-block">
+                            <dt>Lunch Buffet</dt>
+                            <dd>11:00 — 15:00</dd>
+                        </div>
+                        <div class="hours-block">
+                            <dt>Dinner Buffet</dt>
+                            <dd>17:00 — 22:00</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="booking-form">
+                    <form action="#" method="post">
+                        <div class="form-group">
+                            <label class="form-label" for="res-date">Date &amp; Time</label>
+                            <div class="form-row">
+                                <input id="res-date" name="date" type="date" value="2023-10-25">
+                                <label class="visually-hidden" for="res-time">Time</label>
+                                <select id="res-time" name="time" aria-label="Reservation time">
+                                    <option>18:30</option>
+                                    <option>19:00</option>
+                                    <option>19:30</option>
+                                    <option>20:00</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="res-guests">Guests</label>
+                            <select id="res-guests" name="guests">
+                                <option>2 People</option>
+                                <option>4 People</option>
+                                <option>6-10 People</option>
+                                <option>Large Event (10+)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Confirm Reservation</button>
+                    </form>
+                    <p id="takeaway" class="takeaway-note">
+                        <a href="#">Order Takeaway Instead →</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="catering" class="section" aria-labelledby="catering-heading">
+            <div class="section-inner">
+                <header class="section-head">
+                    <span class="section-num" aria-hidden="true">02</span>
+                    <div class="section-title-wrap">
+                        <h2 id="catering-heading" class="section-title">Catering &amp; Events</h2>
+                        <p class="section-meta">Full Service Setup</p>
+                    </div>
+                </header>
+
+                <div class="catering-layout">
+                    <figure class="catering-photo-wrap">
+                        <div class="catering-photo" role="img" aria-label="Catering spread and service"></div>
+                    </figure>
+                    <div class="catering-copy">
+                        <p class="catering-lede">Bring the Kina Buffet experience to your venue. From corporate lunches to wedding banquets.</p>
+                        <div class="numbered">
+                            <div class="numbered-item">
+                                <span>01.</span>
+                                <h3>Hot Stations</h3>
+                                <p>Live cooking and serving.</p>
+                            </div>
+                            <div class="numbered-item">
+                                <span>02.</span>
+                                <h3>Custom Menus</h3>
+                                <p>Tailored to your needs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <p class="footer-mark">KINA</p>
+                <span class="footer-est">Est. 1994</span>
+            </div>
+            <div class="footer-col">
+                <h2>Location</h2>
+                <p>128 East Dragon Rd.<br>Metropolis City, CP 4500</p>
+            </div>
+            <div class="footer-col">
+                <h2>Contact</h2>
+                <p>+45 88 92 10 00<br><a href="mailto:hello@kinabuffet.com">hello@kinabuffet.com</a></p>
+            </div>
+            <div class="footer-col">
+                <h2>Hours</h2>
+                <p>Mon-Sun: 11:00 — 22:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2023 Kina Buffet Group. All Rights Reserved.</span>
+            <div class="footer-links">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Careers</a>
+            </div>
+            <span>Built for the love of Asian Cuisine.</span>
+        </div>
+    </footer>
+</body>
+</html>

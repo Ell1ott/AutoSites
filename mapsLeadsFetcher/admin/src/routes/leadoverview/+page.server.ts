@@ -1,13 +1,15 @@
 import { readFile } from 'node:fs/promises';
 import type { PageServerLoad } from './$types';
 import { mapsBusinessesJsonPath } from '$lib/repoPaths';
+import { readLeadRatingsFile } from '$lib/server/leadRatings';
 import { readSettings, taskIdsFromSettings } from '$lib/server/settings';
 import type { MapsBusinessesFile } from '$lib/places.types';
 
 export const load: PageServerLoad = async () => {
-	const [settings, raw] = await Promise.all([
+	const [settings, raw, leadRatingByPlaceId] = await Promise.all([
 		readSettings(),
-		readFile(mapsBusinessesJsonPath, 'utf-8')
+		readFile(mapsBusinessesJsonPath, 'utf-8'),
+		readLeadRatingsFile()
 	]);
 	const data = JSON.parse(raw) as MapsBusinessesFile;
 	const places = data.api_response?.places ?? [];
@@ -19,6 +21,7 @@ export const load: PageServerLoad = async () => {
 	}));
 
 	return {
+		leadRatingByPlaceId,
 		meta: {
 			fetched_at: data.fetched_at,
 			query: data.query,
