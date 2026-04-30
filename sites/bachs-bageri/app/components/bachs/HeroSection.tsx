@@ -1,6 +1,8 @@
 import { HeroParallaxImage } from "./HeroParallaxImage";
 import { SectionTag } from "./SectionTag";
 import { SiteHeaderNav } from "./SiteHeaderNav";
+import Image from "next/image";
+import bachsOverlayImage from "../../../public/bachs-bageri.avif";
 
 export function HeroSection() {
   return (
@@ -9,7 +11,16 @@ export function HeroSection() {
 
       <div className="hero-main">
         <div className="hero-img-wrapper">
-          <HeroParallaxImage />
+          <div className="hero-img-main">
+            <HeroParallaxImage />
+          </div>
+          <Image
+            className="hero-overlay-image"
+            src={bachsOverlayImage}
+            alt=""
+            aria-hidden
+            sizes="(min-width: 1025px) 18vw, 0px"
+          />
         </div>
         <div className="hero-content">
           <SectionTag>Lokalt i Tarm</SectionTag>
