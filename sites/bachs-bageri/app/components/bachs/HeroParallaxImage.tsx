@@ -22,7 +22,7 @@ export function HeroParallaxImage() {
   return (
     <Image
       src={HERO_SRC}
-      alt="Freshly baked sourdough bread"
+      alt="Friskbagt brød fra Bachs Bageri"
       fill
       priority
       sizes="60vw"

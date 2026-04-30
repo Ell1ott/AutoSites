@@ -6,16 +6,33 @@ const CRAFT_IMG =
 
 export function CraftSection() {
   return (
-    <section className="section-craft" id="processen" aria-labelledby="craft-heading">
+    <section
+      className="section-craft"
+      id="om-os"
+      aria-labelledby="craft-heading"
+    >
       <div className="container grid-layout">
         <div className="craft-text">
-          <SectionTag>Vores Filosofi</SectionTag>
+          <SectionTag>Om Bachs Bageri</SectionTag>
           <h2 className="section-title" id="craft-heading">
-            Kvalitet tager tid. Præcis 36 timer.
+            Fra 1932 tilbage på hylderne i Tarm
           </h2>
           <p>
-            Vores signaturbrød koldhæver i halvandet døgn for at udvikle den
-            dybe smag og den perfekte sprøde skorpe, som Bachs er kendt for.
+            Bachs Bageri bygger på gamle traditioner og ægte bageryrk. Vi er
+            medlem af{" "}
+            <a
+              href="https://www.bkd.dk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-link"
+            >
+              BKD — Brancheforeningen af Danske Konditorer og Bagere
+            </a>
+            , og vi passer på håndværket i hver eneste rugklump og wienerbrød.
+          </p>
+          <p>
+            I 2014 overtog vi Guldbageren her på Storegade. Siden har vi holdt
+            dampen oppe og bagværket frisk — som den eneste rigtige bager i Tarm.
           </p>
           <div className="craft-organic">
             <svg
@@ -39,13 +56,15 @@ export function CraftSection() {
                 strokeWidth="0.5"
               />
             </svg>
-            <span className="craft-organic-label">100% Økologisk Mel</span>
+            <span className="craft-organic-label">
+              CVR 10478448 · Bachs Bageri
+            </span>
           </div>
         </div>
         <div className="craft-image">
           <Image
             src={CRAFT_IMG}
-            alt="Baker working with dough"
+            alt="Bageryrk og dej på et lokalt bageri"
             fill
             sizes="(max-width: 1024px) 100vw, 42vw"
             style={{ objectFit: "cover" }}

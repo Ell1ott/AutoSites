@@ -1,8 +1,9 @@
 const navLinks = [
-  { href: "#menu", label: "Vores Brød" },
-  { href: "#processen", label: "Processen" },
-  { href: "#butikken", label: "Butikken" },
+  { href: "#sortiment", label: "Sortiment" },
+  { href: "#om-os", label: "Om os" },
+  { href: "#service", label: "For dig" },
   { href: "#bestil", label: "Bestil" },
+  { href: "#butikken", label: "Kontakt" },
 ] as const;
 
 export function SiteHeaderNav() {
@@ -14,7 +15,7 @@ export function SiteHeaderNav() {
           <br />
           Bageri
         </div>
-        <div className="brand-tagline">EST. Aarhus 1982</div>
+        <div className="brand-tagline">Traditioner siden 1932</div>
       </a>
       <nav className="bachs-nav" aria-label="Hovedmenu">
         <ul>

@@ -11,7 +11,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <span className="product-category">{product.category}</span>
       <h3 className="product-title">{product.title}</h3>
       <p className="product-desc">{product.description}</p>
-      <div className="product-price">{product.priceLabel}</div>
+      <div className="product-note">{product.note}</div>
     </article>
   );
 }

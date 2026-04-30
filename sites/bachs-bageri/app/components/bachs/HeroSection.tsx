@@ -12,18 +12,22 @@ export function HeroSection() {
           <HeroParallaxImage />
         </div>
         <div className="hero-content">
-          <SectionTag>Dagens Bagværk</SectionTag>
-          <h1>Langsom tid i hver en bid.</h1>
-          <p>
-            Vi ærer det danske bagerhåndværk med surdej, lokale kornsorter og
-            tålmodighed. Besøg os i hjertet af Aarhus.
+          <SectionTag>Lokalt i Tarm</SectionTag>
+          <h1>Håndværk fra ovnen, hver dag.</h1>
+          <p className="hero-tagline-official">
+            „Bachs Bageri er et gammelt bageri med stolte traditioner!“
           </p>
-          <a href="#menu" className="btn-primary">
-            Se dagens menu
+          <p>
+            Vi er et lokalt håndværksbageri og konditori på Storegade — brød,
+            wienerbrød, kager, smørrebrød og sandwich til takeaway. I dag den
+            eneste bager i byen.
+          </p>
+          <a href="#sortiment" className="btn-primary">
+            Se sortimentet
           </a>
         </div>
         <div className="vertical-label" aria-hidden>
-          Morgenfrisk • Siden 1982
+          Tarm • Siden 1932
         </div>
       </div>
     </header>

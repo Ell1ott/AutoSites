@@ -17,9 +17,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Bachs Bageri — Håndlavet i Aarhus",
+  title: "Bachs Bageri — Håndværksbageri i Tarm",
   description:
-    "Håndlavet brød og bagværk i Aarhus med surdej, lokale kornsorter og tålmodighed.",
+    "Lokalt bageri og konditori på Storegade i Tarm: brød, wienerbrød, kager, smørrebrød og sandwich — traditionsrigt siden 1932.",
 };
 
 export default function RootLayout({

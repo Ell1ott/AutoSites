@@ -131,6 +131,31 @@ body {
   margin-bottom: 30px;
 }
 
+.hero-tagline-official {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--clay);
+  margin-bottom: 18px !important;
+  line-height: 1.45;
+}
+
+.section-craft .craft-text p + p {
+  margin-top: 1rem;
+}
+
+.inline-link {
+  color: var(--green);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.inline-link:hover {
+  color: #3a5742;
+}
+
 .section-craft {
   padding: 120px 0;
   background: var(--cream);
@@ -186,7 +211,7 @@ body {
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
+  gap: 28px;
   margin-top: 60px;
 }
 
@@ -239,13 +264,80 @@ body {
   margin-bottom: 25px;
 }
 
-.product-price {
+.product-note {
   border-top: 0.5px solid var(--border);
   padding-top: 15px;
   text-align: center;
   font-family: var(--font-cormorant), serif;
   font-style: italic;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  color: var(--text-light);
+}
+
+.hours-strip {
+  background: var(--green);
+  color: var(--cream);
+  padding: 18px 40px;
+}
+
+.hours-strip-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 28px;
+  text-align: center;
+}
+
+.hours-strip-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+.hours-strip-times {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+
+.section-services {
+  padding: 100px 0;
+  background: var(--sand);
+}
+
+.services-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.services-lead {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.services-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 44px;
+}
+
+.service-pill {
+  border: 1px solid var(--border);
+  padding: 14px 22px;
+  background: var(--cream);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .botanical-svg {
@@ -271,6 +363,34 @@ body {
 
 .btn-primary:hover {
   background: #3a5742;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 15px 35px;
+  background: transparent;
+  color: var(--green);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  border: 1px solid var(--green);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--green);
+  color: white;
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
 }
 
 .bachs-footer {
@@ -321,6 +441,49 @@ body {
 
 .footer-col a:hover {
   opacity: 0.75;
+}
+
+.footer-col-wide {
+  max-width: 320px;
+}
+
+.footer-social-intro {
+  margin-top: 28px;
+  margin-bottom: 12px;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.footer-social {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-social li {
+  margin-bottom: 8px;
+}
+
+.footer-map-link {
+  margin-top: 14px;
+}
+
+.footer-hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-hours-day {
+  opacity: 0.85;
+}
+
+.footer-inline {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .footer-bottom {
@@ -407,6 +570,14 @@ a.brand-box:focus-visible {
   margin-bottom: 40px;
 }
 
+.menu-intro-text {
+  max-width: 640px;
+  margin: 16px auto 0;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.65;
+}
+
 .craft-organic {
   margin-top: 40px;
   display: flex;
@@ -457,5 +628,17 @@ a.brand-box:focus-visible {
   .footer-bottom {
     flex-direction: column;
     gap: 16px;
+    align-items: flex-start;
+  }
+
+  .order-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .order-actions .btn-primary,
+  .order-actions .btn-secondary {
+    width: 100%;
+    text-align: center;
   }
 }

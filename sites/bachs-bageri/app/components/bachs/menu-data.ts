@@ -2,34 +2,63 @@ export type MenuProduct = {
   category: string;
   title: string;
   description: string;
-  priceLabel: string;
+  note: string;
 };
 
 export const menuProducts: MenuProduct[] = [
   {
-    category: "Signatur",
-    title: "Rugbrød Nr. 4",
+    category: "Brød",
+    title: "Friskbagt brød",
     description:
-      "Klassisk mørkt rugbrød med solsikkekerner og ølandshvede.",
-    priceLabel: "45.00 DKK",
+      "Håndværk fra ovnen — med ekstra kærlighed til det grove, især vores rugbrød.",
+    note: "Dagligt udvalg i butikken",
   },
   {
-    category: "Sødt",
-    title: "Kardemommesnurre",
+    category: "Wienerbrød",
+    title: "Wienerbrød & spandauer",
     description:
-      "Smørbagt dej med friskkværnet kardemomme og perlesukker.",
-    priceLabel: "28.00 DKK",
+      "Smørede lag, sprøde kanter og klassisk konditorkærlighed til formiddagskaffen.",
+    note: "Bages hos os",
   },
   {
-    category: "Surdej",
-    title: "Bachs Levain",
-    description: "Vores stolthed. Et lyst surdejsbrød med vilde gærceller.",
-    priceLabel: "52.00 DKK",
+    category: "Kager",
+    title: "Kager til hverdag og fest",
+    description:
+      "Alt fra det søde i disken til sæsonens favoritter — spørg os, hvis du har ønsker.",
+    note: "Ring eller kig forbi",
+  },
+  {
+    category: "Smørrebrød",
+    title: "Smørrebrød & sandwich",
+    description:
+      "Pålæg, salat og hjemmebagt brød — nem frokost eller mad til udvejen.",
+    note: "Takeaway-frokost",
+  },
+  {
+    category: "Sæson",
+    title: "Pålægskagemænd & kagekoner",
+    description:
+      "Detaljer der fejrer højtiderne — bestil i god tid i særlige perioder.",
+    note: "Efter sæson og efterspørgsel",
+  },
+  {
+    category: "Is & koldt",
+    title: "Is",
+    description: "Noget koldt og sødt, når det smager bedst — spørg i disken.",
+    note: "Udvalg varierer",
+  },
+  {
+    category: "Drikke",
+    title: "Drikkevarer",
+    description:
+      "Kaffe, kakao, kildevand og mere — perfekt til bagværket på farten.",
+    note: "Tag med",
   },
   {
     category: "Morgen",
-    title: "Surdejscroissant",
-    description: "Lamineret med dansk økosmør i 72 fine lag.",
-    priceLabel: "32.00 DKK",
+    title: "Morgenmad",
+    description:
+      "Start dagen med noget fra ovnen — croissanter, rundstykker og det, vi står med i dag.",
+    note: "Fra kl. 06.00",
   },
 ];

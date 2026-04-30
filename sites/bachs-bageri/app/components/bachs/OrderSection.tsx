@@ -1,21 +1,33 @@
 import { SectionTag } from "./SectionTag";
 
+const MAIL = "bachsbageritarm@gmail.com";
+
 export function OrderSection() {
   return (
-    <section className="section-order" id="bestil" aria-labelledby="order-heading">
+    <section
+      className="section-order"
+      id="bestil"
+      aria-labelledby="order-heading"
+    >
       <div className="container">
         <div className="order-card">
           <SectionTag>Bestilling</SectionTag>
           <h3 className="section-title order-title" id="order-heading">
-            Skal vi gemme et brød til dig?
+            Ring eller skriv — så hjælper vi dig
           </h3>
           <p>
-            Vi bager i begrænsede partier hver dag. Reserver dit bagværk før
-            kl. 20:00 dagen før.
+            Skal du bruge noget bestemt til et selskab, mange sandwich eller en
+            kage på et tidspunkt? Kontakt os gerne i god tid, så vi kan sige ja
+            til det, du drømmer om.
           </p>
-          <a href="mailto:hej@bachsbageri.dk?subject=Reservation%20af%20bagværk" className="btn-primary">
-            Gå til bestilling
-          </a>
+          <div className="order-actions">
+            <a href={`mailto:${MAIL}?subject=Forespørgsel%20fra%20websitet`} className="btn-primary">
+              Send en mail
+            </a>
+            <a href="tel:+4597371032" className="btn-secondary">
+              Ring til bageren
+            </a>
+          </div>
         </div>
       </div>
     </section>
