@@ -14,45 +14,55 @@ export function SiteFooter() {
             className="logo-sub"
             style={{ color: "var(--dark)", background: "white", padding: "2px 5px", width: "fit-content" }}
           >
-            EST. 1994
+            BUFFET · IKAST
           </div>
         </div>
         <div className="footer-col">
-          <h4>Location</h4>
+          <h4>Adresse</h4>
           <p>
-            128 East Dragon Rd.
+            Østergade 11
             <br />
-            Metropolis City, CP 4500
+            7430 Ikast, Danmark
           </p>
         </div>
         <div className="footer-col">
-          <h4>Contact</h4>
+          <h4>Kontakt</h4>
           <p>
-            +45 88 92 10 00
+            <a href="tel:+4597181888" style={{ color: "inherit", textDecoration: "none" }}>
+              97 18 18 88
+            </a>
             <br />
-            hello@kinabuffet.com
+            <Link href="https://kinabuffet.com/" style={{ color: "inherit", textDecoration: "none" }}>
+              kinabuffet.com
+            </Link>
           </p>
         </div>
         <div className="footer-col">
-          <h4>Hours</h4>
-          <p>Mon-Sun: 11:00 — 22:00</p>
+          <h4>Buffet</h4>
+          <p>Hver dag 16:30 — 22:00</p>
         </div>
       </div>
 
       <div className="footer-bottom">
-        <div>© {YEAR} Kina Buffet Group. All Rights Reserved.</div>
+        <div>© {YEAR} Restaurant Kina Buffet · Kinabuffet</div>
         <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-          <Link href="#" style={{ color: "white", textDecoration: "none" }}>
-            Instagram
-          </Link>
-          <Link href="#" style={{ color: "white", textDecoration: "none" }}>
+          <Link
+            href="https://www.facebook.com/kinabuffet/"
+            style={{ color: "white", textDecoration: "none" }}
+          >
             Facebook
           </Link>
-          <Link href="#" style={{ color: "white", textDecoration: "none" }}>
-            Careers
+          <Link href="/menu" style={{ color: "white", textDecoration: "none" }}>
+            Menukort
+          </Link>
+          <Link href="/om-os" style={{ color: "white", textDecoration: "none" }}>
+            Om os
+          </Link>
+          <Link href="https://kinabuffet.com/" style={{ color: "white", textDecoration: "none" }}>
+            Bestil bord
           </Link>
         </div>
-        <div>Built for the love of Asian Cuisine.</div>
+        <div>Elite Smiley · Autentisk kinesisk i hjertet af Ikast</div>
       </div>
     </footer>
   );

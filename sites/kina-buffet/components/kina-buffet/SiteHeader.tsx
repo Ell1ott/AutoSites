@@ -5,46 +5,50 @@ import { usePathname } from "next/navigation";
 import { LogoBlock } from "./LogoBlock";
 
 const NAV = [
-  { id: "menu", label: "The Menu", accent: false },
-  { id: "catering", label: "Catering", accent: false },
-  { id: "takeaway", label: "Takeaway", accent: false },
-  { id: "reserve", label: "Book a Table", accent: true },
+  { href: "/menu", label: "Menukort", scrollId: null as string | null },
+  { href: "/om-os", label: "Om os", scrollId: null },
+  { href: "/#oplevelse", label: "Oplevelsen", scrollId: "oplevelse" },
+  { href: "/#catering", label: "Catering", scrollId: "catering" },
+  { href: "/#takeaway", label: "Takeaway", scrollId: "takeaway" },
+  { href: "/#reserve", label: "Bestil bord", scrollId: "reserve", accent: true },
 ] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
 
-  const onNavClick =
-    (id: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
-      if (pathname !== "/") return;
-      e.preventDefault();
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      window.history.replaceState(null, "", `#${id}`);
-    };
-
   return (
     <header>
-      <LogoBlock main="Kina Buffet" sub="Est. 1994 • Authentic Asian" />
-      <nav aria-label="Primary">
-        {NAV.map(({ id, label, accent }) => (
-          <Link
-            key={id}
-            href={`/#${id}`}
-            onClick={onNavClick(id)}
-            prefetch={false}
-            scroll={false}
-            style={
-              accent
-                ? {
-                    color: "var(--red)",
-                    borderBottom: "2px solid var(--red)",
-                  }
-                : undefined
-            }
-          >
-            {label}
-          </Link>
-        ))}
+      <Link href="/" prefetch={false} style={{ textDecoration: "none", color: "inherit" }}>
+        <LogoBlock main="Kina Buffet" sub="Byens største kinesiske restaurant • Ikast" />
+      </Link>
+      <nav aria-label="Hovednavigation">
+        {NAV.map(({ href, label, scrollId, ...rest }) => {
+          const accent = "accent" in rest && rest.accent;
+          return (
+            <Link
+              key={href + label}
+              href={href}
+              prefetch={false}
+              scroll={false}
+              onClick={(e) => {
+                if (!scrollId || pathname !== "/") return;
+                e.preventDefault();
+                document.getElementById(scrollId)?.scrollIntoView({ behavior: "smooth" });
+                window.history.replaceState(null, "", `#${scrollId}`);
+              }}
+              style={
+                accent
+                  ? {
+                      color: "var(--red)",
+                      borderBottom: "2px solid var(--red)",
+                    }
+                  : undefined
+              }
+            >
+              {label}
+            </Link>
+          );
+        })}
       </nav>
     </header>
   );

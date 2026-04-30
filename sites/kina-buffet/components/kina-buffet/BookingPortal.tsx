@@ -6,13 +6,21 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { LogoBlock } from "./LogoBlock";
 
-const TIME_OPTIONS = ["18:30", "19:00", "19:30", "20:00"] as const;
-const GUEST_OPTIONS = [
-  "2 People",
-  "4 People",
-  "6-10 People",
-  "Large Event (10+)",
+const TIME_OPTIONS = [
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+  "21:00",
+  "21:30",
 ] as const;
+
+const GUEST_OPTIONS = ["2 personer", "4 personer", "6 – 10 personer", "Større selskab (10+)"] as const;
 
 function defaultDateString() {
   const d = new Date();
@@ -25,7 +33,7 @@ function defaultDateString() {
 export function BookingPortal() {
   const pathname = usePathname();
   const [date, setDate] = useState(defaultDateString);
-  const [time, setTime] = useState<string>(TIME_OPTIONS[0]);
+  const [time, setTime] = useState<string>(TIME_OPTIONS[4]);
   const [guests, setGuests] = useState<string>(GUEST_OPTIONS[1]);
   const [status, setStatus] = useState<"idle" | "success">("idle");
 
@@ -56,24 +64,43 @@ export function BookingPortal() {
               fontSize: "1.5rem",
             }}
           >
-            The Buffet Awaits
+            Reserver dit bord
           </div>
-          <h3>Secure Your Table.</h3>
-          <p style={{ opacity: 0.8, marginTop: "20px", fontSize: "0.9rem" }}>
-            Large groups, corporate events, or family dinners. Kina offers the space and the flavor for
-            every occasion.
+          <h3>Bestil bord</h3>
+          <p style={{ opacity: 0.85, marginTop: "20px", fontSize: "0.95rem", lineHeight: 1.6 }}>
+            Bordbestilling kan altid gøres via <strong>Bestil bord</strong> på{" "}
+            <Link href="https://kinabuffet.com/" style={{ color: "var(--gold)" }}>
+              kinabuffet.com
+            </Link>
+            . Her kan du også sende os en forespørgsel — perfekt til fødselsdage og firmaarrangementer i
+            hjertet af Ikast.
+          </p>
+          <p style={{ marginTop: "16px" }}>
+            <Link
+              href="https://kinabuffet.com/"
+              className="btn-primary"
+              style={{
+                display: "inline-block",
+                textAlign: "center",
+                textDecoration: "none",
+                padding: "16px 28px",
+                fontSize: "0.95rem",
+              }}
+            >
+              Gå til booking på kinabuffet.com
+            </Link>
           </p>
 
           <div style={{ marginTop: "40px", display: "flex", gap: "20px", flexWrap: "wrap" }}>
             <LogoBlock
-              main="Lunch Buffet"
-              sub="11:00 — 15:00"
+              main="Buffet"
+              sub="16:30 — 22:00 · hver dag"
               mainStyle={{ color: "white", fontSize: "1rem" }}
               subStyle={{ color: "var(--gold)" }}
             />
             <LogoBlock
-              main="Dinner Buffet"
-              sub="17:00 — 22:00"
+              main="Plads til"
+              sub="150+ gæster"
               mainStyle={{ color: "white", fontSize: "1rem" }}
               subStyle={{ color: "var(--gold)" }}
             />
@@ -81,9 +108,12 @@ export function BookingPortal() {
         </div>
 
         <form className="booking-form" onSubmit={handleSubmit} noValidate>
+          <p style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--gold)", marginBottom: "16px" }}>
+            Demo — hurtig forespørgsel (ingen garanti)
+          </p>
           <div className="form-group">
             <label className="form-label" htmlFor="reserve-date">
-              Date &amp; Time
+              Dato &amp; tid
             </label>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
               <input
@@ -101,7 +131,7 @@ export function BookingPortal() {
                 name="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                aria-label="Reservation time"
+                aria-label="Tidspunkt"
               >
                 {TIME_OPTIONS.map((t) => (
                   <option key={t} value={t}>
@@ -113,7 +143,7 @@ export function BookingPortal() {
           </div>
           <div className="form-group">
             <label className="form-label" htmlFor="reserve-guests">
-              Guests
+              Antal gæster
             </label>
             <select
               id="reserve-guests"
@@ -129,10 +159,10 @@ export function BookingPortal() {
             </select>
           </div>
           <button className="btn-primary" type="submit">
-            Confirm Reservation
+            Send forespørgsel
           </button>
 
-          <div id="takeaway" style={{ marginTop: "15px", textAlign: "center" }}>
+          <div style={{ marginTop: "15px", textAlign: "center" }}>
             <Link
               href="/#takeaway"
               scroll={pathname === "/"}
@@ -145,7 +175,7 @@ export function BookingPortal() {
                 textDecoration: "none",
               }}
             >
-              Order Takeaway Instead →
+              Takeaway i stedet →
             </Link>
           </div>
 
@@ -160,7 +190,8 @@ export function BookingPortal() {
                 color: "var(--cream)",
               }}
             >
-              Thank you — we&apos;ll confirm your reservation by email shortly.
+              Tak — vi har modtaget din demo-forespørgsel. Bekræft venligst på kinabuffet.com for endelig
+              booking.
             </p>
           )}
         </form>

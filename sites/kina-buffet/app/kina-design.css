@@ -97,22 +97,50 @@
 }
 
 .kina-buffet-landing .hero-media {
+  position: relative;
+  z-index: 0;
   margin: 0;
   display: block;
   width: 100%;
   height: clamp(420px, 78vh, 940px);
-  background-image:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.72) 100%),
-    url("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=82&w=2000");
+  overflow: hidden;
+  background-color: #111;
+}
+
+.kina-buffet-landing .hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.52) 100%);
+}
+
+.kina-buffet-landing .hero-media-slide {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background-size: cover;
   background-position: center;
+  opacity: 0;
+  transition: opacity 1.4s ease-in-out;
+}
+
+.kina-buffet-landing .hero-media-slide.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kina-buffet-landing .hero-media-slide {
+    transition: none;
+  }
 }
 
 .kina-buffet-landing .hero-copy {
   position: absolute;
   left: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 10;
   display: flex;
   align-items: flex-end;
   gap: clamp(1rem, 2.8vw, 2.25rem);
@@ -382,6 +410,10 @@
 }
 
 @media (max-width: 1024px) {
+  .kina-buffet-landing .info-panel {
+    grid-column: span 12;
+  }
+
   .kina-buffet-landing .grid-container {
     gap: 20px;
   }
@@ -444,5 +476,714 @@
 
   .kina-buffet-landing .portal-section {
     padding: 32px 24px;
+  }
+}
+
+/* Menu page */
+.kina-buffet-landing .menu-page main {
+  padding-bottom: 60px;
+}
+
+.kina-buffet-landing .menu-intro {
+  grid-column: span 12;
+  max-width: 42rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  opacity: 0.88;
+}
+
+.kina-buffet-landing .menu-block {
+  grid-column: span 12;
+}
+
+.kina-buffet-landing .menu-block h3 {
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--dark);
+}
+
+.kina-buffet-landing .menu-columns {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px 32px;
+}
+
+.kina-buffet-landing .menu-columns ul {
+  grid-column: span 6;
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+  .kina-buffet-landing .menu-columns ul {
+    grid-column: span 12;
+  }
+}
+
+/* Priser & takeaway side om side */
+.kina-buffet-landing .pricing-takeaway-combo {
+  align-items: start;
+}
+
+.kina-buffet-landing .pricing-takeaway-pane {
+  grid-column: span 6;
+  min-width: 0;
+}
+
+@media (min-width: 961px) {
+  .kina-buffet-landing .pricing-takeaway-pane--pricing {
+    padding-right: clamp(1rem, 2.5vw, 2rem);
+    border-right: 1px solid rgba(26, 26, 26, 0.12);
+  }
+}
+
+@media (max-width: 960px) {
+  .kina-buffet-landing .pricing-takeaway-pane {
+    grid-column: span 12;
+  }
+
+  .kina-buffet-landing .pricing-takeaway-pane--pricing {
+    padding-right: 0;
+    border-right: none;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.12);
+  }
+}
+
+/* Priser & åbningstider — enkelt, neutralt */
+.kina-buffet-landing .pricing-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.kina-buffet-landing .takeaway-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.kina-buffet-landing .takeaway-section .section-label {
+  border-bottom-color: rgba(26, 26, 26, 0.18);
+}
+
+.kina-buffet-landing .takeaway-section .section-label h2 {
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3vw, 1.65rem);
+  text-transform: none;
+  letter-spacing: -0.02em;
+}
+
+.kina-buffet-landing .takeaway-section .card-meta {
+  font-weight: 500;
+  color: rgba(26, 26, 26, 0.45);
+}
+
+.kina-buffet-landing .takeaway-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kina-buffet-landing .takeaway-lede {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--dark);
+}
+
+.kina-buffet-landing .takeaway-body,
+.kina-buffet-landing .takeaway-note {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(26, 26, 26, 0.78);
+}
+
+.kina-buffet-landing .takeaway-note {
+  font-size: 0.875rem;
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.kina-buffet-landing .takeaway-body a,
+.kina-buffet-landing .takeaway-note a {
+  color: var(--dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(26, 26, 26, 0.28);
+}
+
+.kina-buffet-landing .takeaway-body a:hover,
+.kina-buffet-landing .takeaway-note a:hover {
+  text-decoration-color: var(--dark);
+}
+
+.kina-buffet-landing .takeaway-cta {
+  margin: 0.35rem 0 0;
+}
+
+.kina-buffet-landing .takeaway-btn {
+  display: inline-block;
+  padding: 0.65rem 1.35rem;
+  border: 2px solid var(--dark);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--dark);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.kina-buffet-landing .takeaway-btn:hover {
+  background: var(--dark);
+  color: var(--cream);
+}
+
+.kina-buffet-landing .pricing-section .section-label {
+  border-bottom-color: rgba(26, 26, 26, 0.18);
+}
+
+.kina-buffet-landing .pricing-section .section-label h2 {
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3vw, 1.65rem);
+  text-transform: none;
+  letter-spacing: -0.02em;
+}
+
+.kina-buffet-landing .pricing-section .card-meta {
+  font-weight: 500;
+  color: rgba(26, 26, 26, 0.45);
+}
+
+.kina-buffet-landing .pricing-simple {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.kina-buffet-landing .pricing-simple-band {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 560px) {
+  .kina-buffet-landing .pricing-simple-band {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.25rem;
+    align-items: start;
+  }
+
+  .kina-buffet-landing .pricing-simple-buffet-block .pricing-simple-dl {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(26, 26, 26, 0.12);
+  }
+}
+
+.kina-buffet-landing .pricing-simple-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kina-buffet-landing .pricing-simple-buffet-block .pricing-simple-label {
+  margin-bottom: 0.4rem;
+}
+
+.kina-buffet-landing .pricing-simple-label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.45);
+}
+
+.kina-buffet-landing .pricing-simple-hours {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--dark);
+  letter-spacing: -0.01em;
+}
+
+.kina-buffet-landing .pricing-simple-muted {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(26, 26, 26, 0.55);
+}
+
+.kina-buffet-landing .pricing-simple-dl {
+  margin: 0;
+  padding: 0.65rem 0 0;
+  border-top: 1px solid rgba(26, 26, 26, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.kina-buffet-landing .pricing-simple-dl-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.kina-buffet-landing .pricing-simple-dl dt {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(26, 26, 26, 0.65);
+}
+
+.kina-buffet-landing .pricing-simple-dl dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--dark);
+  text-align: right;
+}
+
+.kina-buffet-landing .pricing-simple-unit {
+  font-weight: 400;
+  font-size: 0.82rem;
+  color: rgba(26, 26, 26, 0.45);
+}
+
+.kina-buffet-landing .pricing-simple-kids {
+  padding-top: 0.25rem;
+}
+
+.kina-buffet-landing .pricing-simple-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(26, 26, 26, 0.12);
+  align-items: start;
+}
+
+.kina-buffet-landing .pricing-takeaway-pane .pricing-simple-split {
+  gap: 0.75rem 1rem;
+}
+
+.kina-buffet-landing .pricing-simple-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.kina-buffet-landing .pricing-simple-panel .pricing-simple-label {
+  margin-bottom: 0.15rem;
+}
+
+.kina-buffet-landing .pricing-simple-highlight {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.kina-buffet-landing .pricing-simple-list {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: rgba(26, 26, 26, 0.55);
+}
+
+.kina-buffet-landing .pricing-simple-table {
+  width: 100%;
+  margin: 0.35rem 0 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.kina-buffet-landing .pricing-takeaway-pane .pricing-simple-table {
+  font-size: 0.8125rem;
+}
+
+.kina-buffet-landing .pricing-takeaway-pane .pricing-simple-table th,
+.kina-buffet-landing .pricing-takeaway-pane .pricing-simple-table td {
+  padding-top: 0.28rem;
+  padding-bottom: 0.28rem;
+}
+
+.kina-buffet-landing .pricing-simple-table th {
+  padding: 0.35rem 0.75rem 0.35rem 0;
+  font-weight: 500;
+  text-align: left;
+  color: rgba(26, 26, 26, 0.65);
+  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+.kina-buffet-landing .pricing-simple-table td {
+  padding: 0.35rem 0;
+  text-align: right;
+  font-weight: 500;
+  color: var(--dark);
+  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+.kina-buffet-landing .pricing-simple-links {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+}
+
+.kina-buffet-landing .pricing-simple-links a {
+  color: var(--dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(26, 26, 26, 0.28);
+}
+
+.kina-buffet-landing .pricing-simple-links a:hover {
+  text-decoration-color: var(--dark);
+}
+
+@media (max-width: 720px) {
+  .kina-buffet-landing .pricing-simple-split {
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
+  }
+}
+
+/* Om os side */
+.kina-buffet-landing.om-os-page main {
+  padding-bottom: 0;
+}
+
+.kina-buffet-landing .om-os-hero {
+  position: relative;
+  background: var(--dark);
+  color: var(--cream);
+  border-bottom: 2px solid var(--dark);
+  min-height: clamp(320px, 52vh, 560px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.kina-buffet-landing .om-os-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(105deg, rgba(26, 26, 26, 0.92) 0%, rgba(26, 26, 26, 0.55) 45%, rgba(26, 26, 26, 0.78) 100%),
+    url("https://images.unsplash.com/photo-1578867509548-398bfc3a44b5?auto=format&fit=crop&q=78&w=2000");
+  background-size: cover;
+  background-position: center;
+}
+
+.kina-buffet-landing .om-os-hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(56rem, 100%);
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 2.5rem) clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.kina-buffet-landing .om-os-hero-kicker {
+  margin: 0 0 0.6rem;
+  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(249, 247, 242, 0.55);
+}
+
+.kina-buffet-landing .om-os-hero-title {
+  margin: 0;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 8vw, 4.75rem);
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+.kina-buffet-landing .om-os-hero-script {
+  margin: 0.85rem 0 0;
+  font-size: clamp(1.25rem, 3.2vw, 2rem);
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.kina-buffet-landing .om-os-hero-lede {
+  margin: 1.35rem 0 0;
+  max-width: 36rem;
+  font-size: clamp(0.9rem, 1.35vw, 1.05rem);
+  line-height: 1.65;
+  color: rgba(249, 247, 242, 0.78);
+  padding-left: clamp(0.85rem, 2vw, 1.25rem);
+  border-left: 1px solid rgba(197, 160, 89, 0.45);
+}
+
+.kina-buffet-landing .om-os-story {
+  padding-top: clamp(3.5rem, 8vw, 5.5rem);
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  align-items: start;
+}
+
+.kina-buffet-landing .om-os-story-media {
+  grid-column: span 5;
+  min-height: clamp(280px, 42vw, 460px);
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.22) 100%),
+    url("https://images.unsplash.com/photo-1528605244684-44ed4ae19c4d?auto=format&fit=crop&q=78&w=1200");
+  background-size: cover;
+  background-position: center;
+}
+
+.kina-buffet-landing .om-os-story-copy {
+  grid-column: span 7;
+  padding-top: clamp(0.25rem, 2vw, 1rem);
+}
+
+.kina-buffet-landing .om-os-story-heading {
+  margin: 0 0 1rem;
+  font-size: clamp(0.72rem, 1.1vw, 0.8rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.kina-buffet-landing .om-os-story-lead {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.kina-buffet-landing .om-os-story-body {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  opacity: 0.88;
+  max-width: 40rem;
+}
+
+.kina-buffet-landing .om-os-pill-list {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.65rem;
+}
+
+.kina-buffet-landing .om-os-pill-list li {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.85rem;
+  border: 2px solid var(--dark);
+  background: white;
+}
+
+.kina-buffet-landing .om-os-mission-wrap {
+  background: var(--dark);
+  color: var(--cream);
+  padding: clamp(2.75rem, 7vw, 4.5rem) clamp(1.5rem, 5vw, 3rem);
+}
+
+.kina-buffet-landing .om-os-mission {
+  margin: 0 auto;
+  max-width: 44rem;
+  padding: 0;
+  border: none;
+  position: relative;
+}
+
+.kina-buffet-landing .om-os-mission::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 3px;
+  background: var(--gold);
+  margin-bottom: 1.5rem;
+}
+
+.kina-buffet-landing .om-os-mission p {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.5vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.45;
+  font-style: italic;
+  color: rgba(249, 247, 242, 0.92);
+}
+
+.kina-buffet-landing .om-os-stats {
+  padding-top: clamp(2.75rem, 6vw, 4rem);
+  padding-bottom: clamp(2.75rem, 6vw, 4rem);
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.kina-buffet-landing .om-os-stat {
+  grid-column: span 4;
+  padding: clamp(1.35rem, 3vw, 2rem);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kina-buffet-landing .om-os-stat-value {
+  font-size: clamp(1.65rem, 3.5vw, 2.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--red);
+}
+
+.kina-buffet-landing .om-os-stat-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.kina-buffet-landing .om-os-stat-note {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+.kina-buffet-landing .om-os-bottom {
+  padding-top: 0;
+  padding-bottom: clamp(3.5rem, 8vw, 5rem);
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.kina-buffet-landing .om-os-elite-card {
+  grid-column: span 12;
+  padding: clamp(1.75rem, 4vw, 2.75rem) clamp(1.5rem, 4vw, 2.75rem);
+  background: linear-gradient(135deg, rgba(197, 160, 89, 0.14) 0%, rgba(249, 247, 242, 0.95) 42%, white 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.kina-buffet-landing .om-os-elite-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kina-buffet-landing .om-os-elite-text {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  opacity: 0.88;
+}
+
+.kina-buffet-landing .om-os-elite-badge {
+  flex-shrink: 0;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: var(--cream);
+}
+
+.kina-buffet-landing .om-os-actions {
+  grid-column: span 12;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.kina-buffet-landing .om-os-btn {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  width: auto;
+  min-width: 200px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.kina-buffet-landing .om-os-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-weight: 900;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dark);
+  border: 2px solid var(--dark);
+  background: transparent;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.kina-buffet-landing .om-os-btn-secondary:hover {
+  background: var(--dark);
+  color: var(--cream);
+}
+
+.kina-buffet-landing .om-os-link-back {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+
+.kina-buffet-landing .om-os-link-back:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  .kina-buffet-landing .om-os-story-media,
+  .kina-buffet-landing .om-os-story-copy {
+    grid-column: span 12;
+  }
+
+  .kina-buffet-landing .om-os-story-media {
+    min-height: 320px;
+  }
+
+  .kina-buffet-landing .om-os-stat {
+    grid-column: span 12;
   }
 }

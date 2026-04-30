@@ -5,9 +5,9 @@ import "./kina-design.css";
 import { SiteShell } from "@autosites/site-shell/SiteShell";
 
 export const metadata: Metadata = {
-  title: "KINA BUFFET — Authentic & Modern Asian Dining | Hero V3 Cinematic",
+  title: "Restaurant Kina Buffet — Byens største kinesiske restaurant | Ikast",
   description:
-    "Authentic buffet, dim sum, catering & takeaway — Restaurant Kina in Metropolis City since 1994.",
+    "Buffet, a la carte, takeaway og catering i Ikast. Over 150 pladser, sushi, mongolsk grill og autentisk kinesisk mad. Book på kinabuffet.com.",
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="da" className={inter.className}>
       <body style={{ margin: 0 }}>
         <SiteShell>{children}</SiteShell>
       </body>

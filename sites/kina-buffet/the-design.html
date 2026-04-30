@@ -292,6 +292,60 @@
             margin-bottom: 20px;
         }
 
+        .portal-hours-price {
+            margin-top: 1.35rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .portal-hours-price-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 0 0 0.65rem;
+        }
+
+        .portal-hours-price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.35rem 1.25rem;
+            align-items: start;
+        }
+
+        .portal-slot {
+            display: grid;
+            gap: 0.15rem;
+            padding: 0.35rem 0 0.35rem 0.75rem;
+            border-left: 2px solid rgba(229, 43, 37, 0.55);
+            min-width: 0;
+        }
+
+        .portal-slot-name {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(249, 247, 242, 0.88);
+            line-height: 1.2;
+        }
+
+        .portal-slot-time {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: 0.03em;
+            line-height: 1.25;
+        }
+
+        .portal-slot-price {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -382,6 +436,10 @@
             .grid-container { gap: 20px; }
             .card { grid-column: span 6; }
             .portal-section { grid-template-columns: 1fr; }
+            .portal-hours-price-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem 1rem;
+            }
             .hero-media {
                 height: clamp(340px, 70vh, 760px);
             }
@@ -396,6 +454,10 @@
         @media (max-width: 600px) {
             .hero-flair {
                 display: none;
+            }
+            .portal-hours-price-grid {
+                grid-template-columns: 1fr;
+                gap: 0.65rem;
             }
         }
     </style>
@@ -468,19 +530,24 @@
                     <h3 vid="51">Secure Your Table.</h3>
                     <p style="opacity: 0.8; margin-top: 20px; font-size: 0.9rem;" vid="52">Large groups, corporate events, or family dinners. Kina offers the space and the flavor for every occasion.</p>
                     
-                    <div style="margin-top: 40px; display: flex; gap: 20px;" vid="53">
-                        <div class="logo-block" vid="54">
-                            <div class="logo-main" style="color: white; font-size: 1rem;" vid="55">Lunch Buffet</div>
-                            <div class="logo-sub" style="color: var(--gold);" vid="56">11:00 — 15:00</div>
-                        </div>
-                        <div class="logo-block" vid="57">
-                            <div class="logo-main" style="color: white; font-size: 1rem;" vid="58">Dinner Buffet</div>
-                            <div class="logo-sub" style="color: var(--gold);" vid="59">17:00 — 22:00</div>
+                    <div class="portal-hours-price" vid="53">
+                        <p class="portal-hours-price-label" vid="54">Priser &amp; åbningstider</p>
+                        <div class="portal-hours-price-grid" vid="55">
+                            <div class="portal-slot" vid="56">
+                                <span class="portal-slot-name" vid="57">Frokostbuffet</span>
+                                <span class="portal-slot-time" vid="58">11:00 — 15:00</span>
+                                <span class="portal-slot-price" vid="59">Fra 149 kr</span>
+                            </div>
+                            <div class="portal-slot" vid="60">
+                                <span class="portal-slot-name" vid="61">Aftenbuffet</span>
+                                <span class="portal-slot-time" vid="62">17:00 — 22:00</span>
+                                <span class="portal-slot-price" vid="63">Fra 199 kr</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="booking-form" vid="60">
+                <div class="booking-form" vid="601">
                     <div class="form-group" vid="61">
                         <label class="form-label" vid="62">Date &amp; Time</label>
                         <div style="display: flex; gap: 10px;" vid="63">
