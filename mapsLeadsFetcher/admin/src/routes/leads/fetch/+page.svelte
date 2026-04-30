@@ -23,6 +23,7 @@
 
 	const SORO_LAT = 55.4318;
 	const SORO_LNG = 11.5555;
+	const MAX_FETCH_COUNT = 100;
 
 	let pickLat = $state(SORO_LAT);
 	let pickLng = $state(SORO_LNG);
@@ -82,8 +83,8 @@
 		if (radiusM < 50 || radiusM > 100_000) {
 			return { ok: false, reason: 'Radius must be between 50 m and 100 km' };
 		}
-		if (!Number.isInteger(count) || count < 1 || count > 20) {
-			return { ok: false, reason: 'Count must be an integer from 1 to 20' };
+		if (!Number.isInteger(count) || count < 1 || count > MAX_FETCH_COUNT) {
+			return { ok: false, reason: `Count must be an integer from 1 to ${MAX_FETCH_COUNT}` };
 		}
 		if (!outputPath.trim()) return { ok: false, reason: 'Output JSON path is required' };
 		return { ok: true };
@@ -371,7 +372,7 @@
 							<div class="flex flex-wrap items-center justify-between gap-2">
 								<Label id="count-label" for="count-slider">Result count</Label>
 								<Badge variant="secondary" class="font-mono text-xs font-normal tabular-nums">
-									{count} / 20
+									{count} / {MAX_FETCH_COUNT}
 								</Badge>
 							</div>
 							<Slider
@@ -379,13 +380,20 @@
 								type="single"
 								bind:value={count}
 								min={1}
-								max={20}
+								max={MAX_FETCH_COUNT}
 								step={1}
 								aria-labelledby="count-label"
 							/>
 							<div class="flex flex-col gap-2">
 								<Label for="count" class="sr-only">Result count (numeric)</Label>
-								<Input id="count" type="number" min={1} max={20} step={1} bind:value={count} />
+								<Input
+									id="count"
+									type="number"
+									min={1}
+									max={MAX_FETCH_COUNT}
+									step={1}
+									bind:value={count}
+								/>
 							</div>
 						</div>
 						<div class="flex flex-col gap-2">

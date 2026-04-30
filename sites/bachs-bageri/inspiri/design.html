@@ -1,0 +1,533 @@
+<html lang="da" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">Bachs Bageri — Håndlavet i Aarhus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&amp;family=Montserrat:wght@300;400;500&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+        
+
+        :root {
+            --cream: #FDFCF8;
+            --sand: #F2EFE9;
+            --green: #4A6E53;
+            --clay: #D27D5E;
+            --text: #3E3B39;
+            --text-light: #7B7671;
+            --border: rgba(74, 110, 83, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--sand);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        
+        .texture-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
+            position: relative;
+        }
+
+        .nav-float {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+
+        .brand-box {
+            border: 1px solid var(--green);
+            padding: 20px;
+            text-align: center;
+            background: var(--cream);
+            width: fit-content;
+        }
+
+        .brand-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--green);
+            line-height: 0.9;
+        }
+
+        .brand-tagline {
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color: var(--text-light);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--green);
+        }
+
+        .hero-main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-img-wrapper {
+            width: 60%;
+            height: 70vh;
+            overflow: hidden;
+            position: relative;
+            background: #e0ddd7;
+        }
+
+        .hero-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%) sepia(10%);
+        }
+
+        .hero-content {
+            position: absolute;
+            left: 5%;
+            bottom: 10%;
+            max-width: 400px;
+            background: var(--cream);
+            padding: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .hero-content h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        
+        .section-craft {
+            padding: 120px 0;
+            background: var(--cream);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+
+        .craft-text {
+            grid-column: 2 / 6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-tag {
+            color: var(--clay);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .craft-image {
+            grid-column: 7 / 12;
+            height: 600px;
+            background: var(--sand);
+            position: relative;
+        }
+
+        .craft-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        
+        .section-menu {
+            padding: 120px 0;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .product-tag {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            position: relative;
+            transition: transform 0.3s ease;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%);
+        }
+
+        .product-tag:hover {
+            transform: translateY(-10px);
+        }
+
+        .tag-eyelet {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--green);
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .product-category {
+            text-align: center;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 20px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .product-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .product-desc {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .product-price {
+            border-top: 0.5px solid var(--border);
+            padding-top: 15px;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        
+        .botanical-svg {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 15px 35px;
+            background: var(--green);
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.7rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #3a5742;
+        }
+
+        
+        footer {
+            background: var(--green);
+            color: var(--cream);
+            padding: 100px 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 25px;
+            opacity: 0.8;
+        }
+
+        .footer-col p, .footer-col li {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            list-style: none;
+            opacity: 0.9;
+        }
+
+        .footer-bottom {
+            margin-top: 100px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        
+        .vertical-label {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: rotate(90deg) translateY(-50%);
+            transform-origin: right top;
+            font-size: 0.6rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            .craft-text, .craft-image { grid-column: 1 / -1; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .hero-img-wrapper { width: 100%; }
+        }
+    </style>
+</head>
+<body vid="9">
+    <div class="texture-overlay" vid="10"></div>
+
+    <header vid="11">
+        <div class="nav-float" vid="12">
+            <div class="brand-box" vid="13">
+                <div class="brand-logo" vid="14">Bachs<br vid="15">Bageri</div>
+                <div class="brand-tagline" vid="16">EST. Aarhus 1982</div>
+            </div>
+            <nav vid="17">
+                <ul vid="18">
+                    <li vid="19"><a href="#" vid="20">Vores Brød</a></li>
+                    <li vid="21"><a href="#" vid="22">Processen</a></li>
+                    <li vid="23"><a href="#" vid="24">Butikken</a></li>
+                    <li vid="25"><a href="#" vid="26">Bestil</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="hero-main" vid="27">
+            <div class="hero-img-wrapper" vid="28">
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&amp;fit=crop&amp;q=80&amp;w=2000" alt="Freshly baked sourdough bread" vid="29">
+            </div>
+            <div class="hero-content" vid="30">
+                <span class="section-tag" vid="31">Dagens Bagværk</span>
+                <h1 vid="32">Langsom tid i hver en bid.</h1>
+                <p vid="33">Vi ærer det danske bagerhåndværk med surdej, lokale kornsorter og tålmodighed. Besøg os i hjertet af Aarhus.</p>
+                <a href="#" class="btn-primary" vid="34">Se dagens menu</a>
+            </div>
+            <div class="vertical-label" vid="35">Morgenfrisk • Siden 1982</div>
+        </div>
+    </header>
+
+    <section class="section-craft" vid="36">
+        <div class="container grid-layout" vid="37">
+            <div class="craft-text" vid="38">
+                <span class="section-tag" vid="39">Vores Filosofi</span>
+                <h2 class="section-title" vid="40">Kvalitet tager tid. Præcis 36 timer.</h2>
+                <p vid="41">Vores signaturbrød koldhæver i halvandet døgn for at udvikle den dybe smag og den perfekte sprøde skorpe, som Bachs er kendt for.</p>
+                <div style="margin-top: 40px; display: flex; gap: 20px; align-items: center;" vid="42">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" vid="43">
+                        <path d="M20 5V35M5 20H35" stroke="#D27D5E" stroke-width="1" vid="44"></path>
+                        <circle cx="20" cy="20" r="18" stroke="#D27D5E" stroke-width="0.5" vid="45"></circle>
+                    </svg>
+                    <span style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;" vid="46">100% Økologisk Mel</span>
+                </div>
+            </div>
+            <div class="craft-image" vid="47">
+                <img src="https://images.unsplash.com/photo-1585478259715-876a6a81fc08?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Baker working with dough" vid="48">
+                
+                <svg class="botanical-svg" style="bottom: -50px; left: -50px; width: 300px;" viewBox="0 0 100 100" vid="49">
+                    <path d="M50 100 C 50 100, 30 70, 30 50 C 30 30, 50 0, 50 0 M50 100 C 50 100, 70 70, 70 50 C 70 30, 50 0, 50 0" stroke="#4A6E53" fill="none" stroke-width="0.5" vid="50"></path>
+                    <path d="M35 80 L 25 75 M65 80 L 75 75 M30 60 L 20 55 M70 60 L 80 55" stroke="#4A6E53" stroke-width="0.5" vid="51"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-menu" vid="52">
+        <div class="container" vid="53">
+            <div style="text-align: center; margin-bottom: 40px;" vid="54">
+                <span class="section-tag" vid="55">Fra Ovnen</span>
+                <h2 class="section-title" vid="56">Udvalgte Favoritter</h2>
+            </div>
+
+            <div class="menu-grid" vid="57">
+                
+                <div class="product-tag" vid="58">
+                    <div class="tag-eyelet" vid="59"></div>
+                    <span class="product-category" vid="60">Signatur</span>
+                    <h3 class="product-title" vid="61">Rugbrød Nr. 4</h3>
+                    <p class="product-desc" vid="62">Klassisk mørkt rugbrød med solsikkekerner og ølandshvede.</p>
+                    <div class="product-price" vid="63">45.00 DKK</div>
+                </div>
+
+                
+                <div class="product-tag" vid="64">
+                    <div class="tag-eyelet" vid="65"></div>
+                    <span class="product-category" vid="66">Sødt</span>
+                    <h3 class="product-title" vid="67">Kardemommesnurre</h3>
+                    <p class="product-desc" vid="68">Smørbagt dej med friskkværnet kardemomme og perlesukker.</p>
+                    <div class="product-price" vid="69">28.00 DKK</div>
+                </div>
+
+                
+                <div class="product-tag" vid="70">
+                    <div class="tag-eyelet" vid="71"></div>
+                    <span class="product-category" vid="72">Surdej</span>
+                    <h3 class="product-title" vid="73">Bachs Levain</h3>
+                    <p class="product-desc" vid="74">Vores stolthed. Et lyst surdejsbrød med vilde gærceller.</p>
+                    <div class="product-price" vid="75">52.00 DKK</div>
+                </div>
+
+                
+                <div class="product-tag" vid="76">
+                    <div class="tag-eyelet" vid="77"></div>
+                    <span class="product-category" vid="78">Morgen</span>
+                    <h3 class="product-title" vid="79">Surdejscroissant</h3>
+                    <p class="product-desc" vid="80">Lamineret med dansk økosmør i 72 fine lag.</p>
+                    <div class="product-price" vid="81">32.00 DKK</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 100px 0; background-color: var(--sand); text-align: center;" vid="82">
+        <div class="container" vid="83">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid var(--border); padding: 60px; background: var(--cream);" vid="84">
+                <span class="section-tag" vid="85">Bestilling</span>
+                <h3 class="section-title" style="font-size: 2rem;" vid="86">Skal vi gemme et brød til dig?</h3>
+                <p style="margin-bottom: 30px; font-size: 0.9rem;" vid="87">Vi bager i begrænsede partier hver dag. Reserver dit bagværk før kl. 20:00 dagen før.</p>
+                <a href="#" class="btn-primary" vid="88">Gå til bestilling</a>
+            </div>
+        </div>
+    </section>
+
+    <footer vid="89">
+        <div class="container footer-grid" vid="90">
+            <div class="footer-col" vid="91">
+                <div class="footer-logo" vid="92">Bachs Bageri</div>
+                <p vid="93">Et lille bageri med store drømme om det gode brød. Vi bruger kun lokale råvarer og masser af kærlighed.</p>
+            </div>
+            <div class="footer-col" vid="94">
+                <h4 vid="95">Find os</h4>
+                <p vid="96">Graven 14,<br vid="97">8000 Aarhus C<br vid="98">Danmark</p>
+            </div>
+            <div class="footer-col" vid="99">
+                <h4 vid="100">Åbningstider</h4>
+                <ul vid="101">
+                    <li vid="102">Man - Fre: 07:00 — 17:30</li>
+                    <li vid="103">Lør - Søn: 08:00 — 15:00</li>
+                </ul>
+            </div>
+            <div class="footer-col" vid="104">
+                <h4 vid="105">Kontakt</h4>
+                <ul vid="106">
+                    <li vid="107">hej@bachsbageri.dk</li>
+                    <li vid="108">+45 86 12 34 56</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom" vid="109">
+            <span vid="110">© 2024 Bachs Bageri — Håndværk frem for alt</span>
+            <span vid="111">Design: Studio Scandi</span>
+        </div>
+    </footer>
+
+    <script vid="112">
+        
+        window.addEventListener('scroll', () => {
+            const scroll = window.pageYOffset;
+            const heroImg = document.querySelector('.hero-img-wrapper img');
+            if(heroImg) {
+                heroImg.style.transform = `scale(${1 + scroll/10000}) translateY(${scroll/20}px)`;
+            }
+        });
+    </script>
+
+</body></html>

@@ -3,6 +3,11 @@
   "private": true,
   "workspaces": ["sites/*", "packages/*"],
   "packageManager": "bun@1.3.2",
+  "scripts": {
+    "cms:sync": "bun packages/cms/scripts/cms-sync.ts",
+    "cms:pull": "bun packages/cms/scripts/cms-sync.ts pull",
+    "cms:push": "bun packages/cms/scripts/cms-sync.ts push"
+  },
   "devDependencies": {
     "@supabase/supabase-js": "^2.103.2"
   }

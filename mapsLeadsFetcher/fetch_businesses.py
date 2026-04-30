@@ -39,6 +39,10 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 SORO_LAT = 55.4318
 SORO_LNG = 11.5555
 
+# Places Text Search returns at most 20 places per HTTP request; use nextPageToken to fetch more.
+TEXT_SEARCH_PAGE_SIZE_CAP = 20
+MAX_TEXT_SEARCH_AGGREGATED = 100
+
 
 def _emit_json_event(enabled: bool, payload: dict[str, Any]) -> None:
     if not enabled:
@@ -65,38 +69,64 @@ def search_businesses(
         "X-Goog-Api-Key": api_key,
         "X-Goog-FieldMask": field_mask,
     }
-    body: dict[str, Any] = {
-        "textQuery": text_query,
-        "pageSize": max_results,
-    }
+    common: dict[str, Any] = {"textQuery": text_query}
     if rank_by_distance:
-        body["rankPreference"] = "DISTANCE"
-        body["locationBias"] = {
+        common["rankPreference"] = "DISTANCE"
+        common["locationBias"] = {
             "circle": {
                 "center": {"latitude": latitude, "longitude": longitude},
                 "radius": radius_m,
             }
         }
     if region_code:
-        body["regionCode"] = region_code
+        common["regionCode"] = region_code
     if language_code:
-        body["languageCode"] = language_code
-    response = requests.post(
-        PLACES_TEXT_SEARCH_URL,
-        headers=headers,
-        json=body,
-        timeout=60,
-    )
-    try:
-        payload = response.json()
-    except json.JSONDecodeError:
-        payload = {"raw_text": response.text}
+        common["languageCode"] = language_code
 
-    if not response.ok:
-        raise RuntimeError(
-            f"Places API error HTTP {response.status_code}: {json.dumps(payload, indent=2)}"
+    want = min(max(1, max_results), MAX_TEXT_SEARCH_AGGREGATED)
+    all_places: list[Any] = []
+    page_token: str | None = None
+    last_payload: dict[str, Any] = {}
+
+    while len(all_places) < want:
+        need = want - len(all_places)
+        page_size = min(TEXT_SEARCH_PAGE_SIZE_CAP, need)
+        body = dict(common)
+        body["pageSize"] = page_size
+        if page_token:
+            body["pageToken"] = page_token
+
+        response = requests.post(
+            PLACES_TEXT_SEARCH_URL,
+            headers=headers,
+            json=body,
+            timeout=60,
         )
-    return payload
+        try:
+            payload = response.json()
+        except json.JSONDecodeError:
+            payload = {"raw_text": response.text}
+
+        if not response.ok:
+            raise RuntimeError(
+                f"Places API error HTTP {response.status_code}: {json.dumps(payload, indent=2)}"
+            )
+
+        last_payload = payload
+        batch = payload.get("places") or []
+        for p in batch:
+            if isinstance(p, dict):
+                all_places.append(p)
+
+        next_tok = payload.get("nextPageToken")
+        if not next_tok or not batch:
+            break
+        page_token = str(next_tok)
+
+    merged = dict(last_payload)
+    merged["places"] = all_places[:want]
+    merged.pop("nextPageToken", None)
+    return merged
 
 
 def _localizable_text(obj: Any) -> str:
@@ -302,7 +332,11 @@ def main() -> None:
         "-n",
         type=int,
         default=10,
-        help="Number of places to return (max 20 per request for Text Search).",
+        help=(
+            "Number of places to return (up to "
+            f"{MAX_TEXT_SEARCH_AGGREGATED}; Text Search sends at most "
+            f"{TEXT_SEARCH_PAGE_SIZE_CAP} per HTTP request via pagination)."
+        ),
     )
     parser.add_argument(
         "--output",
@@ -354,7 +388,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    n = max(1, min(args.count, 20))
+    n = max(1, min(args.count, MAX_TEXT_SEARCH_AGGREGATED))
 
     use_bias = not args.no_distance_rank
 

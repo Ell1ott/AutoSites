@@ -529,3 +529,126 @@
   color: #2a2a2a;
   word-break: break-word;
 }
+
+/* EditableList — per-item shell + controls + add tile.
+   Only rendered in edit mode, so these styles never affect the public site.
+
+   Layout: each item's shell is `display: contents` so it doesn't disturb
+   the parent's grid; controls float in a fixed-position-anchored cluster
+   in the top-right of the first child via a relative-positioned bridge. */
+.cms-list-item {
+  position: relative;
+}
+
+.cms-list-item--confirming {
+  outline: 2px solid rgba(180, 30, 30, 0.65);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.cms-list-controls {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 9050;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(20, 20, 20, 0.88);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.cms-list-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #f5f5f5;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+}
+
+.cms-list-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cms-list-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cms-list-btn--delete {
+  font-size: 16px;
+}
+
+.cms-list-btn--confirm {
+  color: #5fdf80;
+  font-weight: 700;
+}
+
+.cms-list-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 64px;
+  padding: 16px;
+  border: 2px dashed rgba(0, 0, 0, 0.25);
+  background: transparent;
+  color: rgba(0, 0, 0, 0.55);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.cms-list-add span[aria-hidden] {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.cms-list-add__label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.cms-list-add:hover:not(:disabled) {
+  border-color: rgba(0, 0, 0, 0.55);
+  color: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.cms-list-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cms-list-add {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.65);
+  }
+  .cms-list-add:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+}

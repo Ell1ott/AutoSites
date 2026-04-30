@@ -1,14 +1,15 @@
 {
-  "name": "my-app",
+  "name": "@autosites/site-bachs-bageri",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack --port 4000",
+    "dev": "next dev --turbopack --port 4006",
     "build": "next build",
-    "start": "next start --port 4000",
+    "start": "next start --port 4006",
     "lint": "eslint",
-    "cms:pull": "bun ../../packages/cms/scripts/cms-sync.ts pull --site kaffemere",
-    "cms:push": "bun ../../packages/cms/scripts/cms-sync.ts push --site kaffemere"
+    "cms:pull": "bun scripts/cms-sync.ts pull --site",
+    "cms:push": "bun scripts/cms-sync.ts push --site"
   },
   "dependencies": {
     "@autosites/analytics": "workspace:*",

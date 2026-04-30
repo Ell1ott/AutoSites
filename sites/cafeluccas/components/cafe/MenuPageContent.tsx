@@ -1,6 +1,16 @@
-import { EditableLink, EditableText } from "@autosites/cms/components";
+import {
+  EditableLink,
+  EditableList,
+  EditableText,
+} from "@autosites/cms/components";
 
-async function MenuDish({
+type DishFallback = {
+  no: string;
+  name: string;
+  body: string;
+};
+
+function MenuDish({
   numberKey,
   nameKey,
   bodyKey,
@@ -27,6 +37,25 @@ async function MenuDish({
         <EditableText cmsKey={bodyKey} fallback={body} as="span" />
       </p>
     </article>
+  );
+}
+
+function renderDish({
+  keyPrefix,
+  fallback,
+}: {
+  keyPrefix: string;
+  fallback: DishFallback;
+}) {
+  return (
+    <MenuDish
+      numberKey={`${keyPrefix}.no`}
+      nameKey={`${keyPrefix}.name`}
+      bodyKey={`${keyPrefix}.body`}
+      number={fallback.no}
+      name={fallback.name}
+      body={fallback.body}
+    />
   );
 }
 
@@ -197,32 +226,36 @@ export async function MenuPageContent() {
               className="menu-section-intro"
               style={{ fontSize: "16px" }}
             />
-            <div style={{ display: "grid", gap: "10px" }}>
-              <MenuDish
-                numberKey="menu.dish.97.no"
-                nameKey="menu.dish.97.name"
-                bodyKey="menu.dish.97.body"
-                number="97"
-                name="Græsk burger menu"
-                body="Cheddar, salatmayonnaise, ketchup, iceberg, agurk, ost, bacon og kartoffelbåde."
-              />
-              <MenuDish
-                numberKey="menu.dish.98.no"
-                nameKey="menu.dish.98.name"
-                bodyKey="menu.dish.98.body"
-                number="98"
-                name="Luccas burger menu"
-                body="Salatmayonnaise, ketchup, iceberg, agurk, ost, bacon og kartoffelbåde."
-              />
-              <MenuDish
-                numberKey="menu.dish.99.no"
-                nameKey="menu.dish.99.name"
-                bodyKey="menu.dish.99.body"
-                number="99"
-                name="Mexicansk burger menu"
-                body="Salatmayonnaise, ketch., jalapeños, guac., tacosauce, iceberg, agurk og kartoffelbåde."
-              />
-            </div>
+            <EditableList<DishFallback>
+              cmsKey="menu.burgers.items"
+              wrapperStyle={{ display: "grid", gap: "10px" }}
+              fallback={[
+                {
+                  id: "97",
+                  no: "97",
+                  name: "Græsk burger menu",
+                  body: "Cheddar, salatmayonnaise, ketchup, iceberg, agurk, ost, bacon og kartoffelbåde.",
+                },
+                {
+                  id: "98",
+                  no: "98",
+                  name: "Luccas burger menu",
+                  body: "Salatmayonnaise, ketchup, iceberg, agurk, ost, bacon og kartoffelbåde.",
+                },
+                {
+                  id: "99",
+                  no: "99",
+                  name: "Mexicansk burger menu",
+                  body: "Salatmayonnaise, ketch., jalapeños, guac., tacosauce, iceberg, agurk og kartoffelbåde.",
+                },
+              ]}
+              newItemFallback={{
+                no: "00",
+                name: "Ny burger",
+                body: "Beskrivelse",
+              }}
+              renderItem={renderDish}
+            />
           </section>
         </div>
 
@@ -262,38 +295,40 @@ export async function MenuPageContent() {
                 as="p"
                 className="menu-section-intro"
               />
-              <div
-                style={{
+              <EditableList<DishFallback>
+                cmsKey="menu.pizzas.items"
+                wrapperStyle={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: "20px",
                 }}
-              >
-                <MenuDish
-                  numberKey="menu.dish.2.no"
-                  nameKey="menu.dish.2.name"
-                  bodyKey="menu.dish.2.body"
-                  number="2"
-                  name="Skinkepizza"
-                  body="En klassiker med skinke."
-                />
-                <MenuDish
-                  numberKey="menu.dish.3.no"
-                  nameKey="menu.dish.3.name"
-                  bodyKey="menu.dish.3.body"
-                  number="3"
-                  name="Pepperonipizza"
-                  body="Krydret pepperoni."
-                />
-                <MenuDish
-                  numberKey="menu.dish.56.no"
-                  nameKey="menu.dish.56.name"
-                  bodyKey="menu.dish.56.body"
-                  number="56"
-                  name="Calzone"
-                  body="Foldet pizza med fyld."
-                />
-              </div>
+                fallback={[
+                  {
+                    id: "2",
+                    no: "2",
+                    name: "Skinkepizza",
+                    body: "En klassiker med skinke.",
+                  },
+                  {
+                    id: "3",
+                    no: "3",
+                    name: "Pepperonipizza",
+                    body: "Krydret pepperoni.",
+                  },
+                  {
+                    id: "56",
+                    no: "56",
+                    name: "Calzone",
+                    body: "Foldet pizza med fyld.",
+                  },
+                ]}
+                newItemFallback={{
+                  no: "00",
+                  name: "Ny pizza",
+                  body: "Beskrivelse",
+                }}
+                renderItem={renderDish}
+              />
             </div>
             <div
               style={{

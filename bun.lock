@@ -74,6 +74,33 @@
         "react-dom": "^19",
       },
     },
+    "sites/bachs-bageri": {
+      "name": "@autosites/site-bachs-bageri",
+      "version": "0.1.0",
+      "dependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "@autosites/site-shell": "workspace:*",
+        "@supabase/ssr": "^0.10.2",
+        "@supabase/supabase-js": "^2.103.2",
+        "next": "16.2.4",
+        "posthog-js": "^1.369.3",
+        "posthog-node": "^5.29.2",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
+      },
+      "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.2.4",
+        "glob": "^13.0.6",
+        "tailwindcss": "^4",
+        "typescript": "^5",
+      },
+    },
     "sites/blank-demo": {
       "name": "@autosites/site-blank-demo",
       "version": "0.1.0",
@@ -301,6 +328,8 @@
     "@autosites/analytics": ["@autosites/analytics@workspace:packages/analytics"],
 
     "@autosites/cms": ["@autosites/cms@workspace:packages/cms"],
+
+    "@autosites/site-bachs-bageri": ["@autosites/site-bachs-bageri@workspace:sites/bachs-bageri"],
 
     "@autosites/site-blank-demo": ["@autosites/site-blank-demo@workspace:sites/blank-demo"],
 

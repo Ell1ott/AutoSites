@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start --port 4004",
     "lint": "eslint",
-    "cms:pull": "bun scripts/cms-sync.ts pull --site",
-    "cms:push": "bun scripts/cms-sync.ts push --site"
+    "cms:pull": "bun ../../packages/cms/scripts/cms-sync.ts pull --site cafeluccas",
+    "cms:push": "bun ../../packages/cms/scripts/cms-sync.ts push --site cafeluccas"
   },
   "dependencies": {
     "@autosites/analytics": "workspace:*",

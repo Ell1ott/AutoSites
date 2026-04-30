@@ -22,6 +22,8 @@ interface FetchRequestBody {
 const MAX_QUERY_LEN = 500;
 const MIN_RADIUS = 50;
 const MAX_RADIUS = 100_000;
+/** Matches `fetch_businesses.py` cap and Places pagination (≤20/page). */
+const MAX_FETCH_COUNT = 100;
 
 function makeRunId(): string {
 	const iso = new Date().toISOString().replace(/[:.]/g, '-').replace(/Z$/, 'Z');
@@ -93,8 +95,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	const countRaw = body.count;
 	const count =
 		typeof countRaw === 'number' && Number.isInteger(countRaw) ? countRaw : 10;
-	if (count < 1 || count > 20) {
-		error(400, 'count must be an integer between 1 and 20');
+	if (count < 1 || count > MAX_FETCH_COUNT) {
+		error(400, `count must be an integer between 1 and ${MAX_FETCH_COUNT}`);
 	}
 
 	const outputRel =
