@@ -1041,15 +1041,37 @@ a.brand-box:focus-visible {
   }
 
   .menu-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(100% - 56px);
+    grid-template-columns: none;
+    gap: 14px;
     margin-top: 30px;
+    overflow-x: auto;
+    overflow-y: visible;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 12px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 30px;
+    padding-bottom: 4px;
+    margin-right: -18px;
+    margin-left: -18px;
   }
 
   .product-tag {
-    clip-path: none;
-    border-radius: 16px;
-    padding: 28px 20px 22px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%);
+    border-radius: 0;
+    min-height: 100%;
+    padding: 30px 22px 24px;
+    overflow: visible;
+  }
+
+  .menu-grid::-webkit-scrollbar {
+    display: none;
   }
 
   .product-category {
