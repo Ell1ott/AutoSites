@@ -1,4 +1,5 @@
 export type MenuProduct = {
+  id: string;
   category: string;
   title: string;
   description: string;
@@ -7,6 +8,7 @@ export type MenuProduct = {
 
 export const menuProducts: MenuProduct[] = [
   {
+    id: "brod",
     category: "Brød",
     title: "Friskbagt brød",
     description:
@@ -14,6 +16,7 @@ export const menuProducts: MenuProduct[] = [
     note: "Dagligt udvalg i butikken",
   },
   {
+    id: "wienerbrod",
     category: "Wienerbrød",
     title: "Wienerbrød & spandauer",
     description:
@@ -21,6 +24,7 @@ export const menuProducts: MenuProduct[] = [
     note: "Bages hos os",
   },
   {
+    id: "kager",
     category: "Kager",
     title: "Kager til hverdag og fest",
     description:
@@ -28,6 +32,7 @@ export const menuProducts: MenuProduct[] = [
     note: "Ring eller kig forbi",
   },
   {
+    id: "smorrebrod",
     category: "Smørrebrød",
     title: "Smørrebrød & sandwich",
     description:
@@ -35,6 +40,7 @@ export const menuProducts: MenuProduct[] = [
     note: "Takeaway-frokost",
   },
   {
+    id: "saeson",
     category: "Sæson",
     title: "Pålægskagemænd & kagekoner",
     description:
@@ -42,12 +48,14 @@ export const menuProducts: MenuProduct[] = [
     note: "Efter sæson og efterspørgsel",
   },
   {
+    id: "is-og-koldt",
     category: "Is & koldt",
     title: "Is",
     description: "Noget koldt og sødt, når det smager bedst — spørg i disken.",
     note: "Udvalg varierer",
   },
   {
+    id: "drikke",
     category: "Drikke",
     title: "Drikkevarer",
     description:
@@ -55,6 +63,7 @@ export const menuProducts: MenuProduct[] = [
     note: "Tag med",
   },
   {
+    id: "morgen",
     category: "Morgen",
     title: "Morgenmad",
     description:

@@ -1,46 +1,76 @@
-"use client";
+import {
+  EditableLink,
+  EditableList,
+  EditableText,
+} from "@autosites/cms/components";
+import { SiteHeaderNavToggle } from "./SiteHeaderNavToggle";
 
-import { useEffect, useState } from "react";
+type NavItemFallback = {
+  href: string;
+  label: string;
+};
 
 const navLinks = [
-  { href: "#sortiment", label: "Sortiment" },
-  { href: "#om-os", label: "Om os" },
-  { href: "#service", label: "For dig" },
-  { href: "#bestil", label: "Bestil" },
-  { href: "#butikken", label: "Kontakt" },
-] as const;
+  { id: "sortiment", href: "#sortiment", label: "Sortiment" },
+  { id: "om-os", href: "#om-os", label: "Om os" },
+  { id: "for-dig", href: "#service", label: "For dig" },
+  { id: "bestil", href: "#bestil", label: "Bestil" },
+  { id: "kontakt", href: "#butikken", label: "Kontakt" },
+];
 
-export function SiteHeaderNav() {
-  const [isOpen, setIsOpen] = useState(false);
+function renderNavItem({
+  keyPrefix,
+  fallback,
+}: {
+  keyPrefix: string;
+  fallback: NavItemFallback;
+}) {
+  return (
+    <li>
+      <EditableLink
+        cmsKey={`${keyPrefix}.link`}
+        fallback={{ href: fallback.href, label: fallback.label }}
+      />
+    </li>
+  );
+}
 
-  const closeMenu = () => setIsOpen(false);
-
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
+export async function SiteHeaderNav() {
   return (
     <div className="nav-float">
+      <SiteHeaderNavToggle />
       <div className="mobile-top-nav-row">
-        <a href="#top" className="brand-box">
-          <div className="brand-logo">
-            Bachs
-            <br />
-            Bageri
-          </div>
-          <div className="brand-tagline">Traditioner siden 1932</div>
-        </a>
+        <EditableLink
+          cmsKey="nav.brandLink"
+          fallback={{ href: "#top", label: "Bachs Bageri" }}
+          className="brand-box"
+        >
+          {() => (
+            <>
+              <div className="brand-logo">
+                <EditableText
+                  cmsKey="nav.brandName"
+                  fallback="Bachs<br />Bageri"
+                  as="span"
+                />
+              </div>
+              <EditableText
+                cmsKey="nav.brandTagline"
+                fallback="Traditioner siden 1932"
+                as="div"
+                className="brand-tagline"
+              />
+            </>
+          )}
+        </EditableLink>
 
         <button
+          id="bachs-mobile-toggle"
           type="button"
           className="mobile-nav-toggle"
-          aria-expanded={isOpen}
+          aria-expanded={false}
           aria-controls="bachs-mobile-menu"
-          aria-label={isOpen ? "Luk menu" : "Åbn menu"}
-          onClick={() => setIsOpen((open) => !open)}
+          aria-label="Åbn menu"
         >
           <span className="mobile-nav-toggle-line" />
           <span className="mobile-nav-toggle-line" />
@@ -49,38 +79,41 @@ export function SiteHeaderNav() {
       </div>
 
       <button
+        id="bachs-mobile-backdrop"
         type="button"
-        className={`mobile-nav-backdrop ${isOpen ? "is-open" : ""}`}
-        onClick={closeMenu}
-        aria-hidden={!isOpen}
-        tabIndex={isOpen ? 0 : -1}
+        className="mobile-nav-backdrop"
+        aria-hidden
+        tabIndex={-1}
       />
 
       <nav
-        className={`bachs-nav ${isOpen ? "is-open" : ""}`}
+        className="bachs-nav"
         aria-label="Hovedmenu"
         id="bachs-mobile-menu"
       >
         <div className="mobile-nav-panel-head">
-          <span className="mobile-nav-panel-label">Navigation</span>
+          <EditableText
+            cmsKey="nav.panelLabel"
+            fallback="Navigation"
+            as="span"
+            className="mobile-nav-panel-label"
+          />
           <button
+            id="bachs-mobile-close"
             type="button"
             className="mobile-nav-close"
-            onClick={closeMenu}
             aria-label="Luk menu"
           >
-            Luk
+            <EditableText cmsKey="nav.closeLabel" fallback="Luk" as="span" />
           </button>
         </div>
-        <ul>
-          {navLinks.map(({ href, label }) => (
-            <li key={href}>
-              <a href={href} onClick={closeMenu}>
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <EditableList<NavItemFallback>
+          cmsKey="nav.items"
+          wrapperAs="ul"
+          fallback={navLinks}
+          newItemFallback={{ href: "#", label: "Nyt menupunkt" }}
+          renderItem={renderNavItem}
+        />
       </nav>
     </div>
   );

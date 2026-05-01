@@ -2,7 +2,7 @@
 
 Working directory: `mapsLeadsFetcher/` (use `uv run …` so deps from `pyproject.toml` apply).
 
-**Env:** `.env.local` in this folder — `GOOGLE_MAPS_API_KEY` (Places), `GEMINI_API_KEY` (AI scripts). Optional Supabase keys for the admin UI if you use that integration.
+**Env:** `.env.local` in this folder — `GOOGLE_MAPS_API_KEY` (Places), `GEMINI_API_KEY` (AI scripts). Optional Supabase keys for the admin UI (`../admin`) if you use that integration.
 
 **Browser (screenshots once):** `uv run patchright install chromium`
 
@@ -113,13 +113,13 @@ After: `bun --cwd sites/<slug> dev` (URL printed by the script).
 
 ## Admin UI (`admin/`)
 
-SvelteKit app for lead overview, AI runs, screenshots, etc.
+SvelteKit app for lead overview, AI runs, screenshots, etc. Lives next to this folder in the monorepo.
 
 ```bash
-cd admin && npm install && npm run dev
+cd ../admin && bun install && bun run dev
 ```
 
-Build / preview: `npm run build`, `npm run preview`.
+Build / preview: `bun run build`, `bun run preview`.
 
 ---
 

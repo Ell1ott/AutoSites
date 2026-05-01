@@ -7,18 +7,21 @@ function findMapsLeadsFetcherRoot(): string {
 	for (const start of starts) {
 		let dir = start;
 		while (true) {
-			if (existsSync(join(dir, 'pyproject.toml')) && existsSync(join(dir, 'admin'))) {
-				return dir;
+			const ml = join(dir, 'mapsLeadsFetcher');
+			if (existsSync(join(ml, 'pyproject.toml'))) {
+				return ml;
 			}
 			const parent = dirname(dir);
 			if (parent === dir) break;
 			dir = parent;
 		}
 	}
-	throw new Error('Could not locate mapsLeadsFetcher repo root');
+	throw new Error(
+		'Could not locate mapsLeadsFetcher (expected <repo>/mapsLeadsFetcher/pyproject.toml)'
+	);
 }
 
-/** Repo root `mapsLeadsFetcher/` (parent of `admin/`). */
+/** Python project root `mapsLeadsFetcher/` (JSON, screenshots, scripts). */
 export const mapsLeadsFetcherRoot = findMapsLeadsFetcherRoot();
 
 export const mapsBusinessesJsonPath = join(mapsLeadsFetcherRoot, 'maps_businesses.json');

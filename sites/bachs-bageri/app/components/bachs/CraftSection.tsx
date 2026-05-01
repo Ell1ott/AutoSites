@@ -1,10 +1,10 @@
-import Image from "next/image";
+import { EditableImage, EditableLink, EditableText } from "@autosites/cms/components";
 import { SectionTag } from "./SectionTag";
 
 const CRAFT_IMG =
   "https://images.unsplash.com/photo-1585478259715-876a6a81fc08?auto=format&fit=crop&q=80&w=1200";
 
-export function CraftSection() {
+export async function CraftSection() {
   return (
     <section
       className="section-craft"
@@ -13,27 +13,43 @@ export function CraftSection() {
     >
       <div className="container grid-layout">
         <div className="craft-text">
-          <SectionTag>Om Bachs Bageri</SectionTag>
+          <SectionTag>
+            <EditableText cmsKey="craft.tag" fallback="Om Bachs Bageri" as="span" />
+          </SectionTag>
           <h2 className="section-title" id="craft-heading">
-            Fra 1932 tilbage på hylderne i Tarm
+            <EditableText
+              cmsKey="craft.title"
+              fallback="Fra 1932 tilbage på hylderne i Tarm"
+              as="span"
+            />
           </h2>
           <p>
-            Bachs Bageri bygger på gamle traditioner og ægte bageryrk. Vi er
-            medlem af{" "}
-            <a
-              href="https://www.bkd.dk"
+            <EditableText
+              cmsKey="craft.body.beforeBkd"
+              fallback="Bachs Bageri bygger på gamle traditioner og ægte bageryrk. Vi er medlem af "
+              as="span"
+            />
+            <EditableLink
+              cmsKey="craft.body.bkdLink"
+              fallback={{
+                href: "https://www.bkd.dk",
+                label: "BKD — Brancheforeningen af Danske Konditorer og Bagere",
+              }}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-link"
-            >
-              BKD — Brancheforeningen af Danske Konditorer og Bagere
-            </a>
-            , og vi passer på håndværket i hver eneste rugklump og wienerbrød.
+            />
+            <EditableText
+              cmsKey="craft.body.afterBkd"
+              fallback=", og vi passer på håndværket i hver eneste rugklump og wienerbrød."
+              as="span"
+            />
           </p>
-          <p>
-            I 2014 overtog vi Guldbageren her på Storegade. Siden har vi holdt
-            dampen oppe og bagværket frisk — som den eneste rigtige bager i Tarm.
-          </p>
+          <EditableText
+            cmsKey="craft.body.secondary"
+            fallback="I 2014 overtog vi Guldbageren her på Storegade. Siden har vi holdt dampen oppe og bagværket frisk — som den eneste rigtige bager i Tarm."
+            as="p"
+          />
           <div className="craft-organic">
             <svg
               width="40"
@@ -56,15 +72,18 @@ export function CraftSection() {
                 strokeWidth="0.5"
               />
             </svg>
-            <span className="craft-organic-label">
-              CVR 10478448 · Bachs Bageri
-            </span>
+            <EditableText
+              cmsKey="craft.cvrLabel"
+              fallback="CVR 10478448 · Bachs Bageri"
+              as="span"
+              className="craft-organic-label"
+            />
           </div>
         </div>
         <div className="craft-image">
-          <Image
-            src={CRAFT_IMG}
-            alt="Bageryrk og dej på et lokalt bageri"
+          <EditableImage
+            cmsKey="craft.image"
+            fallback={{ src: CRAFT_IMG, alt: "Bageryrk og dej på et lokalt bageri" }}
             fill
             sizes="(max-width: 1024px) 100vw, 42vw"
             style={{ objectFit: "cover" }}
