@@ -1,4 +1,8 @@
-import { EditableImage, EditableLink, EditableText } from "@autosites/cms/components";
+import {
+  EditableImage,
+  EditableRichText,
+  EditableText,
+} from "@autosites/cms/components";
 import { SectionTag } from "./SectionTag";
 
 const CRAFT_IMG =
@@ -23,32 +27,11 @@ export async function CraftSection() {
               as="span"
             />
           </h2>
-          <p>
-            <EditableText
-              cmsKey="craft.body.beforeBkd"
-              fallback="Bachs Bageri bygger på gamle traditioner og ægte bageryrk. Vi er medlem af "
-              as="span"
-            />
-            <EditableLink
-              cmsKey="craft.body.bkdLink"
-              fallback={{
-                href: "https://www.bkd.dk",
-                label: "BKD — Brancheforeningen af Danske Konditorer og Bagere",
-              }}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-link"
-            />
-            <EditableText
-              cmsKey="craft.body.afterBkd"
-              fallback=", og vi passer på håndværket i hver eneste rugklump og wienerbrød."
-              as="span"
-            />
-          </p>
-          <EditableText
-            cmsKey="craft.body.secondary"
-            fallback="I 2014 overtog vi Guldbageren her på Storegade. Siden har vi holdt dampen oppe og bagværket frisk — som den eneste rigtige bager i Tarm."
-            as="p"
+          <EditableRichText
+            cmsKey="craft.body"
+            as="div"
+            className="craft-body"
+            fallback={`<p>Bachs Bageri bygger på gamle traditioner og ægte bageryrk. Vi er medlem af <a href="https://www.bkd.dk">BKD — Brancheforeningen af Danske Konditorer og Bagere</a>, og vi passer på håndværket i hver eneste rugklump og wienerbrød.</p><p>I 2014 overtog vi Guldbageren her på Storegade. Siden har vi holdt dampen oppe og bagværket frisk — som den eneste rigtige bager i Tarm.</p>`}
           />
           <div className="craft-organic">
             <svg

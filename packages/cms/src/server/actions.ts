@@ -101,12 +101,37 @@ function estimateValueLength(value: unknown): number {
   if (typeof value === "string") return value.length;
   if (typeof value === "object") {
     const v = value as Record<string, unknown>;
+    if (typeof v.html === "string") return v.html.length;
     if (typeof v.text === "string") return v.text.length;
     if (typeof v.label === "string") return v.label.length;
     if (typeof v.alt === "string") return v.alt.length;
     try { return JSON.stringify(value).length; } catch { return 0; }
   }
   return 0;
+}
+
+function validateTextStyle(style: unknown, label: string): void {
+  if (style === undefined) return;
+  if (!style || typeof style !== "object") {
+    throw new Error(`${label}.style must be an object.`);
+  }
+  const s = style as Record<string, unknown>;
+  if (s.fontSize !== undefined) {
+    if (typeof s.fontSize !== "number" || !Number.isFinite(s.fontSize)) {
+      throw new Error(`${label}.style.fontSize must be a number.`);
+    }
+    if (s.fontSize < 0.5 || s.fontSize > 6) {
+      throw new Error(`${label}.style.fontSize out of range (0.5–6).`);
+    }
+  }
+  if (s.lineHeight !== undefined) {
+    if (typeof s.lineHeight !== "number" || !Number.isFinite(s.lineHeight)) {
+      throw new Error(`${label}.style.lineHeight must be a number.`);
+    }
+    if (s.lineHeight < 0.8 || s.lineHeight > 3) {
+      throw new Error(`${label}.style.lineHeight out of range (0.8–3).`);
+    }
+  }
 }
 
 function validateValue(kind: CmsKind, value: unknown): void {
@@ -118,28 +143,12 @@ function validateValue(kind: CmsKind, value: unknown): void {
     if (typeof v.text !== "string" || v.text.length > 5000) {
       throw new Error("text.text must be a string (≤ 5000 chars).");
     }
-    if (v.style !== undefined) {
-      if (!v.style || typeof v.style !== "object") {
-        throw new Error("text.style must be an object.");
-      }
-      const s = v.style as Record<string, unknown>;
-      if (s.fontSize !== undefined) {
-        if (typeof s.fontSize !== "number" || !Number.isFinite(s.fontSize)) {
-          throw new Error("text.style.fontSize must be a number.");
-        }
-        if (s.fontSize < 0.5 || s.fontSize > 6) {
-          throw new Error("text.style.fontSize out of range (0.5–6).");
-        }
-      }
-      if (s.lineHeight !== undefined) {
-        if (typeof s.lineHeight !== "number" || !Number.isFinite(s.lineHeight)) {
-          throw new Error("text.style.lineHeight must be a number.");
-        }
-        if (s.lineHeight < 0.8 || s.lineHeight > 3) {
-          throw new Error("text.style.lineHeight out of range (0.8–3).");
-        }
-      }
+    validateTextStyle(v.style, "text");
+  } else if (kind === "richText") {
+    if (typeof v.html !== "string" || v.html.length > 50000) {
+      throw new Error("richText.html must be a string (≤ 50000 chars).");
     }
+    validateTextStyle(v.style, "richText");
   } else if (kind === "image") {
     if (typeof v.src !== "string" || typeof v.alt !== "string") {
       throw new Error("image must have string 'src' and 'alt'.");

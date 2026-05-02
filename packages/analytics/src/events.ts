@@ -11,6 +11,9 @@ export const EVENTS = {
   CMS_IMAGE_UPLOADED: "cms_image_uploaded",
   CMS_FIELD_FOCUSED: "cms_field_focused",
   CMS_IMAGE_PICKER_OPENED: "cms_image_picker_opened",
+  CMS_LIST_ITEM_ADDED: "cms_list_item_added",
+  CMS_LIST_ITEM_REMOVED: "cms_list_item_removed",
+  CMS_LIST_ITEM_MOVED: "cms_list_item_moved",
 } as const;
 
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];

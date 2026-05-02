@@ -11,12 +11,12 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { createPortal } from "react-dom";
+import * as Popover from "@radix-ui/react-popover";
 import { updateContent } from "../server/actions";
 import type { CmsTextStyle } from "../types";
 import { useCmsFieldRegistration, useEditableContext } from "./EditableProvider";
-import { useToastStore } from "./Toast";
 import { useTrack } from "../client-logger";
+import { ExpandedRows, sameStyle, styleToCss } from "./StyleControls";
 
 type EditableTextClientProps = {
   cmsKey: string;
@@ -28,15 +28,6 @@ type EditableTextClientProps = {
   before?: ReactNode;
   after?: ReactNode;
 };
-
-const FONT_SIZE_MIN = 0.5;
-const FONT_SIZE_MAX = 6;
-const FONT_SIZE_STEP = 0.05;
-const LINE_HEIGHT_MIN = 0.8;
-const LINE_HEIGHT_MAX = 3;
-const LINE_HEIGHT_STEP = 0.05;
-const FONT_SIZE_DEFAULT = 1;
-const LINE_HEIGHT_DEFAULT = 1.4;
 
 /** Strip everything except allowed inline formatting tags. */
 function sanitizeHtml(html: string): string {
@@ -57,22 +48,6 @@ function sanitizeHtml(html: string): string {
   return walk(div).replace(/\s+$/, "");
 }
 
-function styleToCss(s: CmsTextStyle | undefined): CSSProperties {
-  if (!s) return {};
-  const out: CSSProperties = {};
-  if (typeof s.fontSize === "number") out.fontSize = `${s.fontSize}rem`;
-  if (typeof s.lineHeight === "number") out.lineHeight = s.lineHeight;
-  return out;
-}
-
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, n));
-}
-
-function round2(n: number): number {
-  return Math.round(n * 100) / 100;
-}
-
 export function EditableTextClient({
   cmsKey,
   initialText,
@@ -84,16 +59,11 @@ export function EditableTextClient({
   after,
 }: EditableTextClientProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const toolbarRef = useRef<HTMLSpanElement | null>(null);
   // The contentEditable is intentionally uncontrolled — the DOM owns its
   // content. We set innerHTML once on mount (see effect below) and never
   // pass dangerouslySetInnerHTML, so React has no way to overwrite typing
   // when the parent server component re-renders after a save.
   const hasInitializedRef = useRef(false);
-  // Re-entry guard: prevents endEditing from running twice when both the
-  // document mousedown listener AND the editable's onBlur fire on the same
-  // outside-click.
-  const endingRef = useRef(false);
   // Mirror of savedText for cross-handler reads (style save, throttled text
   // save, endEditing all need the latest committed value without waiting for
   // a React render).
@@ -129,12 +99,6 @@ export function EditableTextClient({
       savedStyleRef.current = prev;
       setTextStyle(prev);
     }
-  }
-
-  function sameStyle(a: CmsTextStyle | undefined, b: CmsTextStyle | undefined) {
-    const af = a?.fontSize, al = a?.lineHeight;
-    const bf = b?.fontSize, bl = b?.lineHeight;
-    return af === bf && al === bl;
   }
 
   /** Apply a style change to local state (live preview) and optionally save. */
@@ -221,8 +185,6 @@ export function EditableTextClient({
 
   /** End the editing session: commit text & style, close the toolbar. */
   async function endEditing() {
-    if (endingRef.current) return;
-    endingRef.current = true;
     const el = ref.current;
     if (!el) return;
 
@@ -271,18 +233,9 @@ export function EditableTextClient({
     }
   }
 
-  function onBlur(e: FocusEvent<HTMLElement>) {
-    // Focus moving into the toolbar shouldn't end the session — the document
-    // mousedown listener (below) handles real outside-clicks.
-    const related = e.relatedTarget as HTMLElement | null;
-    if (related?.closest(".cms-rich-toolbar")) return;
-    void endEditing();
-  }
-
   function onFocus(e: FocusEvent<HTMLElement>) {
     e.currentTarget.classList.add("cms-editing");
     setFocused(true);
-    endingRef.current = false; // new session — allow endEditing again
     track("cms_field_focused", { key: cmsKey, kind: "text" });
   }
 
@@ -316,303 +269,100 @@ export function EditableTextClient({
     ref.current?.focus();
   }
 
-  const [toolbarPos, setToolbarPos] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (focused && ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      // Anchor toolbar by its bottom edge just above the text.
-      // CSS translateY(-100%) makes it grow upward when expanded.
-      setToolbarPos({
-        top: rect.top - 8 + window.scrollY,
-        left: rect.left + window.scrollX,
-      });
-    } else {
-      setToolbarPos(null);
-    }
-  }, [focused]);
-
-  // Single source of truth for "click outside ends the session". Browser blur
-  // events alone are unreliable here because focus can sit on a toolbar input
-  // (number field) — the editable's own onBlur never fires when the user
-  // then clicks somewhere unrelated.
-  useEffect(() => {
-    if (!focused) return;
-    function onDocDown(e: MouseEvent) {
-      const t = e.target as Node | null;
-      if (!t) return;
-      if (ref.current?.contains(t)) return;
-      if (toolbarRef.current?.contains(t)) return;
-      void endEditing();
-    }
-    document.addEventListener("mousedown", onDocDown);
-    return () => document.removeEventListener("mousedown", onDocDown);
-    // endEditing is stable enough — it reads from refs and current state via
-    // the closure captured at this effect's run; that's fine because we
-    // re-run the effect whenever `focused` changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focused]);
-
   const cls = [className, "cms-editable"].filter(Boolean).join(" ");
 
   const liveStyle: CSSProperties = { ...style, ...styleToCss(textStyle) };
 
-  const toolbar =
-    toolbarPos &&
-    createPortal(
-      <span
-        ref={toolbarRef}
-        className={`cms-rich-toolbar${expanded ? " cms-rich-toolbar--expanded" : ""}`}
-        contentEditable={false}
-        style={{ top: toolbarPos.top, left: toolbarPos.left }}
-        onMouseDown={(e) => {
-          // Keep contentEditable focus when clicking buttons. Allow inputs
-          // (e.g. the editable number field) to receive focus normally.
-          if ((e.target as HTMLElement).tagName !== "INPUT") {
-            e.preventDefault();
-          }
-        }}
-      >
-        {expanded ? (
-          <ExpandedRows
-            style={textStyle}
-            onChange={updateStyleField}
-            onReset={resetStyle}
-          />
-        ) : null}
-        <span className="cms-rich-toolbar__row">
-          <button
-            type="button"
-            title="Bold (⌘B)"
-            onClick={() => execFormat("bold")}
-          >
-            B
-          </button>
-          <button
-            type="button"
-            title="Italic (⌘I)"
-            onClick={() => execFormat("italic")}
-          >
-            <i>I</i>
-          </button>
-          <button
-            type="button"
-            title={expanded ? "Hide style options" : "More options"}
-            aria-pressed={expanded}
-            className={expanded ? "cms-rich-toolbar__more is-active" : "cms-rich-toolbar__more"}
-            onClick={() => setExpanded((v) => !v)}
-          >
-            ⋯
-          </button>
-        </span>
-      </span>,
-      document.body,
-    );
-
-  return createElement(
-    "span",
-    { style: { display: "contents" } },
-    toolbar,
-    createElement(tag, {
-      ref,
-      className: cls,
-      style: liveStyle,
-      contentEditable: true,
-      suppressContentEditableWarning: true,
-      spellCheck: true,
-      // Intentionally NO dangerouslySetInnerHTML — see the mount effect above.
-      // React must never re-apply innerHTML or it will wipe user typing when
-      // the parent server component re-renders after a save.
-      onBlur,
-      onFocus,
-      onKeyDown,
-      onPaste,
-      "data-cms-key": cmsKey,
-    }),
-  );
-}
-
-type ExpandedRowsProps = {
-  style: CmsTextStyle | undefined;
-  onChange: (
-    field: "fontSize" | "lineHeight",
-    value: number | undefined,
-    commit?: boolean,
-  ) => void;
-  onReset: () => void;
-};
-
-function ExpandedRows({ style, onChange, onReset }: ExpandedRowsProps) {
-  const fontSet = style?.fontSize !== undefined;
-  const lhSet = style?.lineHeight !== undefined;
+  const editable = createElement(tag, {
+    ref,
+    className: cls,
+    style: liveStyle,
+    contentEditable: true,
+    suppressContentEditableWarning: true,
+    spellCheck: true,
+    // Intentionally NO dangerouslySetInnerHTML — see the mount effect above.
+    // React must never re-apply innerHTML or it will wipe user typing when
+    // the parent server component re-renders after a save.
+    onFocus,
+    onKeyDown,
+    onPaste,
+    "data-cms-key": cmsKey,
+  });
 
   return (
-    <>
-      <StyleNumberRow
-        label="size"
-        field="fontSize"
-        value={style?.fontSize ?? FONT_SIZE_DEFAULT}
-        isSet={fontSet}
-        min={FONT_SIZE_MIN}
-        max={FONT_SIZE_MAX}
-        step={FONT_SIZE_STEP}
-        bumpStep={FONT_SIZE_STEP * 2}
-        onChange={onChange}
-      />
-      <span className="cms-rich-toolbar__row cms-rich-toolbar__row--style">
-        <StyleNumberInline
-          label="line"
-          field="lineHeight"
-          value={style?.lineHeight ?? LINE_HEIGHT_DEFAULT}
-          isSet={lhSet}
-          min={LINE_HEIGHT_MIN}
-          max={LINE_HEIGHT_MAX}
-          step={LINE_HEIGHT_STEP}
-          bumpStep={LINE_HEIGHT_STEP * 2}
-          onChange={onChange}
-        />
-        <button
-          type="button"
-          title="Reset to default"
-          className="cms-rich-toolbar__reset"
-          onClick={onReset}
-          disabled={!fontSet && !lhSet}
+    <Popover.Root
+      open={focused}
+      onOpenChange={(next) => {
+        if (!next) void endEditing();
+      }}
+    >
+      <Popover.Anchor asChild>{editable}</Popover.Anchor>
+      <Popover.Portal>
+        <Popover.Content
+          className={`cms-rich-toolbar${expanded ? " cms-rich-toolbar--expanded" : ""}`}
+          side="top"
+          align="start"
+          sideOffset={8}
+          updatePositionStrategy="always"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => {
+            // Clicks/selections inside the editable itself must not dismiss
+            // the toolbar — the user is positioning a caret or extending a
+            // selection so they can apply B/I.
+            const target = e.detail.originalEvent.target as Node | null;
+            if (target && ref.current?.contains(target)) e.preventDefault();
+          }}
+          onFocusOutside={(e) => {
+            const target = e.target as Node | null;
+            if (target && ref.current?.contains(target)) e.preventDefault();
+          }}
+          onMouseDown={(e) => {
+            // Keep contentEditable focus when clicking buttons. Allow inputs
+            // (e.g. the editable number field) to receive focus normally.
+            if ((e.target as HTMLElement).tagName !== "INPUT") {
+              e.preventDefault();
+            }
+          }}
         >
-          ↺
-        </button>
-      </span>
-    </>
-  );
-}
-
-type StyleRowProps = {
-  label: string;
-  field: "fontSize" | "lineHeight";
-  value: number;
-  isSet: boolean;
-  min: number;
-  max: number;
-  step: number;
-  bumpStep: number;
-  onChange: (
-    field: "fontSize" | "lineHeight",
-    value: number | undefined,
-    commit?: boolean,
-  ) => void;
-};
-
-/** A row with: label, − button, editable number, + button. */
-function StyleNumberRow(props: StyleRowProps) {
-  return (
-    <span className="cms-rich-toolbar__row cms-rich-toolbar__row--style">
-      <StyleNumberInline {...props} />
-    </span>
-  );
-}
-
-/** Inline cluster: label, − button, editable number, + button, slider. */
-function StyleNumberInline({
-  label,
-  field,
-  value,
-  isSet,
-  min,
-  max,
-  step,
-  bumpStep,
-  onChange,
-}: StyleRowProps) {
-  const [draft, setDraft] = useState<string>(value.toFixed(2));
-
-  // Re-sync the draft when the committed value changes from outside (e.g. +/−,
-  // slider drag, reset, or another field's edit).
-  useEffect(() => {
-    setDraft(value.toFixed(2));
-  }, [value]);
-
-  function commit(raw: string) {
-    const parsed = parseFloat(raw);
-    if (!Number.isFinite(parsed)) {
-      setDraft(value.toFixed(2));
-      return;
-    }
-    const v = round2(clamp(parsed, min, max));
-    setDraft(v.toFixed(2));
-    onChange(field, v, true);
-  }
-
-  function bump(delta: number) {
-    const v = round2(clamp(value + delta, min, max));
-    setDraft(v.toFixed(2));
-    onChange(field, v, true);
-  }
-
-  function previewSlider(raw: string) {
-    const v = round2(clamp(parseFloat(raw), min, max));
-    onChange(field, v, false); // local preview only
-  }
-
-  function commitSlider(raw: string) {
-    const v = round2(clamp(parseFloat(raw), min, max));
-    onChange(field, v, true);
-  }
-
-  return (
-    <>
-      <span className="cms-rich-toolbar__label">{label}</span>
-      <button
-        type="button"
-        title={`Decrease ${label}`}
-        onClick={() => bump(-bumpStep)}
-      >
-        −
-      </button>
-      <input
-        type="number"
-        className={`cms-rich-toolbar__num${isSet ? "" : " is-default"}`}
-        min={min}
-        max={max}
-        step={step}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={(e) => commit(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            commit((e.target as HTMLInputElement).value);
-            (e.target as HTMLInputElement).blur();
-          }
-          if (e.key === "Escape") {
-            e.preventDefault();
-            setDraft(value.toFixed(2));
-            (e.target as HTMLInputElement).blur();
-          }
-        }}
-        aria-label={`${label} number`}
-      />
-      <button
-        type="button"
-        title={`Increase ${label}`}
-        onClick={() => bump(bumpStep)}
-      >
-        +
-      </button>
-      <input
-        type="range"
-        className="cms-rich-toolbar__slider"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => previewSlider(e.target.value)}
-        onMouseUp={(e) => commitSlider((e.target as HTMLInputElement).value)}
-        onTouchEnd={(e) => commitSlider((e.target as HTMLInputElement).value)}
-        onKeyUp={(e) => commitSlider((e.target as HTMLInputElement).value)}
-        aria-label={`${label} slider`}
-      />
-    </>
+          {expanded ? (
+            <ExpandedRows
+              style={textStyle}
+              onChange={updateStyleField}
+              onReset={resetStyle}
+            />
+          ) : null}
+          <span className="cms-rich-toolbar__row">
+            <button
+              type="button"
+              title="Bold (⌘B)"
+              onClick={() => execFormat("bold")}
+            >
+              B
+            </button>
+            <button
+              type="button"
+              title="Italic (⌘I)"
+              onClick={() => execFormat("italic")}
+            >
+              <i>I</i>
+            </button>
+            <button
+              type="button"
+              title={expanded ? "Hide style options" : "More options"}
+              aria-pressed={expanded}
+              className={
+                expanded
+                  ? "cms-rich-toolbar__more is-active"
+                  : "cms-rich-toolbar__more"
+              }
+              onClick={() => setExpanded((v) => !v)}
+            >
+              ⋯
+            </button>
+          </span>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

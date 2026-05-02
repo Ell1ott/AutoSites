@@ -63,7 +63,9 @@
       "Bash(curl -sS -o /dev/null -w * http://localhost:*)",
       "Bash(curl -sS -o /tmp/* -w * http://localhost:*)",
       "Read(//Users/elliottfriedrich/.claude/projects/-Users-elliottfriedrich-Documents-GitHub-AutoSites/memory/**)",
-      "Bash(git -C /Users/elliottfriedrich/Documents/GitHub/AutoSites/ status --short)"
+      "Bash(git -C /Users/elliottfriedrich/Documents/GitHub/AutoSites/ status --short)",
+      "mcp__context7__query-docs",
+      "mcp__supabase__list_migrations"
     ]
   }
 }

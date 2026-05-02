@@ -1,4 +1,4 @@
-export type CmsKind = "text" | "image" | "link" | "list";
+export type CmsKind = "text" | "image" | "link" | "list" | "richText";
 
 export type CmsTextStyle = {
   fontSize?: number;
@@ -7,6 +7,10 @@ export type CmsTextStyle = {
 
 export type CmsText = {
   text: string;
+  style?: CmsTextStyle;
+};
+export type CmsRichText = {
+  html: string;
   style?: CmsTextStyle;
 };
 export type CmsImage = {
@@ -23,6 +27,7 @@ export type CmsValueByKind = {
   image: CmsImage;
   link: CmsLink;
   list: CmsList;
+  richText: CmsRichText;
 };
 
 export type CmsRow<K extends CmsKind = CmsKind> = {

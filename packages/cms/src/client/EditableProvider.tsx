@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import type { CmsKind } from "../types";
 import { Toaster, useToastStore } from "./Toast";
 import "./editable.css";
@@ -41,6 +42,10 @@ function formatCmsFieldCompact(kind: CmsKind, value: unknown): string {
   if (kind === "text" && value && typeof value === "object" && "text" in value) {
     const t = String((value as { text: string }).text);
     return t.replace(/\s+/g, " ").trim();
+  }
+  if (kind === "richText" && value && typeof value === "object" && "html" in value) {
+    const h = String((value as { html: string }).html);
+    return h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
   }
   if (kind === "link" && value && typeof value === "object") {
     const v = value as { href: string; label: string };
@@ -131,10 +136,8 @@ export function EditableProviderClient({ children }: { children: ReactNode }) {
 }
 
 function EditModeBanner() {
-  const [open, setOpen] = useState(false);
-
   return (
-    <>
+    <Dialog.Root>
       <div
         role="status"
         aria-live="polite"
@@ -161,13 +164,11 @@ function EditModeBanner() {
       >
         <span>Editing · changes save automatically</span>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <button
-            type="button"
-            className="cms-banner-btn"
-            onClick={() => setOpen(true)}
-          >
-            Page data
-          </button>
+          <Dialog.Trigger asChild>
+            <button type="button" className="cms-banner-btn">
+              Page data
+            </button>
+          </Dialog.Trigger>
           <a
             href="/?edit=0"
             style={{ color: "#fafafa", textDecoration: "underline" }}
@@ -176,29 +177,13 @@ function EditModeBanner() {
           </a>
         </div>
       </div>
-      {open ? <PageDataOverlay onClose={() => setOpen(false)} /> : null}
-    </>
+      <PageDataDialogContent />
+    </Dialog.Root>
   );
 }
 
-function PageDataOverlay({ onClose }: { onClose: () => void }) {
+function PageDataDialogContent() {
   const { pageFields, pushToast } = useEditableContext();
-
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, []);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
 
   const sorted = useMemo(() => {
     return [...pageFields.entries()].sort(([a], [b]) =>
@@ -225,32 +210,27 @@ function PageDataOverlay({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div
-      className="cms-page-data-backdrop"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cms-page-data-title"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div className="cms-page-data-panel">
+    <Dialog.Portal>
+      <Dialog.Overlay className="cms-page-data-backdrop" />
+      <Dialog.Content className="cms-page-data-panel">
         <div className="cms-page-data-header">
-          <h2 id="cms-page-data-title" className="cms-page-data-title">
+          <Dialog.Title className="cms-page-data-title">
             Page data
-          </h2>
+          </Dialog.Title>
           <div className="cms-page-data-actions">
-            <button type="button" className="cms-page-data-copy" onClick={handleCopy}>
-              Copy all
-            </button>
             <button
               type="button"
+              className="cms-page-data-copy"
+              onClick={handleCopy}
+            >
+              Copy all
+            </button>
+            <Dialog.Close
               className="cms-page-data-close"
-              onClick={onClose}
               aria-label="Close"
             >
               ×
-            </button>
+            </Dialog.Close>
           </div>
         </div>
         <p className="cms-page-data-hint">
@@ -276,7 +256,7 @@ function PageDataOverlay({ onClose }: { onClose: () => void }) {
             })
           )}
         </ul>
-      </div>
-    </div>
+      </Dialog.Content>
+    </Dialog.Portal>
   );
 }

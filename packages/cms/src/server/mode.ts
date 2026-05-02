@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createSessionServerClient } from "./supabase";
 import { getSiteId } from "./site";
 
-export async function getEditMode(): Promise<boolean> {
+export const getEditMode = cache(async (): Promise<boolean> => {
   const cookieStore = await cookies();
   if (cookieStore.get("cms-edit")?.value !== "1") return false;
 
@@ -21,4 +22,4 @@ export async function getEditMode(): Promise<boolean> {
     .maybeSingle();
 
   return Boolean(admin);
-}
+});

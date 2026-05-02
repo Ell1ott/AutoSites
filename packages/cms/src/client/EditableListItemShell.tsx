@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import * as Toolbar from "@radix-ui/react-toolbar";
 import { moveListItem, removeListItem } from "../server/actions";
 import { useToastStore } from "./Toast";
 
@@ -82,10 +83,14 @@ export function EditableListItemShell({
       className={`cms-list-item${confirming ? " cms-list-item--confirming" : ""}`}
     >
       {children}
-      <div className="cms-list-controls" contentEditable={false}>
+      <Toolbar.Root
+        className="cms-list-controls"
+        contentEditable={false}
+        aria-label="List item controls"
+      >
         {confirming ? (
           <>
-            <button
+            <Toolbar.Button
               type="button"
               className="cms-list-btn cms-list-btn--confirm"
               title="Confirm delete"
@@ -93,8 +98,8 @@ export function EditableListItemShell({
               disabled={busy}
             >
               ✓
-            </button>
-            <button
+            </Toolbar.Button>
+            <Toolbar.Button
               type="button"
               className="cms-list-btn"
               title="Cancel"
@@ -102,11 +107,11 @@ export function EditableListItemShell({
               disabled={busy}
             >
               ✕
-            </button>
+            </Toolbar.Button>
           </>
         ) : (
           <>
-            <button
+            <Toolbar.Button
               type="button"
               className="cms-list-btn"
               title="Move up"
@@ -114,8 +119,8 @@ export function EditableListItemShell({
               disabled={busy || isFirst}
             >
               ↑
-            </button>
-            <button
+            </Toolbar.Button>
+            <Toolbar.Button
               type="button"
               className="cms-list-btn"
               title="Move down"
@@ -123,8 +128,8 @@ export function EditableListItemShell({
               disabled={busy || isLast}
             >
               ↓
-            </button>
-            <button
+            </Toolbar.Button>
+            <Toolbar.Button
               type="button"
               className="cms-list-btn cms-list-btn--delete"
               title="Delete"
@@ -132,10 +137,10 @@ export function EditableListItemShell({
               disabled={busy}
             >
               ×
-            </button>
+            </Toolbar.Button>
           </>
         )}
-      </div>
+      </Toolbar.Root>
     </div>
   );
 }
