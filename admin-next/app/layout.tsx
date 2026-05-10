@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Providers } from "@/components/providers"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { SideNav } from "@/components/shell/side-nav"
 import { TopBar } from "@/components/shell/top-bar"
@@ -28,16 +29,18 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <TooltipProvider>
-            <div className="flex h-screen w-screen overflow-hidden">
-              <SideNav />
-              <div className="flex flex-1 flex-col min-w-0">
-                <TopBar />
-                <main className="flex-1 overflow-auto">{children}</main>
+          <Providers>
+            <TooltipProvider>
+              <div className="flex h-screen w-screen overflow-hidden">
+                <SideNav />
+                <div className="flex flex-1 flex-col min-w-0">
+                  <TopBar />
+                  <main className="flex-1 overflow-auto">{children}</main>
+                </div>
+                <SelectionPill />
               </div>
-              <SelectionPill />
-            </div>
-          </TooltipProvider>
+            </TooltipProvider>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

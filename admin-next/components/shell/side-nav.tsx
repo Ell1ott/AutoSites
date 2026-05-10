@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -17,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useUiStore } from "@/lib/store/ui"
 
 const NAV_ITEMS = [
   { href: "/leads", label: "Leads", icon: UserGroupIcon },
@@ -26,38 +27,29 @@ const NAV_ITEMS = [
   { href: "/sites", label: "Sites", icon: Globe02Icon },
 ] as const
 
-const PINNED_KEY = "admin-next.sideNavPinned"
-
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/")
 }
 
 export function SideNav() {
   const pathname = usePathname()
-  const [expanded, setExpanded] = useState(false)
+  const expanded = useUiStore((s) => s.sideNavPinned)
+  const setExpanded = useUiStore((s) => s.setSideNavPinned)
   const railRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const pinned = localStorage.getItem(PINNED_KEY)
-    if (pinned === "true") setExpanded(true)
-  }, [])
 
   useEffect(() => {
     if (!expanded) return
     function handleClick(e: MouseEvent) {
       if (railRef.current && !railRef.current.contains(e.target as Node)) {
         setExpanded(false)
-        localStorage.setItem(PINNED_KEY, "false")
       }
     }
     document.addEventListener("mousedown", handleClick)
     return () => document.removeEventListener("mousedown", handleClick)
-  }, [expanded])
+  }, [expanded, setExpanded])
 
   function toggleExpanded() {
-    const next = !expanded
-    setExpanded(next)
-    localStorage.setItem(PINNED_KEY, String(next))
+    setExpanded(!expanded)
   }
 
   return (
