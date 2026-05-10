@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>novine digital — Handcrafted Digital Structures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,30..100,0..1;1,9..144,300..900,30..100,0..1&family=Caveat:wght@400..700&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" />
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --paper: #F5EBDB;
+    --paper-deep: #EFE2CC;
+    --paper-warm: #F8F0E1;
+    --butter: #E8C99B;
+    --butter-soft: #EFD7B0;
+    --cocoa: #3A2A1F;
+    --cocoa-soft: #5A4030;
+    --ink: #2A1C13;
+    --berry: #8C2F39;
+    --honey: #C8924B;
+    --cream-shadow: rgba(58, 42, 31, 0.08);
+    --cream-shadow-deep: rgba(58, 42, 31, 0.18);
+    --tape: rgba(232, 201, 155, 0.55);
+
+    --serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+    --body: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --hand: 'Caveat', 'Brush Script MT', cursive;
+  }
+
+  /* ============ RESET ============ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 19px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 12% 18%, rgba(232, 201, 155, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 88% 72%, rgba(200, 146, 75, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 95%, rgba(140, 47, 57, 0.06) 0%, transparent 40%);
+  }
+
+  /* paper grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.227 0 0 0 0 0.165 0 0 0 0 0.122 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* subtle vignette */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(58, 42, 31, 0.12) 100%);
+  }
+
+  ::selection { background: var(--honey); color: var(--paper); }
+
+  /* ============ LAYOUT ============ */
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 36px;
+    position: relative;
+  }
+
+  section { position: relative; z-index: 2; }
+
+  /* ============ NAV ============ */
+  .nav {
+    padding: 32px 0 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--cocoa);
+    font-style: italic;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .nav-brand sup { font-size: 0.6em; color: var(--berry); margin-left: 1px; }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cocoa-soft);
+  }
+  .nav-links a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-links a:hover { color: var(--berry); }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    padding: 70px 0 110px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--hand);
+    font-size: 28px;
+    color: var(--berry);
+    transform: rotate(-2deg);
+    display: inline-block;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(54px, 9vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+    color: var(--cocoa);
+    font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+    max-width: 14ch;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .hero h1 .ital {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1, "slnt" -10;
+    color: var(--berry);
+    animation: breathe 6s ease-in-out infinite;
+    display: inline-block;
+  }
+  .hero h1 sup {
+    font-size: 0.5em;
+    vertical-align: super;
+    color: var(--honey);
+    font-style: italic;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); letter-spacing: -0.035em; }
+    50% { transform: scale(1.012); letter-spacing: -0.03em; }
+  }
+
+  .hero-mission {
+    font-family: var(--body);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.55;
+    color: var(--cocoa-soft);
+    max-width: 52ch;
+    margin-bottom: 12px;
+    font-style: italic;
+    position: relative;
+  }
+  .hero-mission .key {
+    font-style: normal;
+    color: var(--cocoa);
+    background: linear-gradient(180deg, transparent 60%, var(--butter-soft) 60%, var(--butter-soft) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+
+  .hero-decor {
+    position: absolute;
+    pointer-events: none;
+  }
+  .hero-decor.coffee-ring {
+    top: 90px;
+    right: -40px;
+    width: 220px;
+    height: 220px;
+    opacity: 0.5;
+  }
+  .hero-decor.wheat {
+    bottom: 200px;
+    right: 8%;
+    width: 80px;
+    transform: rotate(15deg);
+    opacity: 0.7;
+  }
+  .hero-decor.croissant {
+    top: 30%;
+    right: 14%;
+    width: 100px;
+    transform: rotate(-12deg);
+    opacity: 0.55;
+  }
+
+  .hero-margin-note {
+    position: absolute;
+    top: 22%;
+    right: 4%;
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--berry);
+    transform: rotate(6deg);
+    max-width: 200px;
+    line-height: 1.2;
+    opacity: 0;
+    animation: fadeInRotate 1.5s ease-out 1s forwards;
+  }
+  .hero-margin-note::before {
+    content: "";
+    position: absolute;
+    top: -22px;
+    left: 30%;
+    width: 50px;
+    height: 30px;
+    background: var(--tape);
+    transform: rotate(-8deg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  @keyframes fadeInRotate {
+    from { opacity: 0; transform: rotate(0deg) translateY(20px); }
+    to { opacity: 1; transform: rotate(6deg) translateY(0); }
+  }
+
+  .scroll-cue {
+    margin-top: 100px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--cocoa-soft);
+    opacity: 0.85;
+  }
+  .scroll-cue svg {
+    width: 60px;
+    height: 22px;
+  }
+
+  /* ============ DIVIDER (wobbly hand-drawn) ============ */
+  .divider {
+    width: 100%;
+    height: 32px;
+    margin: 24px 0;
+    overflow: visible;
+  }
+  .divider path {
+    stroke: var(--cocoa);
+    stroke-width: 1.4;
+    fill: none;
+    opacity: 0.5;
+  }
+
+  /* ============ SECTION HEADERS ============ */
+  .sect-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--berry);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+  .sect-num::before {
+    content: "§ ";
+    color: var(--honey);
+    font-style: normal;
+  }
+
+  .sect-headline {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 78px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--cocoa);
+    max-width: 18ch;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    margin-bottom: 24px;
+  }
+  .sect-headline em {
+    font-style: italic;
+    color: var(--berry);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1, "slnt" -10;
+  }
+
+  /* ============ SECTION 2 — WHAT WE DO ============ */
+  .section-do {
+    padding: 100px 0 90px;
+    position: relative;
+  }
+
+  .do-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+    margin-bottom: 70px;
+  }
+  .do-intro-text {
+    font-family: var(--body);
+    font-size: 20px;
+    font-style: italic;
+    color: var(--cocoa-soft);
+    line-height: 1.55;
+    max-width: 38ch;
+    padding-bottom: 8px;
+  }
+  @media (max-width: 800px) {
+    .do-intro { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  /* prep-counter — bundled stack of ingredients on parchment */
+  .prep-counter {
+    background: var(--paper-warm);
+    border-radius: 6px;
+    padding: 60px 56px 52px;
+    position: relative;
+    box-shadow:
+      0 1px 0 rgba(58,42,31,0.04),
+      0 18px 50px rgba(58,42,31,0.10),
+      0 50px 120px rgba(58,42,31,0.06);
+    border: 1px solid rgba(58,42,31,0.08);
+  }
+  /* tape on prep-counter corners */
+  .prep-counter::before,
+  .prep-counter::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 30px;
+    background: var(--tape);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    z-index: 4;
+  }
+  .prep-counter::before {
+    top: -14px;
+    left: 8%;
+    transform: rotate(-4deg);
+  }
+  .prep-counter::after {
+    top: -14px;
+    right: 8%;
+    transform: rotate(5deg);
+  }
+
+  .prep-label {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-1.5deg);
+    background: var(--paper);
+    padding: 6px 28px;
+    font-family: var(--hand);
+    font-size: 24px;
+    color: var(--berry);
+    border: 1.5px solid var(--cocoa);
+    border-radius: 2px;
+    z-index: 5;
+  }
+
+  .ingredients {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .ingredient {
+    padding: 18px 28px;
+    border-right: 1px dashed rgba(58, 42, 31, 0.2);
+    position: relative;
+  }
+  .ingredient:last-child { border-right: none; }
+  .ingredient-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--honey);
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .ingredient-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    color: var(--cocoa);
+    opacity: 0.85;
+  }
+  .ingredient h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.15;
+    color: var(--cocoa);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .ingredient p {
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--cocoa-soft);
+  }
+
+  @media (max-width: 900px) {
+    .ingredients { grid-template-columns: repeat(2, 1fr); }
+    .ingredient { border-right: none; border-bottom: 1px dashed rgba(58,42,31,0.2); padding: 26px 18px; }
+    .ingredient:nth-child(odd) { border-right: 1px dashed rgba(58,42,31,0.2); }
+    .ingredient:nth-last-child(-n+2) { border-bottom: none; }
+  }
+  @media (max-width: 560px) {
+    .ingredients { grid-template-columns: 1fr; }
+    .ingredient { border-right: none !important; border-bottom: 1px dashed rgba(58,42,31,0.2); }
+    .ingredient:last-child { border-bottom: none; }
+    .prep-counter { padding: 50px 28px 40px; }
+  }
+
+  .closing-line {
+    margin-top: 56px;
+    text-align: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 2.5vw, 30px);
+    color: var(--cocoa);
+    position: relative;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  }
+  .closing-line::before,
+  .closing-line::after {
+    content: "";
+    display: inline-block;
+    width: 60px;
+    height: 1px;
+    background: var(--cocoa);
+    opacity: 0.4;
+    vertical-align: middle;
+    margin: 0 18px;
+  }
+
+  /* ============ SECTION 3 — GALLERIE ============ */
+  .section-gallery {
+    padding: 100px 0 110px;
+    position: relative;
+  }
+  .gallery-head {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+  .gallery-head .sect-num { display: block; margin-bottom: 8px; }
+  .gallery-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1.05;
+    color: var(--cocoa);
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .gallery-head p {
+    font-family: var(--hand);
+    font-size: 26px;
+    color: var(--berry);
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+
+  .polaroid-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 36px;
+    padding: 30px 0 60px;
+  }
+  @media (max-width: 900px) {
+    .polaroid-grid { grid-template-columns: repeat(2, 1fr); gap: 50px 30px; }
+  }
+  @media (max-width: 520px) {
+    .polaroid-grid { grid-template-columns: 1fr; gap: 60px; max-width: 320px; margin: 0 auto; }
+  }
+
+  .polaroid {
+    background: #FAF4E8;
+    padding: 14px 14px 56px;
+    box-shadow:
+      0 2px 6px rgba(58,42,31,0.10),
+      0 14px 32px rgba(58,42,31,0.14);
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    cursor: default;
+  }
+  .polaroid:nth-child(1) { transform: rotate(-3deg); }
+  .polaroid:nth-child(2) { transform: rotate(2deg); margin-top: 18px; }
+  .polaroid:nth-child(3) { transform: rotate(-1.5deg); margin-top: -12px; }
+  .polaroid:nth-child(4) { transform: rotate(3.5deg); margin-top: 26px; }
+
+  .polaroid:hover {
+    transform: rotate(0deg) translateY(-8px) scale(1.03);
+    z-index: 10;
+    box-shadow:
+      0 4px 12px rgba(58,42,31,0.12),
+      0 24px 56px rgba(58,42,31,0.22);
+  }
+
+  .polaroid::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 64px;
+    height: 22px;
+    background: var(--tape);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    z-index: 3;
+  }
+  .polaroid:nth-child(2)::before { transform: translateX(-50%) rotate(4deg); }
+  .polaroid:nth-child(3)::before { transform: translateX(-50%) rotate(-3deg); }
+  .polaroid:nth-child(4)::before { transform: translateX(-50%) rotate(2deg); }
+
+  .polaroid img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    filter: sepia(0.15) saturate(0.92) contrast(0.95);
+    background: var(--butter-soft);
+  }
+
+  .polaroid-caption {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    text-align: center;
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--cocoa);
+    line-height: 1.1;
+  }
+  .polaroid-caption .place {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--cocoa-soft);
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  /* ============ SECTION 4 — PROCESS ============ */
+  .section-process {
+    padding: 100px 0 110px;
+    position: relative;
+    background: linear-gradient(180deg, transparent 0%, rgba(232, 201, 155, 0.18) 30%, rgba(232, 201, 155, 0.18) 70%, transparent 100%);
+  }
+  .process-head {
+    margin-bottom: 80px;
+    max-width: 760px;
+  }
+
+  .timeline {
+    position: relative;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 90px;
+    top: 30px;
+    bottom: 30px;
+    width: 2px;
+    background-image: repeating-linear-gradient(
+      180deg,
+      var(--cocoa) 0px,
+      var(--cocoa) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+    opacity: 0.35;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 90px 1fr 1fr;
+    gap: 30px;
+    padding: 36px 0;
+    position: relative;
+    border-bottom: 1px dashed rgba(58, 42, 31, 0.18);
+  }
+  .step:last-child { border-bottom: none; }
+
+  .step-marker {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 32px;
+    color: var(--berry);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+  }
+  .step-marker::after {
+    content: "";
+    position: absolute;
+    left: 60px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--berry);
+  }
+
+  .step-content {
+    grid-column: 2 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .step-title {
+    grid-column: 1 / -1;
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--cocoa);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-col h4 {
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--berry);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .step-col p {
+    font-family: var(--body);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--cocoa-soft);
+  }
+
+  .step.punchline .step-col:last-child p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 38px;
+    color: var(--berry);
+    line-height: 1;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1, "slnt" -10;
+  }
+  .step.punchline .step-col:last-child p::after {
+    content: ".";
+    color: var(--honey);
+  }
+
+  @media (max-width: 800px) {
+    .timeline::before { left: 22px; }
+    .step { grid-template-columns: 50px 1fr; gap: 14px; }
+    .step-marker { font-size: 22px; }
+    .step-marker::after { left: 34px; top: 6px; width: 10px; height: 10px; }
+    .step-content { grid-column: 2 / -1; grid-template-columns: 1fr; gap: 16px; }
+    .step.punchline .step-col:last-child p { font-size: 28px; }
+  }
+
+  /* ============ SECTION 5 — EMPATHY + FOUNDER ============ */
+  .section-empathy {
+    padding: 110px 0 130px;
+    position: relative;
+  }
+
+  .pull-quote {
+    max-width: 920px;
+    margin: 0 auto 110px;
+    text-align: center;
+    position: relative;
+    padding: 0 40px;
+  }
+  .pull-quote::before {
+    content: "\201C";
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--serif);
+    font-size: 200px;
+    color: var(--berry);
+    opacity: 0.18;
+    line-height: 1;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+  }
+  .pull-quote p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(26px, 3.6vw, 44px);
+    line-height: 1.25;
+    color: var(--cocoa);
+    letter-spacing: -0.015em;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  }
+  .pull-quote p .accent {
+    color: var(--berry);
+    background: linear-gradient(180deg, transparent 70%, rgba(232, 201, 155, 0.55) 70%);
+  }
+
+  /* Founder — irregular, scrapbook-y */
+  .founder {
+    position: relative;
+    min-height: 540px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .founder-portrait {
+    position: absolute;
+    top: 0;
+    left: 4%;
+    width: 280px;
+    transform: rotate(-5deg);
+    background: #FAF4E8;
+    padding: 16px 16px 64px;
+    box-shadow: 0 12px 36px rgba(58,42,31,0.18);
+    z-index: 2;
+  }
+  .founder-portrait::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 30%;
+    width: 80px;
+    height: 26px;
+    background: var(--tape);
+    transform: rotate(-6deg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  }
+  .portrait-block {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background:
+      radial-gradient(ellipse at 50% 35%, var(--butter) 0%, var(--honey) 55%, var(--cocoa-soft) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .portrait-block::before {
+    /* abstract head silhouette */
+    content: "";
+    position: absolute;
+    bottom: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 80%;
+    background: var(--cocoa);
+    border-radius: 50% 50% 30% 30%;
+    opacity: 0.72;
+  }
+  .portrait-block::after {
+    content: "";
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36%;
+    height: 36%;
+    background: var(--cocoa);
+    border-radius: 50%;
+    opacity: 0.85;
+  }
+  .founder-portrait .caption {
+    position: absolute;
+    bottom: 18px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--cocoa);
+  }
+
+  .founder-name-card {
+    position: absolute;
+    top: 80px;
+    right: 6%;
+    max-width: 460px;
+    transform: rotate(1.5deg);
+  }
+  .founder-name-card h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(46px, 5.5vw, 76px);
+    line-height: 0.95;
+    color: var(--cocoa);
+    letter-spacing: -0.025em;
+    font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
+    margin-bottom: 16px;
+  }
+  .founder-name-card .underline {
+    width: 100%;
+    height: 16px;
+    margin-bottom: 22px;
+  }
+  .founder-name-card .underline path {
+    stroke: var(--berry);
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .founder-note {
+    position: absolute;
+    bottom: 80px;
+    left: 28%;
+    max-width: 360px;
+    background: var(--paper-warm);
+    padding: 22px 26px 24px;
+    transform: rotate(-2deg);
+    box-shadow: 0 8px 24px rgba(58,42,31,0.10);
+    border: 1px solid rgba(58,42,31,0.08);
+    font-family: var(--body);
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--cocoa);
+    z-index: 3;
+  }
+  .founder-note::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    right: 20%;
+    width: 56px;
+    height: 22px;
+    background: var(--tape);
+    transform: rotate(8deg);
+  }
+
+  .founder-email {
+    position: absolute;
+    bottom: 0;
+    right: 8%;
+    transform: rotate(-1deg);
+    text-align: right;
+  }
+  .founder-email .label {
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--berry);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .founder-email a {
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.5vw, 32px);
+    color: var(--cocoa);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--cocoa);
+    padding-bottom: 2px;
+    transition: color 0.3s ease;
+    letter-spacing: -0.01em;
+  }
+  .founder-email a:hover { color: var(--berry); border-color: var(--berry); }
+
+  @media (max-width: 900px) {
+    .founder { min-height: auto; padding: 0 12px; }
+    .founder-portrait,
+    .founder-name-card,
+    .founder-note,
+    .founder-email {
+      position: static;
+      margin: 0 auto 36px;
+      transform: none;
+    }
+    .founder-portrait { max-width: 240px; transform: rotate(-3deg); }
+    .founder-name-card { text-align: left; transform: rotate(0); max-width: 100%; }
+    .founder-note { transform: rotate(-1deg); max-width: 100%; }
+    .founder-email { text-align: left; }
+  }
+
+  /* ============ SECTION 6 — FAQ ============ */
+  .section-faq {
+    padding: 110px 0 90px;
+    position: relative;
+  }
+  .faq-head {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .faq-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(38px, 5vw, 60px);
+    color: var(--cocoa);
+    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .faq-head h2 em {
+    font-style: italic;
+    color: var(--berry);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1, "slnt" -10;
+  }
+
+  .faq {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .faq-item {
+    border-top: 1px solid rgba(58,42,31,0.2);
+    padding: 6px 0;
+  }
+  .faq-item:last-child { border-bottom: 1px solid rgba(58,42,31,0.2); }
+
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 24px 60px 24px 60px;
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(20px, 2vw, 26px);
+    color: var(--cocoa);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary:hover { color: var(--berry); }
+
+  .faq-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.7em;
+    color: var(--honey);
+    flex-shrink: 0;
+    min-width: 36px;
+  }
+  .faq-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    transition: transform 0.4s ease;
+  }
+  .faq-item[open] .faq-icon { transform: translateY(-50%) rotate(45deg); }
+
+  .faq-answer {
+    padding: 0 60px 32px 100px;
+    font-family: var(--body);
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--cocoa-soft);
+    max-width: 70ch;
+  }
+  .faq-answer .em {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--cocoa);
+  }
+
+  @media (max-width: 600px) {
+    .faq-item summary { padding: 22px 44px 22px 0; gap: 14px; font-size: 19px; }
+    .faq-answer { padding: 0 0 26px 50px; font-size: 17px; }
+    .faq-num { min-width: 26px; }
+  }
+
+  /* ============ SECTION 7 — CONTACT CTA ============ */
+  .section-cta {
+    padding: 140px 0 130px;
+    position: relative;
+    text-align: center;
+  }
+
+  .section-cta::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background:
+      radial-gradient(circle, rgba(232, 201, 155, 0.5) 0%, transparent 60%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .cta-inner { position: relative; z-index: 2; }
+
+  .cta-eyebrow {
+    font-family: var(--hand);
+    font-size: 30px;
+    color: var(--berry);
+    transform: rotate(-2deg);
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+
+  .cta-headline {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1;
+    color: var(--cocoa);
+    letter-spacing: -0.03em;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    margin-bottom: 16px;
+    max-width: 16ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-headline em {
+    font-style: italic;
+    color: var(--berry);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1, "slnt" -10;
+  }
+
+  .cta-headline-underline {
+    width: 320px;
+    max-width: 80%;
+    height: 18px;
+    margin: 0 auto 60px;
+    display: block;
+  }
+  .cta-headline-underline path {
+    stroke: var(--honey);
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  .cta-contacts {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .cta-contact {
+    text-align: center;
+  }
+  .cta-contact .label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--honey);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .cta-contact a {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(22px, 2.4vw, 32px);
+    color: var(--cocoa);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+    transition: all 0.3s ease;
+  }
+  .cta-contact a:hover {
+    color: var(--berry);
+    border-bottom-color: var(--berry);
+  }
+
+  .cta-reassurance {
+    font-family: var(--hand);
+    font-size: 28px;
+    color: var(--cocoa);
+    transform: rotate(-1.5deg);
+    display: inline-block;
+    margin-top: 10px;
+    position: relative;
+  }
+  .cta-reassurance::before {
+    content: "";
+    position: absolute;
+    left: -34px;
+    top: 50%;
+    width: 24px;
+    height: 1.5px;
+    background: var(--berry);
+  }
+  .cta-reassurance::after {
+    content: "";
+    position: absolute;
+    right: -34px;
+    top: 50%;
+    width: 24px;
+    height: 1.5px;
+    background: var(--berry);
+  }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    padding: 70px 0 50px;
+    border-top: 1px solid rgba(58,42,31,0.15);
+    margin-top: 30px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+  }
+  .footer-brand {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--cocoa);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    letter-spacing: -0.01em;
+  }
+  .footer-brand sup { font-size: 0.5em; color: var(--berry); }
+
+  .footer-mid {
+    text-align: center;
+  }
+  .footer-mid a {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--cocoa);
+    text-decoration: none;
+    border-bottom: 1px solid var(--cocoa-soft);
+    transition: color 0.3s;
+  }
+  .footer-mid a:hover { color: var(--berry); }
+
+  .footer-social {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+  .footer-social a {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--cocoa-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cocoa);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .footer-social a:hover {
+    border-color: var(--berry);
+    color: var(--berry);
+    transform: translateY(-2px) rotate(-4deg);
+  }
+
+  .footer-bottom {
+    margin-top: 40px;
+    text-align: center;
+    font-family: var(--hand);
+    font-size: 20px;
+    color: var(--cocoa-soft);
+  }
+
+  @media (max-width: 700px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+    .footer-mid, .footer-social { justify-content: center; }
+  }
+
+  /* ============ FLOUR SMUDGE BG ELEMENTS ============ */
+  .flour-smudge {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: lighten;
+    z-index: 0;
+  }
+
+  /* typewriter cursor */
+  .typewriter::after {
+    content: "|";
+    color: var(--berry);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+    font-weight: 300;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* fade-in observer */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 1s ease, transform 1s ease; }
+  .fade-in.in { opacity: 1; transform: translateY(0); }
+
+</style>
+</head>
+<body>
+
+<!-- ====== NAV ====== -->
+<header class="wrap nav">
+  <div class="nav-brand">novine digital<sup>^</sup></div>
+  <nav class="nav-links">
+    <a href="#what">Vi bygger</a>
+    <a href="#gallery">Gallerie</a>
+    <a href="#process">Process</a>
+    <a href="#faq">Spørgsmål</a>
+    <a href="#kontakt">Kontakt</a>
+  </nav>
+</header>
+
+<!-- ====== HERO ====== -->
+<section class="wrap hero">
+  <span class="hero-eyebrow">— en lille hilsen fra novine</span>
+
+  <h1>
+    Handcrafted<br />
+    <span class="ital">Digital</span><br />
+    Structures<sup>^</sup>
+  </h1>
+
+  <p class="hero-mission" id="hero-mission">
+    <span id="typewriter-line" class="typewriter">Building websites with the precision of a master joiner.</span>
+    We specialize in <span class="key">bespoke CMS architectures</span> and <span class="key">organic SEO growth</span> for the design-conscious.
+  </p>
+
+  <!-- Coffee ring decoration -->
+  <svg class="hero-decor coffee-ring" viewBox="0 0 220 220" aria-hidden="true">
+    <defs>
+      <radialGradient id="ring" cx="50%" cy="50%" r="50%">
+        <stop offset="78%" stop-color="transparent" />
+        <stop offset="84%" stop-color="#8C2F39" stop-opacity="0.55" />
+        <stop offset="92%" stop-color="#3A2A1F" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="transparent" />
+      </radialGradient>
+    </defs>
+    <circle cx="110" cy="110" r="98" fill="url(#ring)" />
+    <circle cx="110" cy="110" r="80" fill="none" stroke="#8C2F39" stroke-width="0.4" opacity="0.4" />
+  </svg>
+
+  <!-- Wheat sprig SVG -->
+  <svg class="hero-decor wheat" viewBox="0 0 80 220" aria-hidden="true">
+    <g stroke="#3A2A1F" stroke-width="1.4" fill="none" opacity="0.7">
+      <path d="M40 220 L40 30" />
+      <path d="M40 30 Q34 22 28 26" />
+      <path d="M40 60 Q28 54 22 60 Q26 70 40 70" />
+      <path d="M40 60 Q52 54 58 60 Q54 70 40 70" />
+      <path d="M40 90 Q28 84 22 90 Q26 100 40 100" />
+      <path d="M40 90 Q52 84 58 90 Q54 100 40 100" />
+      <path d="M40 120 Q28 114 22 120 Q26 130 40 130" />
+      <path d="M40 120 Q52 114 58 120 Q54 130 40 130" />
+      <path d="M40 150 Q28 144 22 150 Q26 160 40 160" />
+      <path d="M40 150 Q52 144 58 150 Q54 160 40 160" />
+    </g>
+  </svg>
+
+  <!-- Croissant SVG -->
+  <svg class="hero-decor croissant" viewBox="0 0 100 60" aria-hidden="true">
+    <path d="M10 40 Q15 15 35 12 Q55 9 70 18 Q85 27 90 42 Q72 32 55 35 Q42 38 28 42 Q18 44 10 40 Z"
+      fill="#C8924B" stroke="#3A2A1F" stroke-width="1" opacity="0.9" />
+    <path d="M22 35 Q26 26 35 24" stroke="#3A2A1F" stroke-width="0.6" fill="none" opacity="0.5" />
+    <path d="M40 32 Q48 26 58 27" stroke="#3A2A1F" stroke-width="0.6" fill="none" opacity="0.5" />
+    <path d="M60 33 Q68 30 78 36" stroke="#3A2A1F" stroke-width="0.6" fill="none" opacity="0.5" />
+  </svg>
+
+  <div class="hero-margin-note">
+    Lavet med smør,<br />
+    omhu &amp; kaffe.
+  </div>
+
+  <div class="scroll-cue">
+    SCROLL TO DISCOVER
+    <svg viewBox="0 0 60 22" aria-hidden="true">
+      <path d="M2 11 Q15 4 30 11 T58 11" stroke="#3A2A1F" stroke-width="1.2" fill="none" stroke-linecap="round" />
+      <path d="M52 6 L58 11 L52 16" stroke="#3A2A1F" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 18 Q60 8 120 16 T240 18 Q300 24 360 16 T480 14 Q540 22 600 18 T720 16 Q780 24 840 18 T960 16 Q1020 22 1080 16 T1180 18" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 2 — WHAT WE DO ====== -->
+<section class="wrap section-do" id="what">
+  <div class="do-intro">
+    <div>
+      <span class="sect-num">02 — Hvad vi laver</span>
+      <h2 class="sect-headline fade-in">Vi tager os af <em>det hele</em>.</h2>
+    </div>
+    <div class="do-intro-text fade-in">
+      Fire ingredienser, en opskrift. Vi blander dem så du ikke skal røre i dejen.
+    </div>
+  </div>
+
+  <div class="prep-counter fade-in">
+    <span class="prep-label">— ingredienser —</span>
+
+    <div class="ingredients">
+      <div class="ingredient">
+        <span class="ingredient-num">№ 01</span>
+        <svg class="ingredient-icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="10" width="36" height="28" rx="2" />
+          <path d="M6 16 H42" />
+          <circle cx="11" cy="13" r="0.8" fill="currentColor" />
+          <circle cx="14" cy="13" r="0.8" fill="currentColor" />
+          <circle cx="17" cy="13" r="0.8" fill="currentColor" />
+          <path d="M12 22 H28 M12 26 H32 M12 30 H22" opacity="0.6" />
+        </svg>
+        <h3>Website</h3>
+        <p>Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+      </div>
+
+      <div class="ingredient">
+        <span class="ingredient-num">№ 02</span>
+        <svg class="ingredient-icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="24" r="16" />
+          <ellipse cx="24" cy="24" rx="6" ry="16" />
+          <path d="M8 24 H40" />
+          <path d="M24 8 V40" opacity="0.4" />
+        </svg>
+        <h3>Hosting &amp; domæne</h3>
+        <p>Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+      </div>
+
+      <div class="ingredient">
+        <span class="ingredient-num">№ 03</span>
+        <svg class="ingredient-icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 8 L10 40 L34 40 L38 36 L38 8 Z" />
+          <path d="M34 40 L34 36 L38 36" />
+          <path d="M16 18 H30 M16 24 H30 M16 30 H24" opacity="0.7" />
+          <circle cx="32" cy="14" r="3" stroke="#8C2F39" />
+        </svg>
+        <h3>CMS — hvis du vil</h3>
+        <p>Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+      </div>
+
+      <div class="ingredient">
+        <span class="ingredient-num">№ 04</span>
+        <svg class="ingredient-icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="22" cy="22" r="12" />
+          <path d="M31 31 L40 40" />
+          <path d="M16 22 Q22 16 28 22 Q22 28 16 22" opacity="0.6" />
+        </svg>
+        <h3>Findbar på Google</h3>
+        <p>Vi sørger for, at dine kunder finder dig på Google.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="closing-line fade-in">Du behøver ikke samle stykkerne selv.</p>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 16 Q90 26 180 16 T360 14 Q450 22 540 16 T720 14 Q810 24 900 16 T1080 16 L1180 14" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 3 — GALLERIE ====== -->
+<section class="wrap section-gallery" id="gallery">
+  <div class="gallery-head">
+    <span class="sect-num">03 — Gallerie</span>
+    <h2 class="fade-in">Et lille udvalg.</h2>
+    <p class="fade-in">Steder vi har bygget websites til.</p>
+  </div>
+
+  <div class="polaroid-grid">
+    <div class="polaroid fade-in">
+      <img src="https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?auto=format&fit=crop&q=80&w=1000" alt="Bachs Bageri" />
+      <div class="polaroid-caption">
+        Bachs Bageri
+        <span class="place">Frederiksberg</span>
+      </div>
+    </div>
+
+    <div class="polaroid fade-in">
+      <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&q=80&w=1000" alt="Café Solgaarden" />
+      <div class="polaroid-caption">
+        Café Solgaarden
+        <span class="place">Aarhus</span>
+      </div>
+    </div>
+
+    <div class="polaroid fade-in">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1000" alt="Restaurant Klint" />
+      <div class="polaroid-caption">
+        Restaurant Klint
+        <span class="place">Aalborg</span>
+      </div>
+    </div>
+
+    <div class="polaroid fade-in">
+      <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&q=80&w=1000" alt="Spisehuset Nord" />
+      <div class="polaroid-caption">
+        Spisehuset Nord
+        <span class="place">Helsingør</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 14 Q70 22 140 14 T280 16 Q350 8 420 16 T560 14 Q630 22 700 14 T840 16 Q910 8 980 16 T1180 14" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 4 — PROCESS ====== -->
+<section class="section-process" id="process">
+  <div class="wrap">
+    <div class="process-head">
+      <span class="sect-num">04 — Process</span>
+      <h2 class="sect-headline fade-in">Fra første snak<br />til <em>lanceret site</em>.</h2>
+    </div>
+
+    <div class="timeline">
+
+      <div class="step fade-in">
+        <div class="step-marker">01/</div>
+        <div class="step-content">
+          <div class="step-title">Snak</div>
+          <div class="step-col">
+            <h4>Vi gør</h4>
+            <p>En kort samtale. Vi lærer dit sted at kende.</p>
+          </div>
+          <div class="step-col">
+            <h4>Du gør</h4>
+            <p>Fortæller om dit sted. Det er alt.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step fade-in">
+        <div class="step-marker">02/</div>
+        <div class="step-content">
+          <div class="step-title">Materialer</div>
+          <div class="step-col">
+            <h4>Vi gør</h4>
+            <p>Sender dig en kort tjekliste.</p>
+          </div>
+          <div class="step-col">
+            <h4>Du gør</h4>
+            <p>Sender logo, åbningstider, et par billeder.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step fade-in">
+        <div class="step-marker">03/</div>
+        <div class="step-content">
+          <div class="step-title">Design</div>
+          <div class="step-col">
+            <h4>Vi gør</h4>
+            <p>Tegner dit site fra bunden. Du ser det først.</p>
+          </div>
+          <div class="step-col">
+            <h4>Du gør</h4>
+            <p>Siger hvad du synes. Vi justerer.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step punchline fade-in">
+        <div class="step-marker">04/</div>
+        <div class="step-content">
+          <div class="step-title">Byg &amp; lancering</div>
+          <div class="step-col">
+            <h4>Vi gør</h4>
+            <p>Bygger, hoster, sætter dig op på Google.</p>
+          </div>
+          <div class="step-col">
+            <h4>Du gør</h4>
+            <p>Ingenting</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step fade-in">
+        <div class="step-marker">05/</div>
+        <div class="step-content">
+          <div class="step-title">Overdragelse</div>
+          <div class="step-col">
+            <h4>Vi gør</h4>
+            <p>Viser dig CMS'en på 5 minutter — hvis du vil.</p>
+          </div>
+          <div class="step-col">
+            <h4>Du gør</h4>
+            <p>Klipper båndet.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 18 Q90 8 180 18 T360 16 Q450 24 540 18 T720 16 Q810 8 900 18 T1080 18 L1180 16" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 5 — EMPATHY + FOUNDER ====== -->
+<section class="wrap section-empathy">
+  <div class="pull-quote fade-in">
+    <p>
+      De fleste cafe-ejere har ikke tid til at sidde og gøre det selv. <span class="accent">Det giver mening.</span> Det er derfor vi findes.
+    </p>
+  </div>
+
+  <div class="founder">
+
+    <div class="founder-portrait fade-in">
+      <div class="portrait-block"></div>
+      <div class="caption">— Elliott, 2026 —</div>
+    </div>
+
+    <div class="founder-name-card fade-in">
+      <h3>Elliott<br />Friedrich</h3>
+      <svg class="underline" viewBox="0 0 460 16" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2 10 Q60 2 120 9 T240 8 Q300 14 360 8 T458 10" />
+      </svg>
+    </div>
+
+    <div class="founder-note fade-in">
+      Startede novine fordi for mange små steder fortjener bedre end en skabelon.
+    </div>
+
+    <div class="founder-email fade-in">
+      <span class="label">— skriv direkte —</span>
+      <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 14 Q70 24 140 16 T280 14 Q350 22 420 14 T560 16 Q630 8 700 16 T840 14 Q910 22 980 14 T1180 16" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 6 — FAQ ====== -->
+<section class="wrap section-faq" id="faq">
+  <div class="faq-head">
+    <span class="sect-num">06 — Spørgsmål</span>
+    <h2 class="fade-in">Spørgsmål, vi <em>ofte får</em></h2>
+  </div>
+
+  <div class="faq">
+
+    <details class="faq-item">
+      <summary>
+        <span class="faq-num">01.</span>
+        <span>Hvad koster det?</span>
+        <svg class="faq-icon" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 5 V23 M5 14 H23" stroke="#3A2A1F" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        Vi sender et fast tilbud efter første snak. <span class="em">Ingen overraskelser, ingen timeregning.</span>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        <span class="faq-num">02.</span>
+        <span>Hvor lang tid tager det?</span>
+        <svg class="faq-icon" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 5 V23 M5 14 H23" stroke="#3A2A1F" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        Typisk 3–6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        <span class="faq-num">03.</span>
+        <span>Skal jeg selv vedligeholde det?</span>
+        <svg class="faq-icon" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 5 V23 M5 14 H23" stroke="#3A2A1F" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        Nej. Du behøver ikke røre noget. <span class="em">Men du KAN</span> — vores CMS er lavet, så du kan ændre menukort, åbningstider eller priser på 30 sekunder. Helt uden teknisk viden.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        <span class="faq-num">04.</span>
+        <span>Hvad sker der hvis jeg en dag vil flytte væk fra jer?</span>
+        <svg class="faq-icon" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 5 V23 M5 14 H23" stroke="#3A2A1F" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        Dit domæne er dit. Dit indhold er dit. Vi hjælper dig videre uden bøvl. <span class="em">Vi vil hellere du bliver, fordi du gerne vil — ikke fordi du skal.</span>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>
+        <span class="faq-num">05.</span>
+        <span>Hvad hvis jeg ikke kan lide designet?</span>
+        <svg class="faq-icon" viewBox="0 0 28 28" aria-hidden="true">
+          <path d="M14 5 V23 M5 14 H23" stroke="#3A2A1F" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </summary>
+      <div class="faq-answer">
+        Så laver vi det om. <span class="em">Du betaler ikke for noget, du ikke kan stå inde for.</span>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ====== DIVIDER ====== -->
+<div class="wrap">
+  <svg class="divider" viewBox="0 0 1180 32" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 16 Q90 24 180 14 T360 16 Q450 8 540 16 T720 14 Q810 22 900 16 T1080 14 L1180 18" />
+  </svg>
+</div>
+
+<!-- ====== SECTION 7 — CONTACT CTA ====== -->
+<section class="wrap section-cta" id="kontakt">
+  <div class="cta-inner">
+    <span class="cta-eyebrow">— lad os snakke —</span>
+
+    <h2 class="cta-headline">Et kort kald.<br /><em>Ingen forpligtelse.</em></h2>
+
+    <svg class="cta-headline-underline" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M2 12 Q40 2 80 10 T160 9 Q200 16 240 9 T318 12" />
+    </svg>
+
+    <div class="cta-contacts">
+      <div class="cta-contact">
+        <span class="label">— email —</span>
+        <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+      </div>
+      <div class="cta-contact">
+        <span class="label">— telefon —</span>
+        <a href="tel:+4591804039">+45 91 80 40 39</a>
+      </div>
+    </div>
+
+    <p class="cta-reassurance">Du taler med Elliott — ikke en sælger.</p>
+  </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer class="wrap footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">novine digital<sup>^</sup></div>
+    </div>
+    <div class="footer-mid">
+      <a href="mailto:hello@novine.dk">hello@novine.dk</a>
+    </div>
+    <div class="footer-social">
+      <a href="#" aria-label="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+        </svg>
+      </a>
+      <a href="#" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M8 10 V17 M8 7 V7.01" />
+          <path d="M12 17 V13 Q12 10 14.5 10 T17 13 V17" />
+        </svg>
+      </a>
+      <a href="#" aria-label="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="M3 7 L12 13 L21 7" />
+        </svg>
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 — bagt med kærlighed i København.</div>
+</footer>
+
+<script>
+  // ============ TYPEWRITER on hero mission opening line ============
+  (function() {
+    const target = document.getElementById('typewriter-line');
+    if (!target) return;
+    const fullText = target.textContent;
+    target.textContent = '';
+    let i = 0;
+    function tick() {
+      if (i <= fullText.length) {
+        target.textContent = fullText.slice(0, i);
+        i++;
+        setTimeout(tick, 38 + Math.random() * 30);
+      } else {
+        // remove blinking cursor after done
+        setTimeout(() => target.classList.remove('typewriter'), 800);
+      }
+    }
+    setTimeout(tick, 600);
+  })();
+
+  // ============ FADE-IN observer ============
+  (function() {
+    const els = document.querySelectorAll('.fade-in');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(el => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(el => io.observe(el));
+  })();
+
+  // ============ FAQ — close others on open (single-open accordion) ============
+  (function() {
+    const items = document.querySelectorAll('.faq-item');
+    items.forEach((item) => {
+      item.addEventListener('toggle', () => {
+        if (item.open) {
+          items.forEach((other) => {
+            if (other !== item && other.open) other.open = false;
+          });
+        }
+      });
+    });
+  })();
+
+  // ============ Polaroid: gentle parallax tilt on mouse ============
+  (function() {
+    const polaroids = document.querySelectorAll('.polaroid');
+    polaroids.forEach((p) => {
+      const baseTransform = window.getComputedStyle(p).transform;
+      p.addEventListener('mousemove', (e) => {
+        const rect = p.getBoundingClientRect();
+        const cx = (e.clientX - rect.left) / rect.width - 0.5;
+        const cy = (e.clientY - rect.top) / rect.height - 0.5;
+        p.style.transform = `rotate(0deg) translateY(-8px) scale(1.03) rotateY(${cx * 6}deg) rotateX(${cy * -6}deg)`;
+      });
+      p.addEventListener('mouseleave', () => {
+        p.style.transform = '';
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

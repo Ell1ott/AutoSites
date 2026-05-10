@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>novine digital — Handcrafted Digital Structures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================================
+           VARIABLE 3 — ARCHITECTURAL BLUEPRINT
+           novine digital landing page
+           Palette: warm paper / terracotta / sage / ink
+           Type: Inter (body) + JetBrains Mono (technical) + Fraunces (editorial accents)
+           ========================================================= */
+
+        :root {
+            --paper: #E6E4E2;
+            --paper-deep: #DEDCD9;
+            --terracotta: #CD9A7E;
+            --terracotta-deep: #B47E63;
+            --sage: #A8AB9D;
+            --ink: #3D352F;
+            --ink-faint: rgba(61, 53, 47, 0.1);
+            --ink-line: rgba(61, 53, 47, 0.55);
+            --ink-soft: rgba(61, 53, 47, 0.7);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+            --serif: 'Fraunces', Georgia, serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ---------- Frame & shared utility primitives ---------- */
+
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .mono-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+        .mono-num {
+            font-family: var(--mono);
+            font-weight: 400;
+            font-feature-settings: "tnum" on, "lnum" on;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+        /* ---------- Nav ---------- */
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.5;
+        }
+
+        /* ---------- Section base ---------- */
+
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+        /* ---------- HERO (carried over verbatim from design.html) ---------- */
+
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        /* =========================================================
+           SECTION 2 — WHAT WE DO  (Exploded axonometric stack)
+           ========================================================= */
+
+        .stack-section {
+            background: var(--paper);
+            padding-top: 160px;
+            padding-bottom: 160px;
+            min-height: auto;
+            position: relative;
+        }
+
+        .stack-wrap {
+            grid-column: 2 / 12;
+            position: relative;
+        }
+
+        /* Subtle figure title bar at the top */
+        .fig-titlebar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-top: 0.5px solid var(--ink-line);
+            border-bottom: 0.5px solid var(--ink-line);
+            padding: 14px 0;
+            margin-bottom: 56px;
+        }
+
+        .fig-titlebar .fig-id {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+        .fig-titlebar .fig-scale {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .stack-headline-row {
+            display: grid;
+            grid-template-columns: 6fr 6fr;
+            gap: 64px;
+            align-items: end;
+            margin-bottom: 80px;
+        }
+
+        .stack-headline {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: clamp(44px, 6vw, 84px);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+        }
+
+        .stack-headline em {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .stack-intro {
+            font-size: 14px;
+            max-width: 380px;
+            opacity: 0.85;
+            border-left: 0.5px solid var(--ink-line);
+            padding-left: 18px;
+        }
+
+        /* Diagram + spec sheet split */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: 7fr 5fr;
+            gap: 64px;
+            align-items: start;
+        }
+
+        .stack-svg-wrap {
+            position: relative;
+            aspect-ratio: 1 / 1.05;
+            width: 100%;
+        }
+
+        .stack-svg-wrap svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* The right-side spec sheet (typographic table) */
+        .spec-sheet {
+            border-top: 0.5px solid var(--ink-line);
+            position: relative;
+        }
+
+        .spec-sheet-head {
+            display: grid;
+            grid-template-columns: 36px 1fr 80px;
+            gap: 18px;
+            padding: 14px 0 12px;
+            border-bottom: 0.5px solid var(--ink-line);
+        }
+
+        .spec-sheet-head span {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .spec-row {
+            display: grid;
+            grid-template-columns: 36px 1fr 80px;
+            gap: 18px;
+            padding: 22px 0;
+            border-bottom: 0.5px dotted var(--ink-line);
+            transition: background 0.3s;
+        }
+
+        .spec-row:hover {
+            background: rgba(205, 154, 126, 0.06);
+        }
+
+        .spec-row .spec-num {
+            font-family: var(--mono);
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--ink);
+            letter-spacing: 0.04em;
+        }
+
+        .spec-row .spec-body h4 {
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 6px;
+        }
+
+        .spec-row .spec-body p {
+            font-size: 13.5px;
+            line-height: 1.55;
+            opacity: 0.82;
+            max-width: 36ch;
+        }
+
+        .spec-row .spec-tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--terracotta-deep);
+            text-align: right;
+            padding-top: 4px;
+        }
+
+        /* Closing typographer's note under the diagram */
+        .stack-footnote {
+            margin-top: 80px;
+            padding-top: 28px;
+            border-top: 0.5px solid var(--ink-line);
+            display: grid;
+            grid-template-columns: 80px 1fr 80px;
+            gap: 24px;
+            align-items: baseline;
+        }
+
+        .stack-footnote .stack-footnote-prefix {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .stack-footnote .stack-footnote-text {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(20px, 2.4vw, 30px);
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .stack-footnote .stack-footnote-meta {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            text-align: right;
+        }
+
+        /* =========================================================
+           SECTION 3 — GALLERIE (visual carried over verbatim)
+           ========================================================= */
+
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding-top: 140px;
+            padding-bottom: 140px;
+        }
+
+        .gallery-wrap {
+            grid-column: 2 / 12;
+            width: 100%;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+        }
+
+        .gallery-title {
+            font-size: clamp(40px, 6vw, 72px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+        }
+
+        .gallery-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .gallery-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1px solid rgba(61, 53, 47, 0.35);
+            background: transparent;
+        }
+
+        .gallery-dot.active {
+            border-color: var(--ink);
+            background: var(--ink);
+        }
+
+        .gallery-subline {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            opacity: 0.75;
+            margin-bottom: 64px;
+        }
+
+        .gallery-stack {
+            position: relative;
+            height: 72vh;
+            min-height: 520px;
+            max-height: 720px;
+        }
+
+        .gallery-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: min(46%, 460px);
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 0.5px solid rgba(61, 53, 47, 0.18);
+            box-shadow: 0 20px 45px rgba(61, 53, 47, 0.12);
+            background: #d7d2ce;
+            transform-origin: bottom left;
+            transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+            will-change: transform;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.82) contrast(0.95);
+            transition: transform var(--transition), filter var(--transition);
+            mix-blend-mode: multiply;
+            opacity: 0.92;
+        }
+
+        .gallery-card:hover {
+            box-shadow: 0 26px 56px rgba(61, 53, 47, 0.2);
+            filter: brightness(1.02);
+        }
+
+        .gallery-card:hover img {
+            transform: scale(1.05);
+            filter: saturate(1) contrast(1);
+        }
+
+        .gallery-card-label {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            background: rgba(230, 228, 226, 0.8);
+            border: 0.5px solid rgba(61, 53, 47, 0.25);
+            backdrop-filter: blur(4px);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 6px 10px;
+        }
+
+        .gallery-card-arrow {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-size: 24px;
+            font-weight: 200;
+        }
+
+        .gallery-card[data-card="0"] { z-index: 4; transform: rotate(-8deg) translateX(0) translateY(0); }
+        .gallery-card[data-card="1"] { z-index: 3; transform: rotate(-4deg) translateX(48px) translateY(26px); }
+        .gallery-card[data-card="2"] { z-index: 2; transform: rotate(0deg) translateX(96px) translateY(52px); }
+        .gallery-card[data-card="3"] { z-index: 1; transform: rotate(4deg) translateX(144px) translateY(78px); }
+
+        /* =========================================================
+           SECTION 4 — PROCESS  (Process flow diagram)
+           ========================================================= */
+
+        .process-section {
+            background: var(--paper-deep);
+            color: var(--ink);
+            padding-top: 160px;
+            padding-bottom: 160px;
+            min-height: auto;
+        }
+
+        .process-wrap {
+            grid-column: 2 / 12;
+            position: relative;
+        }
+
+        .process-headline-row {
+            display: grid;
+            grid-template-columns: 7fr 5fr;
+            gap: 64px;
+            align-items: end;
+            margin-bottom: 96px;
+        }
+
+        .process-headline {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: clamp(44px, 6vw, 84px);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+        }
+
+        .process-headline em {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .process-legend {
+            font-size: 13.5px;
+            opacity: 0.85;
+            border-left: 0.5px solid var(--ink-line);
+            padding-left: 18px;
+            line-height: 1.55;
+        }
+
+        .process-legend-tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Process flow diagram — vertical, with rail down the left */
+        .process-flow {
+            position: relative;
+            display: grid;
+            grid-template-columns: 56px 6fr 4fr 80px;
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        .process-flow-head {
+            display: contents;
+        }
+
+        .process-flow-head .flow-h {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            padding-bottom: 14px;
+            border-bottom: 0.5px solid var(--ink-line);
+        }
+
+        .process-step {
+            display: contents;
+        }
+
+        .process-step > .step-cell {
+            padding: 32px 0 32px;
+            border-bottom: 0.5px dotted var(--ink-line);
+            position: relative;
+        }
+
+        .process-step .step-num {
+            font-family: var(--mono);
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 36px;
+        }
+
+        .process-step .step-num-circle {
+            width: 36px;
+            height: 36px;
+            border: 0.75px solid var(--ink);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper-deep);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* The vertical rail behind the numbers */
+        .process-flow::before {
+            content: "";
+            position: absolute;
+            left: 17px;
+            top: 60px;
+            bottom: 60px;
+            width: 0.5px;
+            background: repeating-linear-gradient(
+                to bottom,
+                var(--ink-line) 0 4px,
+                transparent 4px 8px
+            );
+            z-index: 1;
+        }
+
+        .process-step .step-vi h4 {
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: -0.015em;
+            margin-bottom: 6px;
+        }
+
+        .process-step .step-vi p {
+            font-size: 14px;
+            line-height: 1.55;
+            opacity: 0.82;
+            max-width: 44ch;
+        }
+
+        .process-step .step-du {
+            position: relative;
+            padding-left: 24px;
+            padding-top: 36px;
+        }
+
+        /* Bracket marks on the "Du gør" column */
+        .process-step .step-du::before,
+        .process-step .step-du::after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            width: 10px;
+            height: 0.5px;
+            background: var(--ink);
+        }
+        .process-step .step-du::before {
+            top: 38px;
+        }
+        .process-step .step-du::after {
+            bottom: 38px;
+        }
+        .process-step .step-du > .du-rule {
+            position: absolute;
+            left: 6px;
+            top: 38px;
+            bottom: 38px;
+            width: 0.5px;
+            background: var(--ink);
+        }
+
+        .process-step .step-du p {
+            font-size: 14px;
+            line-height: 1.55;
+            opacity: 0.92;
+            max-width: 36ch;
+        }
+
+        .process-step .step-du .du-emph {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 22px;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            color: var(--ink);
+        }
+
+        .process-step .step-meta {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            text-align: right;
+            padding-top: 38px;
+        }
+
+        .process-step:last-child > .step-cell {
+            border-bottom: none;
+        }
+
+        /* Special callout on step 04 */
+        .step-callout {
+            position: relative;
+        }
+
+        .step-callout-marker {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--terracotta-deep);
+        }
+
+        .step-callout-circle {
+            width: 22px;
+            height: 22px;
+            border: 0.75px solid var(--terracotta-deep);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+        /* =========================================================
+           SECTION 5 — EMPATHY + FOUNDER
+           ========================================================= */
+
+        .empathy-section {
+            background: var(--paper);
+            padding-top: 160px;
+            padding-bottom: 160px;
+            min-height: auto;
+        }
+
+        .empathy-wrap {
+            grid-column: 2 / 12;
+            position: relative;
+        }
+
+        /* Empathy as titleblock */
+        .empathy-block {
+            position: relative;
+            border: 0.5px solid var(--ink-line);
+            padding: 64px 56px 56px;
+            margin-bottom: 120px;
+        }
+
+        .empathy-corner {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            color: var(--ink);
+        }
+        .empathy-corner.tl { top: -1px; left: -1px; border-top: 1px solid; border-left: 1px solid; }
+        .empathy-corner.tr { top: -1px; right: -1px; border-top: 1px solid; border-right: 1px solid; }
+        .empathy-corner.bl { bottom: -1px; left: -1px; border-bottom: 1px solid; border-left: 1px solid; }
+        .empathy-corner.br { bottom: -1px; right: -1px; border-bottom: 1px solid; border-right: 1px solid; }
+
+        .empathy-tag {
+            position: absolute;
+            top: 18px;
+            left: 28px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: var(--paper);
+            padding: 0 10px;
+            color: var(--ink-soft);
+        }
+
+        .empathy-tag-r {
+            position: absolute;
+            top: 18px;
+            right: 28px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: var(--paper);
+            padding: 0 10px;
+            color: var(--ink-soft);
+        }
+
+        .empathy-quote {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(28px, 4vw, 52px);
+            line-height: 1.18;
+            letter-spacing: -0.02em;
+            max-width: 22ch;
+        }
+
+        .empathy-quote .quote-mark {
+            font-family: var(--serif);
+            font-style: normal;
+            font-weight: 300;
+            color: var(--terracotta-deep);
+        }
+
+        .empathy-footer-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+            margin-top: 56px;
+            padding-top: 24px;
+            border-top: 0.5px dotted var(--ink-line);
+        }
+
+        .empathy-footer-row > div span {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .empathy-footer-row > div p {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        /* Founder titleblock — drawing-style ID card */
+        .founder-block {
+            display: grid;
+            grid-template-columns: 4fr 8fr;
+            gap: 56px;
+            align-items: start;
+        }
+
+        .founder-portrait-wrap {
+            position: relative;
+            aspect-ratio: 4 / 5;
+            background: var(--paper-deep);
+            border: 0.5px solid var(--ink-line);
+            overflow: hidden;
+        }
+
+        .founder-portrait-wrap svg.portrait-placeholder {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Crosshair / registration marks at corners */
+        .registration-mark {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            color: var(--ink);
+            pointer-events: none;
+        }
+
+        .registration-mark svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .registration-mark.tl { top: -10px; left: -10px; }
+        .registration-mark.tr { top: -10px; right: -10px; }
+        .registration-mark.bl { bottom: -10px; left: -10px; }
+        .registration-mark.br { bottom: -10px; right: -10px; }
+
+        .founder-titleblock {
+            border: 0.5px solid var(--ink-line);
+            padding: 0;
+            position: relative;
+        }
+
+        .founder-tb-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 0.5px solid var(--ink-line);
+        }
+
+        .founder-tb-header > div {
+            padding: 14px 22px;
+        }
+
+        .founder-tb-header > div + div {
+            border-left: 0.5px solid var(--ink-line);
+        }
+
+        .founder-tb-header span.tb-label {
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .founder-tb-header strong {
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: -0.005em;
+        }
+
+        .founder-name {
+            padding: 36px 22px 28px;
+            border-bottom: 0.5px solid var(--ink-line);
+        }
+
+        .founder-name span {
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .founder-name h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: clamp(36px, 4vw, 56px);
+            line-height: 1;
+            letter-spacing: -0.025em;
+        }
+
+        .founder-note {
+            padding: 28px 22px;
+            border-bottom: 0.5px solid var(--ink-line);
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 18px;
+            align-items: baseline;
+        }
+
+        .founder-note span {
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .founder-note p {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 19px;
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+
+        .founder-email-row {
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .founder-email-row .tb-label {
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .founder-email-row a {
+            font-family: var(--mono);
+            font-size: 16px;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 0.5px solid var(--ink);
+            padding-bottom: 2px;
+            letter-spacing: 0.01em;
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .founder-email-row a:hover {
+            color: var(--terracotta-deep);
+            border-color: var(--terracotta-deep);
+        }
+
+        /* =========================================================
+           SECTION 6 — FAQ
+           ========================================================= */
+
+        .faq-section {
+            background: var(--paper);
+            padding-top: 160px;
+            padding-bottom: 160px;
+            min-height: auto;
+        }
+
+        .faq-wrap {
+            grid-column: 2 / 12;
+        }
+
+        .faq-header {
+            display: grid;
+            grid-template-columns: 5fr 7fr;
+            gap: 64px;
+            align-items: end;
+            margin-bottom: 80px;
+        }
+
+        .faq-headline {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: clamp(40px, 5vw, 72px);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+        }
+
+        .faq-headline em {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .faq-meta {
+            font-size: 13.5px;
+            opacity: 0.85;
+            border-left: 0.5px solid var(--ink-line);
+            padding-left: 18px;
+            max-width: 42ch;
+        }
+
+        .faq-list {
+            border-top: 0.5px solid var(--ink-line);
+        }
+
+        .faq-item {
+            border-bottom: 0.5px solid var(--ink-faint);
+        }
+
+        .faq-q {
+            display: grid;
+            grid-template-columns: 80px 1fr 40px;
+            gap: 24px;
+            align-items: center;
+            padding: 28px 0;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .faq-q:hover {
+            background: rgba(205, 154, 126, 0.05);
+        }
+
+        .faq-q .faq-tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .faq-q .faq-text {
+            font-size: clamp(18px, 1.8vw, 24px);
+            font-weight: 300;
+            letter-spacing: -0.01em;
+        }
+
+        .faq-q .faq-toggle {
+            font-family: var(--mono);
+            font-size: 22px;
+            font-weight: 300;
+            justify-self: end;
+            line-height: 1;
+            transition: transform 0.4s var(--transition);
+        }
+
+        .faq-item.open .faq-toggle {
+            transform: rotate(45deg);
+            color: var(--terracotta-deep);
+        }
+
+        .faq-a {
+            display: grid;
+            grid-template-columns: 80px 1fr 40px;
+            gap: 24px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s var(--transition), padding 0.5s var(--transition), opacity 0.4s;
+            opacity: 0;
+            padding: 0 0;
+        }
+
+        .faq-item.open .faq-a {
+            max-height: 400px;
+            padding: 0 0 32px 0;
+            opacity: 1;
+        }
+
+        .faq-a .faq-tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--terracotta-deep);
+        }
+
+        .faq-a p {
+            font-size: 15.5px;
+            line-height: 1.65;
+            opacity: 0.88;
+            max-width: 60ch;
+        }
+
+        /* =========================================================
+           SECTION 7 — CONTACT CTA  (drawing titleblock)
+           ========================================================= */
+
+        .cta-section {
+            background: var(--paper-deep);
+            padding-top: 160px;
+            padding-bottom: 160px;
+            min-height: auto;
+        }
+
+        .cta-wrap {
+            grid-column: 2 / 12;
+        }
+
+        .cta-block {
+            position: relative;
+            border: 0.5px solid var(--ink-line);
+            padding: 80px 64px 56px;
+            background: var(--paper);
+        }
+
+        .cta-tag {
+            position: absolute;
+            top: 22px;
+            left: 32px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: var(--paper);
+            padding: 0 10px;
+            color: var(--ink-soft);
+        }
+
+        .cta-tag-r {
+            position: absolute;
+            top: 22px;
+            right: 32px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: var(--paper);
+            padding: 0 10px;
+            color: var(--ink-soft);
+        }
+
+        .cta-headline {
+            font-family: 'Inter', sans-serif;
+            font-weight: 200;
+            font-size: clamp(48px, 7vw, 104px);
+            line-height: 0.98;
+            letter-spacing: -0.04em;
+            text-align: center;
+            margin: 32px 0 56px;
+        }
+
+        .cta-headline em {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .cta-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-top: 0.5px solid var(--ink-line);
+            border-bottom: 0.5px solid var(--ink-line);
+        }
+
+        .cta-method {
+            padding: 36px 28px;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-method + .cta-method {
+            border-left: 0.5px solid var(--ink-line);
+        }
+
+        .cta-method .tb-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .cta-method a {
+            font-family: var(--mono);
+            font-size: clamp(18px, 2.4vw, 28px);
+            color: var(--ink);
+            text-decoration: none;
+            letter-spacing: 0.01em;
+            border-bottom: 0.5px solid var(--ink);
+            padding-bottom: 4px;
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .cta-method a:hover {
+            color: var(--terracotta-deep);
+            border-color: var(--terracotta-deep);
+        }
+
+        .cta-footnote {
+            text-align: center;
+            margin-top: 32px;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 18px;
+            opacity: 0.82;
+        }
+
+        .cta-corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+        }
+        .cta-corner.tl { top: -1px; left: -1px; border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+        .cta-corner.tr { top: -1px; right: -1px; border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); }
+        .cta-corner.bl { bottom: -1px; left: -1px; border-bottom: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+        .cta-corner.br { bottom: -1px; right: -1px; border-bottom: 1px solid var(--ink); border-right: 1px solid var(--ink); }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            border-top: 0.5px solid var(--ink-line);
+        }
+
+        .footer-main {
+            grid-column: 1 / 6;
+        }
+
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-family: var(--mono);
+            font-size: 28px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 1024px) {
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .gallery-wrap { grid-column: 1 / 13; }
+            .gallery-stack { height: 64vh; min-height: 460px; }
+            .gallery-card { width: min(68%, 420px); }
+
+            .stack-wrap, .process-wrap, .empathy-wrap, .faq-wrap, .cta-wrap {
+                grid-column: 1 / 13;
+            }
+
+            .stack-headline-row,
+            .process-headline-row,
+            .faq-header {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .stack-grid {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .founder-block {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .founder-portrait-wrap {
+                aspect-ratio: 5 / 4;
+                max-width: 380px;
+            }
+
+            .process-flow {
+                grid-template-columns: 40px 1fr;
+                gap: 16px;
+            }
+
+            .process-flow-head .flow-h:nth-child(3),
+            .process-flow-head .flow-h:nth-child(4),
+            .process-step .step-meta {
+                display: none;
+            }
+
+            .process-step .step-du {
+                grid-column: 2;
+                padding-top: 0;
+                margin-top: 14px;
+                padding-bottom: 0;
+                padding-left: 18px;
+            }
+
+            .process-step .step-du::before,
+            .process-step .step-du::after {
+                left: 0;
+            }
+            .process-step .step-du > .du-rule {
+                left: 0;
+            }
+
+            .process-step .step-vi {
+                grid-column: 2;
+            }
+
+            .process-step .step-num {
+                grid-row: span 2;
+                padding-top: 32px;
+            }
+
+            .process-flow::before {
+                left: 13px;
+            }
+
+            .empathy-block {
+                padding: 56px 28px 28px;
+            }
+
+            .empathy-footer-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .cta-block {
+                padding: 64px 28px 40px;
+            }
+
+            .cta-methods {
+                grid-template-columns: 1fr;
+            }
+            .cta-method + .cta-method {
+                border-left: none;
+                border-top: 0.5px solid var(--ink-line);
+            }
+
+            footer {
+                padding: 60px 28px;
+            }
+            .footer-main { grid-column: 1 / 13; }
+            .footer-secondary {
+                grid-column: 1 / 13;
+                text-align: left;
+                margin-top: 48px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            section {
+                padding: 100px 24px 40px;
+            }
+
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+
+            nav { padding: 24px; }
+            .nav-links { gap: 24px; }
+
+            .stack-section, .process-section, .empathy-section, .faq-section, .cta-section, .gallery-section {
+                padding-top: 100px;
+                padding-bottom: 100px;
+            }
+
+            .stack-headline,
+            .process-headline {
+                font-size: 40px;
+            }
+
+            .empathy-quote {
+                font-size: 26px;
+            }
+
+            .cta-headline {
+                font-size: 44px;
+            }
+
+            .faq-q {
+                grid-template-columns: 56px 1fr 28px;
+                gap: 14px;
+                padding: 22px 0;
+            }
+            .faq-a {
+                grid-template-columns: 56px 1fr 28px;
+                gap: 14px;
+            }
+
+            .faq-q .faq-text {
+                font-size: 17px;
+            }
+
+            .stack-footnote {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .stack-footnote .stack-footnote-meta { text-align: left; }
+
+            .scroll-indicator { left: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="frame"></div>
+
+    <!-- ============================================================
+         NAV
+         ============================================================ -->
+    <nav>
+        <div class="logo">novine digital^</div>
+        <div class="nav-links">
+            <div>
+                <span class="meta-label">Location</span><br>
+                <a href="#" class="nav-item">Danmark</a>
+            </div>
+            <div>
+                <span class="meta-label">Selected Works</span><br>
+                <a href="#gallerie" class="nav-item">Gallerie</a>
+            </div>
+            <div>
+                <span class="meta-label">Inquiry</span><br>
+                <a href="#contact" class="nav-item">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         SECTION 1 — HERO  (carried over verbatim from design.html)
+         ============================================================ -->
+    <section class="hero">
+        <div class="axis axis-v" style="left: 40px;"></div>
+        <div class="hero-main">
+            <h1 class="hero-title">Handcrafted<br>Digital<br>Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta">
+            <p class="meta-label">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator">
+            <span class="caret">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 2 — WHAT WE DO  (Exploded axonometric stack)
+         ============================================================ -->
+    <section class="stack-section">
+        <div class="stack-wrap">
+
+            <!-- Figure title bar -->
+            <div class="fig-titlebar">
+                <span class="fig-id">Fig. 01 &nbsp;/&nbsp; Stack — Exploded View</span>
+                <span class="fig-scale">Scale 1:1 &nbsp;·&nbsp; Sheet 02 of 07</span>
+            </div>
+
+            <!-- Headline + small intro -->
+            <div class="stack-headline-row">
+                <h2 class="stack-headline">Vi tager os <em>af</em> det hele.</h2>
+                <p class="stack-intro">
+                    Fire dele, samlet til ét website, der bare virker.
+                    Du behøver ikke vide hvad de hedder — vi sørger for, at de hænger sammen.
+                </p>
+            </div>
+
+            <!-- Diagram + spec sheet -->
+            <div class="stack-grid">
+
+                <!-- Inline SVG: exploded axonometric stack -->
+                <div class="stack-svg-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 600 640" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                        <!-- Axonometric defs: 30deg projection -->
+                        <defs>
+                            <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(35)">
+                                <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(61,53,47,0.18)" stroke-width="0.5"/>
+                            </pattern>
+                            <marker id="arrA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3D352F"/>
+                            </marker>
+                            <marker id="arrB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3D352F"/>
+                            </marker>
+                        </defs>
+
+                        <!-- Construction base lines (dotted) -->
+                        <g stroke="#3D352F" stroke-width="0.5" stroke-linecap="square" opacity="0.35">
+                            <line x1="40" y1="120" x2="40" y2="600" stroke-dasharray="2 4"/>
+                            <line x1="560" y1="120" x2="560" y2="600" stroke-dasharray="2 4"/>
+                        </g>
+
+                        <!-- ==== Slab 1 — Website (top) ==== -->
+                        <g class="slab" transform="translate(0,80)">
+                            <!-- top face -->
+                            <polygon points="180,40 460,40 380,90 100,90" fill="#E6E4E2" stroke="#3D352F" stroke-width="0.75" stroke-linejoin="miter"/>
+                            <!-- right face -->
+                            <polygon points="460,40 460,72 380,122 380,90" fill="url(#hatch)" stroke="#3D352F" stroke-width="0.75"/>
+                            <!-- front face -->
+                            <polygon points="100,90 380,90 380,122 100,122" fill="#DEDCD9" stroke="#3D352F" stroke-width="0.75"/>
+                            <!-- callout circle -->
+                            <circle cx="500" cy="65" r="14" fill="#E6E4E2" stroke="#3D352F" stroke-width="0.75"/>
+                            <text x="500" y="69" font-family="JetBrains Mono, monospace" font-size="11" font-weight="500" fill="#3D352F" text-anchor="middle">01</text>
+                            <!-- leader line -->
+                            <line x1="486" y1="65" x2="448" y2="65" stroke="#3D352F" stroke-width="0.5"/>
+                            <!-- label -->
+                            <text x="100" y="34" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.2" fill="#3D352F">[ WEBSITE ]</text>
+                        </g>
+
+                        <!-- ==== Slab 2 — Hosting & domæne ==== -->
+                        <g class="slab" transform="translate(0,220)">
+                            <polygon points="180,40 460,40 380,90 100,90" fill="#CD9A7E" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="460,40 460,72 380,122 380,90" fill="#B47E63" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="100,90 380,90 380,122 100,122" fill="#D9B39F" stroke="#3D352F" stroke-width="0.75"/>
+                            <circle cx="500" cy="65" r="14" fill="#E6E4E2" stroke="#3D352F" stroke-width="0.75"/>
+                            <text x="500" y="69" font-family="JetBrains Mono, monospace" font-size="11" font-weight="500" fill="#3D352F" text-anchor="middle">02</text>
+                            <line x1="486" y1="65" x2="448" y2="65" stroke="#3D352F" stroke-width="0.5"/>
+                            <text x="100" y="34" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.2" fill="#3D352F">[ HOSTING &amp; DOMÆNE ]</text>
+                        </g>
+
+                        <!-- ==== Slab 3 — CMS ==== -->
+                        <g class="slab" transform="translate(0,360)">
+                            <polygon points="180,40 460,40 380,90 100,90" fill="#A8AB9D" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="460,40 460,72 380,122 380,90" fill="#8E9183" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="100,90 380,90 380,122 100,122" fill="#B6B8AB" stroke="#3D352F" stroke-width="0.75"/>
+                            <circle cx="500" cy="65" r="14" fill="#E6E4E2" stroke="#3D352F" stroke-width="0.75"/>
+                            <text x="500" y="69" font-family="JetBrains Mono, monospace" font-size="11" font-weight="500" fill="#3D352F" text-anchor="middle">03</text>
+                            <line x1="486" y1="65" x2="448" y2="65" stroke="#3D352F" stroke-width="0.5"/>
+                            <text x="100" y="34" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.2" fill="#3D352F">[ CMS — HVIS DU VIL ]</text>
+                        </g>
+
+                        <!-- ==== Slab 4 — Findbar på Google (bottom plinth) ==== -->
+                        <g class="slab" transform="translate(0,500)">
+                            <polygon points="180,40 460,40 380,90 100,90" fill="#DEDCD9" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="460,40 460,72 380,122 380,90" fill="url(#hatch)" stroke="#3D352F" stroke-width="0.75"/>
+                            <polygon points="100,90 380,90 380,122 100,122" fill="#D2D0CD" stroke="#3D352F" stroke-width="0.75"/>
+                            <circle cx="500" cy="65" r="14" fill="#E6E4E2" stroke="#3D352F" stroke-width="0.75"/>
+                            <text x="500" y="69" font-family="JetBrains Mono, monospace" font-size="11" font-weight="500" fill="#3D352F" text-anchor="middle">04</text>
+                            <line x1="486" y1="65" x2="448" y2="65" stroke="#3D352F" stroke-width="0.5"/>
+                            <text x="100" y="34" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="1.2" fill="#3D352F">[ FINDBAR PÅ GOOGLE ]</text>
+                        </g>
+
+                        <!-- ==== Construction lines connecting slabs ==== -->
+                        <g stroke="#3D352F" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.6">
+                            <line x1="100" y1="202" x2="100" y2="260"/>
+                            <line x1="380" y1="202" x2="380" y2="260"/>
+                            <line x1="100" y1="342" x2="100" y2="400"/>
+                            <line x1="380" y1="342" x2="380" y2="400"/>
+                            <line x1="100" y1="482" x2="100" y2="540"/>
+                            <line x1="380" y1="482" x2="380" y2="540"/>
+                        </g>
+
+                        <!-- ==== Total height dimension on left ==== -->
+                        <g stroke="#3D352F" stroke-width="0.5" stroke-linecap="square">
+                            <line x1="60" y1="120" x2="60" y2="622" marker-start="url(#arrB)" marker-end="url(#arrA)"/>
+                            <line x1="55" y1="120" x2="65" y2="120"/>
+                            <line x1="55" y1="622" x2="65" y2="622"/>
+                        </g>
+                        <text x="46" y="375" font-family="JetBrains Mono, monospace" font-size="9.5" letter-spacing="1.2" fill="#3D352F" transform="rotate(-90 46 375)" text-anchor="middle">TOTAL — 1 site, 4 dele</text>
+
+                        <!-- corner registration marks -->
+                        <g stroke="#3D352F" stroke-width="0.75" fill="none">
+                            <path d="M 20 100 L 30 100 M 20 100 L 20 110"/>
+                            <path d="M 580 100 L 570 100 M 580 100 L 580 110"/>
+                            <path d="M 20 622 L 30 622 M 20 622 L 20 612"/>
+                            <path d="M 580 622 L 570 622 M 580 622 L 580 612"/>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Spec sheet right column -->
+                <div class="spec-sheet">
+                    <div class="spec-sheet-head">
+                        <span>No.</span>
+                        <span>Component</span>
+                        <span>Tag</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-num">01</span>
+                        <div class="spec-body">
+                            <h4>Website</h4>
+                            <p>Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+                        </div>
+                        <span class="spec-tag">Bespoke</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-num">02</span>
+                        <div class="spec-body">
+                            <h4>Hosting &amp; domæne</h4>
+                            <p>Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+                        </div>
+                        <span class="spec-tag">Inkl.</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-num">03</span>
+                        <div class="spec-body">
+                            <h4>CMS — hvis du vil</h4>
+                            <p>Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+                        </div>
+                        <span class="spec-tag">Optional</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-num">04</span>
+                        <div class="spec-body">
+                            <h4>Findbar på Google</h4>
+                            <p>Vi sørger for, at dine kunder finder dig på Google.</p>
+                        </div>
+                        <span class="spec-tag">Built-in</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Closing typographer's note -->
+            <div class="stack-footnote">
+                <span class="stack-footnote-prefix">Note —</span>
+                <p class="stack-footnote-text"><em>Du behøver ikke samle stykkerne selv.</em></p>
+                <span class="stack-footnote-meta">Fig. 01 &nbsp;/&nbsp; End</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3 — GALLERIE  (visual carried over verbatim, labels updated)
+         ============================================================ -->
+    <section class="gallery-section" id="gallerie">
+        <div class="gallery-wrap">
+            <div class="gallery-header">
+                <h2 class="gallery-title">Gallerie</h2>
+                <div class="gallery-controls" aria-hidden="true">
+                    <span class="gallery-dot active"></span>
+                    <span class="gallery-dot"></span>
+                    <span class="gallery-dot"></span>
+                    <span class="gallery-dot"></span>
+                </div>
+            </div>
+
+            <p class="gallery-subline">Steder vi har bygget websites til.</p>
+
+            <div class="gallery-stack" id="gallery-stack">
+                <article class="gallery-card" data-card="0">
+                    <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Bachs Bageri">
+                    <span class="gallery-card-label">Bachs Bageri / Frederiksberg</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="1">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Café Solgaarden">
+                    <span class="gallery-card-label">Café Solgaarden / Aarhus</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="2">
+                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Restaurant Klint">
+                    <span class="gallery-card-label">Restaurant Klint / Aalborg</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="3">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Spisehuset Nord">
+                    <span class="gallery-card-label">Spisehuset Nord / Helsingør</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 4 — PROCESS  (Process flow diagram)
+         ============================================================ -->
+    <section class="process-section">
+        <div class="process-wrap">
+
+            <div class="fig-titlebar">
+                <span class="fig-id">Fig. 02 &nbsp;/&nbsp; Process Flow — 5 Nodes</span>
+                <span class="fig-scale">From inquiry to live site</span>
+            </div>
+
+            <div class="process-headline-row">
+                <h2 class="process-headline">Fra første snak <em>til</em> lanceret site.</h2>
+                <p class="process-legend">
+                    <span class="process-legend-tag">Legend</span>
+                    Venstre kolonne: hvad vi gør. Højre kolonne: hvad du gør.
+                    Den højre er bevidst kort — det er hele pointen.
+                </p>
+            </div>
+
+            <div class="process-flow">
+
+                <!-- Header row -->
+                <div class="process-flow-head">
+                    <div class="flow-h">No.</div>
+                    <div class="flow-h">Vi gør</div>
+                    <div class="flow-h">Du gør</div>
+                    <div class="flow-h" style="text-align:right;">Stage</div>
+                </div>
+
+                <!-- 01 / Snak -->
+                <div class="process-step">
+                    <div class="step-cell step-num">
+                        <span class="step-num-circle">01</span>
+                    </div>
+                    <div class="step-cell step-vi">
+                        <h4>Snak</h4>
+                        <p>En kort samtale. Vi lærer dit sted at kende.</p>
+                    </div>
+                    <div class="step-cell step-du">
+                        <span class="du-rule"></span>
+                        <p>Fortæller om dit sted. Det er alt.</p>
+                    </div>
+                    <div class="step-cell step-meta">Stage A</div>
+                </div>
+
+                <!-- 02 / Materialer -->
+                <div class="process-step">
+                    <div class="step-cell step-num">
+                        <span class="step-num-circle">02</span>
+                    </div>
+                    <div class="step-cell step-vi">
+                        <h4>Materialer</h4>
+                        <p>Sender dig en kort tjekliste.</p>
+                    </div>
+                    <div class="step-cell step-du">
+                        <span class="du-rule"></span>
+                        <p>Sender logo, åbningstider, et par billeder.</p>
+                    </div>
+                    <div class="step-cell step-meta">Stage B</div>
+                </div>
+
+                <!-- 03 / Design -->
+                <div class="process-step">
+                    <div class="step-cell step-num">
+                        <span class="step-num-circle">03</span>
+                    </div>
+                    <div class="step-cell step-vi">
+                        <h4>Design</h4>
+                        <p>Tegner dit site fra bunden. Du ser det først.</p>
+                    </div>
+                    <div class="step-cell step-du">
+                        <span class="du-rule"></span>
+                        <p>Siger hvad du synes. Vi justerer.</p>
+                    </div>
+                    <div class="step-cell step-meta">Stage C</div>
+                </div>
+
+                <!-- 04 / Byg & lancering — special callout -->
+                <div class="process-step step-callout">
+                    <div class="step-cell step-num">
+                        <span class="step-num-circle" style="border-color: #B47E63; color:#B47E63;">04</span>
+                    </div>
+                    <div class="step-cell step-vi">
+                        <h4>Byg &amp; lancering</h4>
+                        <p>Bygger, hoster, sætter dig op på Google.</p>
+                    </div>
+                    <div class="step-cell step-du">
+                        <span class="du-rule" style="background:#B47E63;"></span>
+                        <p class="du-emph">Ingenting.</p>
+                        <span class="step-callout-marker">
+                            <span class="step-callout-circle">04</span>
+                            = 0 hours client time
+                        </span>
+                    </div>
+                    <div class="step-cell step-meta">Stage D</div>
+                </div>
+
+                <!-- 05 / Overdragelse -->
+                <div class="process-step">
+                    <div class="step-cell step-num">
+                        <span class="step-num-circle">05</span>
+                    </div>
+                    <div class="step-cell step-vi">
+                        <h4>Overdragelse</h4>
+                        <p>Viser dig CMS'en på 5 minutter — hvis du vil.</p>
+                    </div>
+                    <div class="step-cell step-du">
+                        <span class="du-rule"></span>
+                        <p>Klipper båndet.</p>
+                    </div>
+                    <div class="step-cell step-meta">Stage E</div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5 — EMPATHY + FOUNDER  (titleblock + ID card)
+         ============================================================ -->
+    <section class="empathy-section">
+        <div class="empathy-wrap">
+
+            <!-- Empathy quote in titleblock -->
+            <div class="empathy-block">
+                <span class="empathy-corner tl"></span>
+                <span class="empathy-corner tr"></span>
+                <span class="empathy-corner bl"></span>
+                <span class="empathy-corner br"></span>
+                <span class="empathy-tag">Legend / Empathy</span>
+                <span class="empathy-tag-r">Sheet 05 / 07</span>
+
+                <p class="empathy-quote">
+                    <span class="quote-mark">&ldquo;</span>De fleste cafe-ejere har ikke tid til at sidde og gøre det selv. Det giver mening. Det er derfor vi findes.<span class="quote-mark">&rdquo;</span>
+                </p>
+
+                <div class="empathy-footer-row">
+                    <div>
+                        <span>Drawn by</span>
+                        <p>novine digital</p>
+                    </div>
+                    <div>
+                        <span>For</span>
+                        <p>Cafe-, restaurant- og bageriejere i Danmark</p>
+                    </div>
+                    <div>
+                        <span>Date est.</span>
+                        <p>2024 — løbende</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Founder block as ID titleblock -->
+            <div class="founder-block">
+
+                <!-- Portrait with registration marks -->
+                <div class="founder-portrait-wrap">
+                    <span class="registration-mark tl">
+                        <svg viewBox="0 0 20 20"><line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="0.75"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="0.75"/><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="0.75" fill="none"/></svg>
+                    </span>
+                    <span class="registration-mark tr">
+                        <svg viewBox="0 0 20 20"><line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="0.75"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="0.75"/><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="0.75" fill="none"/></svg>
+                    </span>
+                    <span class="registration-mark bl">
+                        <svg viewBox="0 0 20 20"><line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="0.75"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="0.75"/><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="0.75" fill="none"/></svg>
+                    </span>
+                    <span class="registration-mark br">
+                        <svg viewBox="0 0 20 20"><line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="0.75"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="0.75"/><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="0.75" fill="none"/></svg>
+                    </span>
+
+                    <!-- Portrait placeholder — abstract figure -->
+                    <svg class="portrait-placeholder" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                        <rect width="200" height="250" fill="#DEDCD9"/>
+                        <!-- Subtle grid -->
+                        <g stroke="#3D352F" stroke-width="0.3" opacity="0.18">
+                            <line x1="0" y1="62" x2="200" y2="62"/>
+                            <line x1="0" y1="125" x2="200" y2="125"/>
+                            <line x1="0" y1="188" x2="200" y2="188"/>
+                            <line x1="50" y1="0" x2="50" y2="250"/>
+                            <line x1="100" y1="0" x2="100" y2="250"/>
+                            <line x1="150" y1="0" x2="150" y2="250"/>
+                        </g>
+                        <!-- Abstract head/shoulders -->
+                        <g fill="none" stroke="#3D352F" stroke-width="0.75" stroke-linecap="square">
+                            <circle cx="100" cy="98" r="36"/>
+                            <path d="M 40 240 Q 40 165 100 158 Q 160 165 160 240"/>
+                            <line x1="100" y1="62" x2="100" y2="134" stroke-dasharray="2 3" opacity="0.5"/>
+                            <line x1="64" y1="98" x2="136" y2="98" stroke-dasharray="2 3" opacity="0.5"/>
+                        </g>
+                        <text x="14" y="240" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="1.2" fill="#3D352F" opacity="0.7">PORTRAIT — PLACEHOLDER</text>
+                        <text x="186" y="14" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="1.2" fill="#3D352F" opacity="0.7" text-anchor="end">EF / 01</text>
+                    </svg>
+                </div>
+
+                <!-- Titleblock -->
+                <div class="founder-titleblock">
+                    <div class="founder-tb-header">
+                        <div>
+                            <span class="tb-label">Role</span>
+                            <strong>Founder</strong>
+                        </div>
+                        <div>
+                            <span class="tb-label">Status</span>
+                            <strong>Reachable</strong>
+                        </div>
+                    </div>
+                    <div class="founder-name">
+                        <span>Name</span>
+                        <h3>Elliott Friedrich</h3>
+                    </div>
+                    <div class="founder-note">
+                        <span>Note</span>
+                        <p>Startede novine fordi for mange små steder fortjener bedre end en skabelon.</p>
+                    </div>
+                    <div class="founder-email-row">
+                        <span class="tb-label">Direkte linje</span>
+                        <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 6 — FAQ  (accordion with technical numbering)
+         ============================================================ -->
+    <section class="faq-section">
+        <div class="faq-wrap">
+
+            <div class="fig-titlebar">
+                <span class="fig-id">Fig. 03 &nbsp;/&nbsp; Q &amp; A — Schedule</span>
+                <span class="fig-scale">5 entries &nbsp;·&nbsp; click to expand</span>
+            </div>
+
+            <div class="faq-header">
+                <h2 class="faq-headline">Spørgsmål, vi <em>ofte</em> får.</h2>
+                <p class="faq-meta">
+                    De fem mest stillede spørgsmål — pris, tid, kontrol, lock-in og design.
+                    Hvis dit ikke står her, så er der altid telefonen.
+                </p>
+            </div>
+
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span class="faq-tag">[ Q.01 ]</span>
+                        <span class="faq-text">Hvad koster det?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-a">
+                        <span class="faq-tag">[ A.01 ]</span>
+                        <p>Vi sender et fast tilbud efter første snak. Ingen overraskelser, ingen timeregning.</p>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span class="faq-tag">[ Q.02 ]</span>
+                        <span class="faq-text">Hvor lang tid tager det?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-a">
+                        <span class="faq-tag">[ A.02 ]</span>
+                        <p>Typisk 3–6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.</p>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span class="faq-tag">[ Q.03 ]</span>
+                        <span class="faq-text">Skal jeg selv vedligeholde det?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-a">
+                        <span class="faq-tag">[ A.03 ]</span>
+                        <p>Nej. Du behøver ikke røre noget. Men du KAN — vores CMS er lavet, så du kan ændre menukort, åbningstider eller priser på 30 sekunder. Helt uden teknisk viden.</p>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span class="faq-tag">[ Q.04 ]</span>
+                        <span class="faq-text">Hvad sker der hvis jeg en dag vil flytte væk fra jer?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-a">
+                        <span class="faq-tag">[ A.04 ]</span>
+                        <p>Dit domæne er dit. Dit indhold er dit. Vi hjælper dig videre uden bøvl. Vi vil hellere du bliver, fordi du gerne vil — ikke fordi du skal.</p>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span class="faq-tag">[ Q.05 ]</span>
+                        <span class="faq-text">Hvad hvis jeg ikke kan lide designet?</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-a">
+                        <span class="faq-tag">[ A.05 ]</span>
+                        <p>Så laver vi det om. Du betaler ikke for noget, du ikke kan stå inde for.</p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 7 — CONTACT CTA  (drawing titleblock)
+         ============================================================ -->
+    <section class="cta-section" id="contact">
+        <div class="cta-wrap">
+
+            <div class="cta-block">
+                <span class="cta-corner tl"></span>
+                <span class="cta-corner tr"></span>
+                <span class="cta-corner bl"></span>
+                <span class="cta-corner br"></span>
+                <span class="cta-tag">Fig. 04 / Call</span>
+                <span class="cta-tag-r">Inquiry — Open</span>
+
+                <h2 class="cta-headline">Et kort kald.<br><em>Ingen</em> forpligtelse.</h2>
+
+                <div class="cta-methods">
+                    <div class="cta-method">
+                        <span class="tb-label">Email</span>
+                        <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+                    </div>
+                    <div class="cta-method">
+                        <span class="tb-label">Phone</span>
+                        <a href="tel:+4591804039">+45 91 80 40 39</a>
+                    </div>
+                </div>
+
+                <p class="cta-footnote">Du taler med Elliott — ikke en sælger.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer>
+        <div class="footer-main">
+            <span class="meta-label">Ready to Build?</span>
+            <div style="margin-top: 20px;">
+                <a href="mailto:hello@novine.dk" class="big-link">hello@novine.dk</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 320px; opacity: 0.6;">
+                Baseret i Danmark. Vi bygger websites for steder der bryder sig om håndværk —
+                cafeer, restauranter og bagerier, der fortjener mere end en skabelon.
+            </p>
+        </div>
+        <div class="footer-secondary">
+            <div>
+                <span class="meta-label">Connect</span><br>
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;">Behance</a>
+            </div>
+            <div style="margin-top: 40px;">
+                <span class="meta-label">© 2026 novine digital^</span><br>
+                <span class="meta-label">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+         JS — hero parallax, gallery animation, FAQ accordion
+         ============================================================ -->
+    <script>
+        // Hero parallax (carried over from design.html verbatim)
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            if (heroTitle) heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+        // Gallery scroll-driven fan-out (carried over from design.html verbatim)
+        const galleryStack = document.getElementById('gallery-stack');
+        const galleryCards = Array.from(document.querySelectorAll('.gallery-card'));
+
+        const galleryStart = [
+            { rotate: -8, x: 0, y: 0 },
+            { rotate: -4, x: 48, y: 26 },
+            { rotate: 0, x: 96, y: 52 },
+            { rotate: 4, x: 144, y: 78 }
+        ];
+
+        const galleryEndDesktop = [
+            { rotate: -14, x: 0, y: 0 },
+            { rotate: -4, x: 160, y: -10 },
+            { rotate: 6, x: 320, y: -22 },
+            { rotate: 14, x: 480, y: -34 }
+        ];
+
+        const galleryEndMobile = [
+            { rotate: -14, x: 0, y: 0 },
+            { rotate: -4, x: 112, y: 4 },
+            { rotate: 6, x: 224, y: -8 },
+            { rotate: 14, x: 336, y: -20 }
+        ];
+
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const lerp = (from, to, t) => from + (to - from) * t;
+        let targetProgress = 0;
+        let currentProgress = 0;
+
+        const calculateProgress = () => {
+            if (!galleryStack) return;
+            const rect = galleryStack.getBoundingClientRect();
+            const start = window.innerHeight * 0.9;
+            const end = window.innerHeight * 0.25;
+            const raw = (start - rect.top) / (start - end);
+            targetProgress = clamp(raw, 0, 1);
+        };
+
+        const renderGallery = () => {
+            const useMobile = window.innerWidth <= 1024;
+            const galleryEnd = useMobile ? galleryEndMobile : galleryEndDesktop;
+
+            currentProgress = lerp(currentProgress, targetProgress, 0.12);
+
+            galleryCards.forEach((card, index) => {
+                const start = galleryStart[index];
+                const end = galleryEnd[index];
+                const rotate = lerp(start.rotate, end.rotate, currentProgress);
+                const x = lerp(start.x, end.x, currentProgress);
+                const y = lerp(start.y, end.y, currentProgress);
+                card.style.transform = `rotate(${rotate}deg) translateX(${x}px) translateY(${y}px)`;
+            });
+
+            requestAnimationFrame(renderGallery);
+        };
+
+        document.addEventListener('scroll', calculateProgress, { passive: true });
+        window.addEventListener('resize', calculateProgress);
+        calculateProgress();
+        requestAnimationFrame(renderGallery);
+
+        // FAQ accordion — vanilla, click-to-expand
+        document.querySelectorAll('.faq-item').forEach((item) => {
+            const q = item.querySelector('.faq-q');
+            const toggle = item.querySelector('.faq-toggle');
+            q.addEventListener('click', () => {
+                const isOpen = item.classList.contains('open');
+                // Close all others for clean accordion behavior
+                document.querySelectorAll('.faq-item.open').forEach((openItem) => {
+                    if (openItem !== item) {
+                        openItem.classList.remove('open');
+                        const t = openItem.querySelector('.faq-toggle');
+                        if (t) t.textContent = '+';
+                    }
+                });
+                if (isOpen) {
+                    item.classList.remove('open');
+                    toggle.textContent = '+';
+                } else {
+                    item.classList.add('open');
+                    toggle.textContent = '×';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

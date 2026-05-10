@@ -1,0 +1,1774 @@
+<!doctype html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>novine digital — Handcrafted Digital Structures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================================
+           novine digital — Variation 1 / Editorial Magazine
+           Hero + Gallerie carried over verbatim from design.html.
+           New editorial sections introduced for content per spec
+           docs/specs/2026-05-07-page-content-design.md
+           ========================================================= */
+
+        /* ---------- Tokens ---------- */
+        :root {
+            --paper:        #E6E4E2;
+            --paper-deep:   #DCD8D3;
+            --terracotta:   #CD9A7E;
+            --sage:         #A8AB9D;
+            --ink:          #3D352F;
+            --ink-deep:     #2A2421;     /* editorial near-black for headlines */
+            --aubergine:    #4A2F39;     /* the lone editorial accent */
+            --ink-faint:    rgba(61, 53, 47, 0.1);
+            --ink-rule:     rgba(61, 53, 47, 0.22);
+            --transition:   0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+            --serif:        'Fraunces', 'Times New Roman', serif;
+            --sans:         'Inter', sans-serif;
+            --mono:         'JetBrains Mono', ui-monospace, monospace;
+        }
+
+        /* ---------- Reset ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: var(--sans);
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: pageFade 1.2s ease 0.1s forwards;
+        }
+        @keyframes pageFade { to { opacity: 1; } }
+
+        /* ---------- Shared atoms ---------- */
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+        /* Hairline rules used throughout editorial sections */
+        .rule {
+            display: block;
+            width: 100%;
+            height: 0.5px;
+            background: var(--ink-rule);
+            border: 0;
+        }
+
+        /* ---------- Nav ---------- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover { opacity: 0.5; }
+
+        /* ---------- Section base ---------- */
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+        /* ---------- HERO (verbatim) ---------- */
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+        /* ---------- Editorial section frame ---------- */
+        .ed-section {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+            padding: 160px 40px 160px;
+            min-height: 0;
+        }
+
+        .ed-eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--ink);
+            opacity: 0.55;
+        }
+
+        .ed-display {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            color: var(--ink-deep);
+            line-height: 0.95;
+            letter-spacing: -0.025em;
+        }
+
+        .ed-display em,
+        .ed-display .it {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--aubergine);
+        }
+
+        /* ---------- Section 2: What we do ---------- */
+        .what-section {
+            background: var(--paper);
+            padding-top: 200px;
+            padding-bottom: 200px;
+        }
+
+        .what-header {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: 2fr 8fr 2fr;
+            gap: 40px;
+            align-items: end;
+            margin-bottom: 100px;
+        }
+
+        .what-eyebrow-col {
+            grid-column: 1 / 2;
+            padding-top: 24px;
+        }
+        .what-eyebrow-col .ed-eyebrow {
+            display: block;
+        }
+        .what-folio {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 13px;
+            color: var(--ink);
+            opacity: 0.55;
+            margin-top: 14px;
+        }
+
+        .what-headline {
+            grid-column: 2 / 3;
+            font-size: clamp(54px, 8.5vw, 132px);
+        }
+        .what-headline .stop {
+            font-style: italic;
+            color: var(--aubergine);
+            margin-left: 0.05em;
+        }
+
+        .what-list {
+            grid-column: 2 / 11;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .what-item {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: 1.4fr 3fr 5fr 1fr;
+            gap: 40px;
+            align-items: start;
+            padding: 56px 0;
+            border-top: 0.5px solid var(--ink-rule);
+            position: relative;
+            transition: background 0.6s var(--transition);
+        }
+
+        .what-item:last-of-type {
+            border-bottom: 0.5px solid var(--ink-rule);
+        }
+
+        .what-item:hover { background: rgba(205, 154, 126, 0.05); }
+
+        .what-num {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(64px, 8vw, 120px);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            color: transparent;
+            -webkit-text-stroke: 0.6px var(--ink-deep);
+            text-stroke: 0.6px var(--ink-deep);
+            transition: color 0.6s var(--transition);
+        }
+
+        .what-item:hover .what-num {
+            color: var(--ink-deep);
+            -webkit-text-stroke: 0;
+        }
+
+        .what-title {
+            font-family: var(--serif);
+            font-weight: 400;
+            font-variation-settings: "opsz" 48;
+            font-size: clamp(28px, 2.6vw, 38px);
+            line-height: 1.05;
+            letter-spacing: -0.015em;
+            color: var(--ink-deep);
+        }
+
+        .what-body {
+            font-family: var(--sans);
+            font-weight: 300;
+            font-size: 17px;
+            line-height: 1.55;
+            color: var(--ink);
+            max-width: 46ch;
+        }
+
+        .what-marker {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.45;
+            text-align: right;
+            padding-top: 8px;
+        }
+
+        .what-closing {
+            grid-column: 8 / 13;
+            margin-top: 80px;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 96;
+            font-size: clamp(24px, 2.4vw, 34px);
+            line-height: 1.25;
+            color: var(--aubergine);
+            text-align: right;
+            position: relative;
+        }
+
+        .what-closing::before {
+            content: "";
+            display: block;
+            width: 64px;
+            height: 0.5px;
+            background: var(--ink-rule);
+            margin: 0 0 18px auto;
+        }
+
+        /* ---------- Section 3: Gallerie (visual verbatim) ---------- */
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding-top: 140px;
+            padding-bottom: 120px;
+        }
+
+        .gallery-wrap {
+            grid-column: 2 / 12;
+            width: 100%;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 18px;
+            margin-bottom: 64px;
+            gap: 32px;
+        }
+
+        .gallery-title-block {
+            display: flex;
+            align-items: baseline;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-title {
+            font-size: clamp(40px, 6vw, 72px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+        }
+
+        .gallery-subline {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 36;
+            font-size: 16px;
+            color: var(--ink);
+            opacity: 0.65;
+            letter-spacing: -0.005em;
+        }
+
+        .gallery-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .gallery-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1px solid rgba(61, 53, 47, 0.35);
+            background: transparent;
+        }
+
+        .gallery-dot.active {
+            border-color: var(--ink);
+            background: var(--ink);
+        }
+
+        .gallery-stack {
+            position: relative;
+            height: 72vh;
+            min-height: 520px;
+            max-height: 720px;
+        }
+
+        .gallery-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: min(46%, 460px);
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 0.5px solid rgba(61, 53, 47, 0.18);
+            box-shadow: 0 20px 45px rgba(61, 53, 47, 0.12);
+            background: #d7d2ce;
+            transform-origin: bottom left;
+            transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+            will-change: transform;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.82) contrast(0.95);
+            transition: transform var(--transition), filter var(--transition);
+            mix-blend-mode: multiply;
+            opacity: 0.92;
+        }
+
+        .gallery-card:hover {
+            box-shadow: 0 26px 56px rgba(61, 53, 47, 0.2);
+            filter: brightness(1.02);
+        }
+
+        .gallery-card:hover img {
+            transform: scale(1.05);
+            filter: saturate(1) contrast(1);
+        }
+
+        .gallery-card-label {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            background: rgba(230, 228, 226, 0.8);
+            border: 0.5px solid rgba(61, 53, 47, 0.25);
+            backdrop-filter: blur(4px);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 6px 10px;
+        }
+
+        .gallery-card-arrow {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-size: 24px;
+            font-weight: 200;
+        }
+
+        .gallery-card[data-card="0"] { z-index: 4; transform: rotate(-8deg) translateX(0) translateY(0); }
+        .gallery-card[data-card="1"] { z-index: 3; transform: rotate(-4deg) translateX(48px) translateY(26px); }
+        .gallery-card[data-card="2"] { z-index: 2; transform: rotate(0deg) translateX(96px) translateY(52px); }
+        .gallery-card[data-card="3"] { z-index: 1; transform: rotate(4deg) translateX(144px) translateY(78px); }
+
+        /* ---------- Section 4: Process ---------- */
+        .process-section {
+            background: var(--paper-deep);
+            padding-top: 200px;
+            padding-bottom: 200px;
+        }
+
+        .process-header {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 4fr 8fr;
+            gap: 48px;
+            align-items: end;
+            margin-bottom: 110px;
+        }
+
+        .process-header-left .ed-eyebrow { display: block; }
+        .process-header-left .what-folio { margin-top: 14px; }
+
+        .process-headline {
+            grid-column: 2 / 3;
+            font-size: clamp(48px, 7vw, 110px);
+        }
+        .process-headline em {
+            font-style: italic;
+            color: var(--aubergine);
+            font-weight: 400;
+        }
+
+        .ledger {
+            grid-column: 2 / 12;
+            border-top: 0.5px solid var(--ink-rule);
+        }
+
+        .ledger-head,
+        .ledger-row {
+            display: grid;
+            grid-template-columns: 0.6fr 2fr 3.5fr 3.5fr;
+            gap: 40px;
+            border-bottom: 0.5px solid var(--ink-rule);
+            position: relative;
+        }
+
+        .ledger-head {
+            padding: 14px 0 18px;
+            color: var(--ink);
+        }
+        .ledger-head > div { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.55; }
+        .ledger-head > div:first-child { padding-left: 0; }
+
+        .ledger-row {
+            padding: 56px 0 60px;
+            align-items: start;
+            transition: background 0.5s var(--transition);
+        }
+        .ledger-row:hover { background: rgba(74, 47, 57, 0.025); }
+
+        /* Vertical column rules */
+        .ledger-row::before,
+        .ledger-row::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 0.5px;
+            background: var(--ink-rule);
+            opacity: 0.6;
+        }
+        .ledger-row::before { left: calc((0.6 / 9.6) * 100%); }
+        .ledger-row::after  { left: calc(((0.6 + 2) / 9.6) * 100%); }
+        /* Note: the simple percent placement above is approximate — keeps the
+           ledger feeling like a printed table without overconstraining grid. */
+
+        .ledger-num {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(34px, 3.4vw, 48px);
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            color: var(--ink-deep);
+        }
+
+        .ledger-step {
+            font-family: var(--serif);
+            font-weight: 400;
+            font-variation-settings: "opsz" 48;
+            font-size: clamp(28px, 2.8vw, 40px);
+            line-height: 1;
+            letter-spacing: -0.015em;
+            color: var(--ink-deep);
+        }
+
+        .ledger-cell {
+            padding-top: 8px;
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink);
+            max-width: 38ch;
+        }
+
+        .ledger-cell .cell-label {
+            display: block;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 14px;
+        }
+
+        /* The "Ingenting" punchline gets its own room. */
+        .ingenting {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 400;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(40px, 4.5vw, 64px);
+            line-height: 1;
+            letter-spacing: -0.025em;
+            color: var(--aubergine);
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* ---------- Section 5: Empathy + Founder ---------- */
+        .empathy-section {
+            background: var(--paper);
+            padding-top: 220px;
+            padding-bottom: 220px;
+        }
+
+        .pullquote {
+            grid-column: 2 / 13;
+            position: relative;
+            padding-right: 8vw;
+        }
+
+        .pullquote-mark {
+            position: absolute;
+            top: -0.35em;
+            left: -0.04em;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(160px, 18vw, 280px);
+            line-height: 1;
+            color: var(--terracotta);
+            opacity: 0.45;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .pullquote-body {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(38px, 5.2vw, 80px);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--ink-deep);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Drop cap on the pullquote */
+        .pullquote-body .dropcap {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 400;
+            font-variation-settings: "opsz" 144;
+            font-size: 1.05em;
+            color: var(--aubergine);
+        }
+
+        .founder-block {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            margin-top: 200px;
+            position: relative;
+        }
+
+        .founder-portrait {
+            grid-column: 2 / 6;
+            grid-row: 1 / 4;
+            aspect-ratio: 4 / 5;
+            background: var(--paper-deep);
+            border: 0.5px solid var(--ink-rule);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .founder-portrait svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .founder-caption {
+            position: absolute;
+            left: 0;
+            bottom: -30px;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 24;
+            font-size: 13px;
+            color: var(--ink);
+            opacity: 0.7;
+        }
+
+        .founder-name-block {
+            grid-column: 7 / 13;
+            grid-row: 1 / 2;
+            padding-top: 12px;
+        }
+
+        .founder-role {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            opacity: 0.55;
+        }
+
+        .founder-name {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(56px, 7vw, 110px);
+            line-height: 0.92;
+            letter-spacing: -0.035em;
+            color: var(--ink-deep);
+            margin-top: 18px;
+        }
+        .founder-name .amp {
+            font-style: italic;
+            color: var(--aubergine);
+        }
+
+        .founder-note {
+            grid-column: 8 / 12;
+            grid-row: 2 / 3;
+            margin-top: 56px;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 36;
+            font-size: clamp(20px, 1.8vw, 26px);
+            line-height: 1.4;
+            color: var(--ink);
+            max-width: 38ch;
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .founder-note::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 16px;
+            height: 0.5px;
+            background: var(--ink-rule);
+        }
+
+        .founder-signature {
+            grid-column: 9 / 13;
+            grid-row: 3 / 4;
+            margin-top: 72px;
+            text-align: right;
+        }
+
+        .founder-signature .meta-label {
+            display: block;
+            font-family: var(--mono);
+            margin-bottom: 14px;
+        }
+
+        .signature-link {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 400;
+            font-variation-settings: "opsz" 96;
+            font-size: clamp(28px, 3vw, 42px);
+            color: var(--ink-deep);
+            text-decoration: none;
+            border-bottom: 0.5px solid var(--ink-rule);
+            padding-bottom: 4px;
+            transition: color 0.4s var(--transition), border-color 0.4s var(--transition);
+            letter-spacing: -0.01em;
+        }
+
+        .signature-link:hover {
+            color: var(--aubergine);
+            border-color: var(--aubergine);
+        }
+
+        /* Marginalia annotation */
+        .founder-marginalia {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.45;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            justify-self: end;
+            align-self: start;
+            padding-top: 80px;
+        }
+
+        /* ---------- Section 6: FAQ ---------- */
+        .faq-section {
+            background: var(--paper-deep);
+            padding-top: 200px;
+            padding-bottom: 200px;
+        }
+
+        .faq-header {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: end;
+            margin-bottom: 100px;
+        }
+
+        .faq-header-meta { padding-bottom: 14px; }
+        .faq-header-meta .ed-eyebrow { display: block; }
+        .faq-header-meta .what-folio { margin-top: 14px; }
+
+        .faq-headline {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(48px, 6vw, 90px);
+            line-height: 0.98;
+            letter-spacing: -0.025em;
+            color: var(--ink-deep);
+            text-align: right;
+        }
+        .faq-headline em {
+            font-style: italic;
+            color: var(--aubergine);
+            font-weight: 400;
+        }
+
+        .faq-list {
+            grid-column: 2 / 12;
+            border-top: 0.5px solid var(--ink-rule);
+        }
+
+        .faq-item {
+            border-bottom: 0.5px solid var(--ink-rule);
+        }
+
+        .faq-q {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: baseline;
+            gap: 32px;
+            padding: 36px 8px 36px 0;
+            cursor: pointer;
+            background: transparent;
+            border: 0;
+            width: 100%;
+            text-align: left;
+            color: var(--ink-deep);
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 96;
+            font-size: clamp(24px, 2.6vw, 36px);
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            transition: color 0.4s var(--transition);
+        }
+
+        .faq-q:hover { color: var(--aubergine); }
+
+        .faq-q .q-dash {
+            font-family: var(--serif);
+            font-style: italic;
+            color: var(--aubergine);
+            font-weight: 400;
+            margin-right: 4px;
+        }
+
+        .faq-q .q-num {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            opacity: 0.5;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: normal;
+            align-self: center;
+        }
+
+        .faq-q .q-toggle {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: 1em;
+            line-height: 1;
+            transition: transform 0.5s var(--transition);
+            display: inline-block;
+            color: var(--ink);
+        }
+
+        .faq-item[aria-expanded="true"] .q-toggle { transform: rotate(45deg); color: var(--aubergine); }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s var(--transition);
+        }
+
+        .faq-a-inner {
+            padding: 0 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 7fr 4fr;
+            gap: 32px;
+        }
+
+        .faq-a-text {
+            grid-column: 2 / 3;
+            font-family: var(--sans);
+            font-weight: 300;
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--ink);
+            max-width: 60ch;
+        }
+
+        .faq-a-marker {
+            grid-column: 3 / 4;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 24;
+            font-size: 13px;
+            opacity: 0.55;
+            text-align: right;
+            padding-top: 4px;
+        }
+
+        /* ---------- Section 7: Contact CTA ---------- */
+        .cta-section {
+            background: var(--paper);
+            padding-top: 220px;
+            padding-bottom: 220px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            text-align: center;
+        }
+
+        .cta-eyebrow {
+            grid-column: 1 / 13;
+            margin-bottom: 60px;
+        }
+
+        .cta-eyebrow .ed-eyebrow {
+            display: block;
+            margin-bottom: 6px;
+        }
+        .cta-eyebrow .what-folio { margin-top: 0; }
+
+        .cta-headline {
+            grid-column: 2 / 12;
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 144;
+            font-size: clamp(56px, 9vw, 150px);
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            color: var(--ink-deep);
+        }
+        .cta-headline em {
+            font-style: italic;
+            color: var(--aubergine);
+            font-weight: 400;
+        }
+        .cta-headline .stop {
+            font-style: italic;
+            color: var(--aubergine);
+        }
+
+        .cta-rule {
+            grid-column: 6 / 8;
+            margin: 80px auto 70px;
+            width: 80px;
+            height: 0.5px;
+            background: var(--ink);
+            opacity: 0.4;
+        }
+
+        .cta-contacts {
+            grid-column: 3 / 11;
+            display: grid;
+            grid-template-columns: 1fr 0.05fr 1fr;
+            gap: 40px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .cta-divider {
+            width: 0.5px;
+            height: 60px;
+            background: var(--ink-rule);
+        }
+
+        .cta-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .cta-contact .meta-label {
+            font-family: var(--mono);
+        }
+
+        .cta-link {
+            font-family: var(--mono);
+            font-weight: 400;
+            font-size: clamp(18px, 1.8vw, 24px);
+            letter-spacing: 0.04em;
+            color: var(--ink-deep);
+            text-decoration: none;
+            border-bottom: 0.5px solid var(--ink-rule);
+            padding-bottom: 4px;
+            transition: color 0.4s var(--transition), border-color 0.4s var(--transition);
+        }
+
+        .cta-link:hover {
+            color: var(--aubergine);
+            border-color: var(--aubergine);
+        }
+
+        .cta-reassurance {
+            grid-column: 1 / 13;
+            margin-top: 80px;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 72;
+            font-size: clamp(20px, 2vw, 28px);
+            color: var(--ink);
+            opacity: 0.85;
+            letter-spacing: -0.005em;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            border-top: 0.5px solid var(--ink-rule);
+        }
+
+        .footer-main { grid-column: 1 / 6; }
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-family: var(--serif);
+            font-weight: 300;
+            font-variation-settings: "opsz" 96;
+            font-size: 32px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+            letter-spacing: -0.01em;
+            transition: color 0.4s var(--transition);
+        }
+        .big-link:hover { color: var(--aubergine); }
+
+        /* ---------- Axis (decorative vertical lines from base) ---------- */
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1024px) {
+            /* Hero (verbatim) */
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .gallery-wrap { grid-column: 1 / 13; }
+            .gallery-stack { height: 64vh; min-height: 460px; }
+            .gallery-card { width: min(68%, 420px); }
+
+            /* Editorial sections */
+            .ed-section { padding: 130px 32px 130px; }
+            .what-section, .process-section, .empathy-section, .faq-section, .cta-section {
+                padding-top: 140px;
+                padding-bottom: 140px;
+            }
+
+            .what-header { grid-template-columns: 1fr; gap: 24px; }
+            .what-eyebrow-col, .what-headline { grid-column: 1 / 13; }
+            .what-list { grid-column: 1 / 13; }
+            .what-item { grid-template-columns: 0.7fr 4fr 5fr 0.4fr; gap: 24px; }
+            .what-marker { display: none; }
+            .what-closing { grid-column: 1 / 13; }
+
+            .process-header { grid-column: 1 / 13; grid-template-columns: 1fr; gap: 24px; }
+            .ledger { grid-column: 1 / 13; }
+            .ledger-head, .ledger-row { grid-template-columns: 0.6fr 1.6fr 3fr 3fr; gap: 24px; }
+
+            .pullquote { grid-column: 1 / 13; padding-right: 0; }
+            .founder-block { grid-column: 1 / 13; }
+            .founder-portrait { grid-column: 1 / 7; }
+            .founder-name-block { grid-column: 7 / 13; }
+            .founder-note { grid-column: 7 / 13; }
+            .founder-signature { grid-column: 7 / 13; }
+            .founder-marginalia { display: none; }
+
+            .faq-header { grid-column: 1 / 13; grid-template-columns: 1fr; gap: 16px; }
+            .faq-headline { text-align: left; }
+            .faq-list { grid-column: 1 / 13; }
+            .faq-a-inner { grid-template-columns: 1fr; }
+            .faq-a-text { grid-column: 1 / 2; }
+            .faq-a-marker { display: none; }
+
+            .cta-headline { grid-column: 1 / 13; }
+            .cta-contacts { grid-column: 1 / 13; }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 100px 24px 40px; }
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+            nav { padding: 24px; }
+            .nav-links { gap: 24px; }
+
+            .ed-section, .what-section, .process-section, .empathy-section, .faq-section, .cta-section {
+                padding-left: 24px;
+                padding-right: 24px;
+                padding-top: 100px;
+                padding-bottom: 100px;
+            }
+
+            .what-item {
+                grid-template-columns: 1fr;
+                gap: 14px;
+                padding: 36px 0;
+            }
+            .what-num { font-size: 64px; }
+            .what-title { font-size: 26px; }
+
+            .ledger-head { display: none; }
+            .ledger-row {
+                grid-template-columns: 1fr;
+                gap: 14px;
+                padding: 36px 0;
+            }
+            .ledger-row::before, .ledger-row::after { display: none; }
+            .ledger-cell { max-width: none; }
+
+            .pullquote-mark { font-size: 140px; top: -0.2em; }
+            .pullquote-body { font-size: 32px; line-height: 1.15; }
+
+            .founder-portrait { grid-column: 1 / 13; aspect-ratio: 4 / 4; }
+            .founder-name-block, .founder-note, .founder-signature {
+                grid-column: 1 / 13;
+                text-align: left;
+            }
+            .founder-signature { text-align: left; margin-top: 36px; }
+
+            .faq-q { font-size: 22px; gap: 16px; }
+            .faq-q .q-num { display: none; }
+
+            .cta-contacts {
+                grid-template-columns: 1fr;
+                gap: 36px;
+            }
+            .cta-divider { display: none; }
+            .cta-rule { margin: 50px auto 40px; }
+
+            footer { padding: 60px 24px; }
+            .footer-main, .footer-secondary {
+                grid-column: 1 / 13;
+                text-align: left;
+                margin-bottom: 40px;
+            }
+            .footer-secondary { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="frame"></div>
+
+    <!-- =========================================================
+         NAV
+         ========================================================= -->
+    <nav>
+        <div class="logo">novine digital^</div>
+        <div class="nav-links">
+            <div>
+                <span class="meta-label">Beliggenhed</span><br>
+                <a href="#" class="nav-item">København / DK</a>
+            </div>
+            <div>
+                <span class="meta-label">Udvalgte arbejder</span><br>
+                <a href="#gallerie" class="nav-item">Gallerie</a>
+            </div>
+            <div>
+                <span class="meta-label">Forespørgsel</span><br>
+                <a href="#contact" class="nav-item">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- =========================================================
+         SECTION 1 — HERO (verbatim from design.html)
+         ========================================================= -->
+    <section class="hero">
+        <div class="axis axis-v" style="left: 40px;"></div>
+        <div class="hero-main">
+            <h1 class="hero-title">Handcrafted<br>Digital<br>Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta">
+            <p class="meta-label">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator">
+            <span class="caret">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2 — WHAT WE DO (NEW)
+         Editorial spread. Big serif headline + numbered list with
+         hairline rules. Closing line as right-aligned italic
+         marginalia.
+         ========================================================= -->
+    <section class="what-section ed-section">
+        <div class="what-header">
+            <div class="what-eyebrow-col">
+                <span class="ed-eyebrow">§ 02 / Tilbud</span>
+                <div class="what-folio">Et samlet hele.</div>
+            </div>
+            <h2 class="what-headline ed-display">
+                Vi tager os<br>af det hele<span class="stop">.</span>
+            </h2>
+        </div>
+
+        <div class="what-list" role="list">
+            <article class="what-item" role="listitem">
+                <div class="what-num">01</div>
+                <h3 class="what-title">Website</h3>
+                <p class="what-body">Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+                <span class="what-marker">i.</span>
+            </article>
+
+            <article class="what-item" role="listitem">
+                <div class="what-num">02</div>
+                <h3 class="what-title">Hosting &amp; domæne</h3>
+                <p class="what-body">Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+                <span class="what-marker">ii.</span>
+            </article>
+
+            <article class="what-item" role="listitem">
+                <div class="what-num">03</div>
+                <h3 class="what-title">CMS — <em style="font-style:italic; color:var(--aubergine);">hvis du vil</em></h3>
+                <p class="what-body">Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+                <span class="what-marker">iii.</span>
+            </article>
+
+            <article class="what-item" role="listitem">
+                <div class="what-num">04</div>
+                <h3 class="what-title">Findbar på Google</h3>
+                <p class="what-body">Vi sørger for, at dine kunder finder dig på Google.</p>
+                <span class="what-marker">iv.</span>
+            </article>
+        </div>
+
+        <p class="what-closing">Du behøver ikke samle stykkerne selv.</p>
+    </section>
+
+    <!-- =========================================================
+         SECTION 3 — GALLERIE (visual verbatim, labels updated)
+         ========================================================= -->
+    <section class="gallery-section" id="gallerie">
+        <div class="gallery-wrap">
+            <div class="gallery-header">
+                <div class="gallery-title-block">
+                    <h2 class="gallery-title">Gallerie</h2>
+                    <p class="gallery-subline">Steder vi har bygget websites til.</p>
+                </div>
+                <div class="gallery-controls" aria-hidden="true">
+                    <span class="gallery-dot active"></span>
+                    <span class="gallery-dot"></span>
+                    <span class="gallery-dot"></span>
+                    <span class="gallery-dot"></span>
+                </div>
+            </div>
+
+            <div class="gallery-stack" id="gallery-stack">
+                <article class="gallery-card" data-card="0">
+                    <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000" alt="Bachs Bageri">
+                    <span class="gallery-card-label">Bachs Bageri / Frederiksberg</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="1">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=1000" alt="Café Solgaarden">
+                    <span class="gallery-card-label">Café Solgaarden / Aarhus</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="2">
+                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000" alt="Restaurant Klint">
+                    <span class="gallery-card-label">Restaurant Klint / Aalborg</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+                <article class="gallery-card" data-card="3">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000" alt="Spisehuset Nord">
+                    <span class="gallery-card-label">Spisehuset Nord / Helsingør</span>
+                    <span class="gallery-card-arrow">^</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 4 — PROCESS (NEW)
+         Vertical ledger. Numbered rows; "Vi gør" / "Du gør"
+         columns separated by hairline rules.
+         The "Ingenting" cell deserves its own air.
+         ========================================================= -->
+    <section class="process-section ed-section">
+        <div class="process-header">
+            <div class="process-header-left">
+                <span class="ed-eyebrow">§ 04 / Proces</span>
+                <div class="what-folio">Fem trin. Næsten ingen af dem er dine.</div>
+            </div>
+            <h2 class="process-headline ed-display">
+                Fra første snak<br>til <em>lanceret</em> site.
+            </h2>
+        </div>
+
+        <div class="ledger" role="table" aria-label="Process steps">
+            <div class="ledger-head" role="row">
+                <div role="columnheader">Trin</div>
+                <div role="columnheader">Fase</div>
+                <div role="columnheader">Vi gør</div>
+                <div role="columnheader">Du gør</div>
+            </div>
+
+            <div class="ledger-row" role="row">
+                <div class="ledger-num" role="cell">01/</div>
+                <div class="ledger-step" role="cell">Snak</div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Vi gør</span>
+                    En kort samtale. Vi lærer dit sted at kende.
+                </div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Du gør</span>
+                    Fortæller om dit sted. Det er alt.
+                </div>
+            </div>
+
+            <div class="ledger-row" role="row">
+                <div class="ledger-num" role="cell">02/</div>
+                <div class="ledger-step" role="cell">Materialer</div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Vi gør</span>
+                    Sender dig en kort tjekliste.
+                </div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Du gør</span>
+                    Sender logo, åbningstider, et par billeder.
+                </div>
+            </div>
+
+            <div class="ledger-row" role="row">
+                <div class="ledger-num" role="cell">03/</div>
+                <div class="ledger-step" role="cell">Design</div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Vi gør</span>
+                    Tegner dit site fra bunden. Du ser det først.
+                </div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Du gør</span>
+                    Siger hvad du synes. Vi justerer.
+                </div>
+            </div>
+
+            <div class="ledger-row" role="row">
+                <div class="ledger-num" role="cell">04/</div>
+                <div class="ledger-step" role="cell">Byg &amp; lancering</div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Vi gør</span>
+                    Bygger, hoster, sætter dig op på Google.
+                </div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Du gør</span>
+                    <span class="ingenting">Ingenting.</span>
+                </div>
+            </div>
+
+            <div class="ledger-row" role="row">
+                <div class="ledger-num" role="cell">05/</div>
+                <div class="ledger-step" role="cell">Overdragelse</div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Vi gør</span>
+                    Viser dig CMS'en på 5 minutter — hvis du vil.
+                </div>
+                <div class="ledger-cell" role="cell">
+                    <span class="cell-label">Du gør</span>
+                    Klipper båndet.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 5 — EMPATHY + FOUNDER (NEW)
+         Full-width pullquote with oversized quote mark, then a
+         scattered founder block — portrait, name, italic note,
+         signature email.
+         ========================================================= -->
+    <section class="empathy-section ed-section">
+
+        <figure class="pullquote">
+            <span class="pullquote-mark" aria-hidden="true">&ldquo;</span>
+            <blockquote class="pullquote-body">
+                <span class="dropcap">D</span>e fleste cafe-ejere har ikke tid til at sidde og gøre det selv. Det giver mening. <em style="font-style:italic;">Det er derfor vi findes.</em>
+            </blockquote>
+        </figure>
+
+        <!-- Founder block: irregular layout — portrait, big name, floating note, signature -->
+        <div class="founder-block">
+
+            <div class="founder-marginalia" aria-hidden="true">
+                Photograph: Elliott Friedrich, founder, novine.
+            </div>
+
+            <figure class="founder-portrait">
+                <!-- Editorial silhouette portrait — abstract shape until real photo is supplied -->
+                <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-label="Founder portrait placeholder">
+                    <defs>
+                        <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#D9CDC2"/>
+                            <stop offset="1" stop-color="#BFAE9F"/>
+                        </linearGradient>
+                        <linearGradient id="fig" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#4A2F39"/>
+                            <stop offset="1" stop-color="#2A2421"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="400" height="500" fill="url(#bg)"/>
+                    <!-- Subtle paper grain lines -->
+                    <g stroke="#3D352F" stroke-opacity="0.06" stroke-width="0.5">
+                        <line x1="0" y1="120" x2="400" y2="120"/>
+                        <line x1="0" y1="380" x2="400" y2="380"/>
+                    </g>
+                    <!-- Silhouette: head + shoulders -->
+                    <g fill="url(#fig)">
+                        <ellipse cx="200" cy="200" rx="86" ry="100"/>
+                        <path d="M60 500 C 60 380 110 320 200 320 C 290 320 340 380 340 500 Z"/>
+                    </g>
+                    <!-- Editorial framing rule -->
+                    <rect x="20" y="20" width="360" height="460" fill="none" stroke="#3D352F" stroke-opacity="0.18" stroke-width="0.5"/>
+                </svg>
+                <figcaption class="founder-caption">Photograph: portrait pending — Elliott Friedrich, novine.</figcaption>
+            </figure>
+
+            <div class="founder-name-block">
+                <div class="founder-role">Founder, novine</div>
+                <h3 class="founder-name">Elliott<br>Friedrich</h3>
+            </div>
+
+            <p class="founder-note">
+                Startede novine fordi for mange små steder fortjener bedre end en skabelon.
+            </p>
+
+            <div class="founder-signature">
+                <span class="meta-label">Direkte linje</span>
+                <a href="mailto:elliott@novine.dk" class="signature-link">elliott@novine.dk</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 6 — FAQ (NEW)
+         Editorial Q&A. Question in serif with em-dash prefix.
+         Click to expand answer in Inter. Hairline rules between.
+         ========================================================= -->
+    <section class="faq-section ed-section">
+        <div class="faq-header">
+            <div class="faq-header-meta">
+                <span class="ed-eyebrow">§ 06 / FAQ</span>
+                <div class="what-folio">Fem ting de fleste vil vide.</div>
+            </div>
+            <h2 class="faq-headline">Spørgsmål, vi <em>ofte</em> får.</h2>
+        </div>
+
+        <div class="faq-list">
+
+            <div class="faq-item" data-faq>
+                <button class="faq-q" type="button" aria-expanded="false">
+                    <span><span class="q-dash">—</span> Hvad koster det?</span>
+                    <span class="q-num">Q.01</span>
+                    <span class="q-toggle" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <p class="faq-a-text">
+                            Vi sender et fast tilbud efter første snak. Ingen overraskelser, ingen timeregning.
+                        </p>
+                        <span class="faq-a-marker">Ad. Q.01</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+                <button class="faq-q" type="button" aria-expanded="false">
+                    <span><span class="q-dash">—</span> Hvor lang tid tager det?</span>
+                    <span class="q-num">Q.02</span>
+                    <span class="q-toggle" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <p class="faq-a-text">
+                            Typisk 3—6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.
+                        </p>
+                        <span class="faq-a-marker">Ad. Q.02</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+                <button class="faq-q" type="button" aria-expanded="false">
+                    <span><span class="q-dash">—</span> Skal jeg selv vedligeholde det?</span>
+                    <span class="q-num">Q.03</span>
+                    <span class="q-toggle" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <p class="faq-a-text">
+                            Nej. Du behøver ikke røre noget. Men du KAN — vores CMS er lavet, så du kan ændre menukort, åbningstider eller priser på 30 sekunder. Helt uden teknisk viden.
+                        </p>
+                        <span class="faq-a-marker">Ad. Q.03</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+                <button class="faq-q" type="button" aria-expanded="false">
+                    <span><span class="q-dash">—</span> Hvad sker der hvis jeg en dag vil flytte væk fra jer?</span>
+                    <span class="q-num">Q.04</span>
+                    <span class="q-toggle" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <p class="faq-a-text">
+                            Dit domæne er dit. Dit indhold er dit. Vi hjælper dig videre uden bøvl. Vi vil hellere du bliver, fordi du gerne vil — ikke fordi du skal.
+                        </p>
+                        <span class="faq-a-marker">Ad. Q.04</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-faq>
+                <button class="faq-q" type="button" aria-expanded="false">
+                    <span><span class="q-dash">—</span> Hvad hvis jeg ikke kan lide designet?</span>
+                    <span class="q-num">Q.05</span>
+                    <span class="q-toggle" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <p class="faq-a-text">
+                            Så laver vi det om. Du betaler ikke for noget, du ikke kan stå inde for.
+                        </p>
+                        <span class="faq-a-marker">Ad. Q.05</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 7 — CONTACT CTA (NEW)
+         Centered editorial closer. Big serif headline, hairline
+         rule, two contact methods, italic reassurance.
+         ========================================================= -->
+    <section class="cta-section ed-section" id="contact">
+        <div class="cta-eyebrow">
+            <span class="ed-eyebrow">§ 07 / Kontakt</span>
+            <div class="what-folio">Skriv eller ring. Begge bliver besvaret.</div>
+        </div>
+
+        <h2 class="cta-headline">
+            Et kort kald.<br>Ingen <em>forpligtelse</em><span class="stop">.</span>
+        </h2>
+
+        <div class="cta-rule" aria-hidden="true"></div>
+
+        <div class="cta-contacts">
+            <div class="cta-contact">
+                <span class="meta-label">Email</span>
+                <a href="mailto:elliott@novine.dk" class="cta-link">elliott@novine.dk</a>
+            </div>
+            <div class="cta-divider" aria-hidden="true"></div>
+            <div class="cta-contact">
+                <span class="meta-label">Telefon</span>
+                <a href="tel:+4591804039" class="cta-link">+45 91 80 40 39</a>
+            </div>
+        </div>
+
+        <p class="cta-reassurance">Du taler med Elliott — ikke en sælger.</p>
+    </section>
+
+    <!-- =========================================================
+         FOOTER (email updated to novine.dk)
+         ========================================================= -->
+    <footer>
+        <div class="footer-main">
+            <span class="meta-label">Klar til at bygge?</span>
+            <div style="margin-top: 20px;">
+                <a href="mailto:hello@novine.dk" class="big-link">hello@novine.dk</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 320px; opacity: 0.6;">
+                Baseret i Danmark. Vi arbejder med små steder, der fortjener bedre end en skabelon.
+            </p>
+        </div>
+        <div class="footer-secondary">
+            <div>
+                <span class="meta-label">Connect</span><br>
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;">Behance</a>
+            </div>
+            <div style="margin-top: 40px;">
+                <span class="meta-label">© 2026 novine digital^</span><br>
+                <span class="meta-label">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ---------- Hero parallax (verbatim) ---------- */
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            if (heroTitle) heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+        /* ---------- Gallerie scroll-driven fan-out (verbatim) ---------- */
+        const galleryStack = document.getElementById('gallery-stack');
+        const galleryCards = Array.from(document.querySelectorAll('.gallery-card'));
+
+        const galleryStart = [
+            { rotate: -8, x: 0, y: 0 },
+            { rotate: -4, x: 48, y: 26 },
+            { rotate: 0, x: 96, y: 52 },
+            { rotate: 4, x: 144, y: 78 }
+        ];
+
+        const galleryEndDesktop = [
+            { rotate: -14, x: 0, y: 0 },
+            { rotate: -4, x: 160, y: -10 },
+            { rotate: 6, x: 320, y: -22 },
+            { rotate: 14, x: 480, y: -34 }
+        ];
+
+        const galleryEndMobile = [
+            { rotate: -14, x: 0, y: 0 },
+            { rotate: -4, x: 112, y: 4 },
+            { rotate: 6, x: 224, y: -8 },
+            { rotate: 14, x: 336, y: -20 }
+        ];
+
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const lerp = (from, to, t) => from + (to - from) * t;
+        let targetProgress = 0;
+        let currentProgress = 0;
+
+        const calculateProgress = () => {
+            if (!galleryStack) return;
+            const rect = galleryStack.getBoundingClientRect();
+            const start = window.innerHeight * 0.9;
+            const end = window.innerHeight * 0.25;
+            const raw = (start - rect.top) / (start - end);
+            targetProgress = clamp(raw, 0, 1);
+        };
+
+        const renderGallery = () => {
+            const useMobile = window.innerWidth <= 1024;
+            const galleryEnd = useMobile ? galleryEndMobile : galleryEndDesktop;
+
+            currentProgress = lerp(currentProgress, targetProgress, 0.12);
+
+            galleryCards.forEach((card, index) => {
+                const start = galleryStart[index];
+                const end = galleryEnd[index];
+                const rotate = lerp(start.rotate, end.rotate, currentProgress);
+                const x = lerp(start.x, end.x, currentProgress);
+                const y = lerp(start.y, end.y, currentProgress);
+                card.style.transform = `rotate(${rotate}deg) translateX(${x}px) translateY(${y}px)`;
+            });
+
+            requestAnimationFrame(renderGallery);
+        };
+
+        document.addEventListener('scroll', calculateProgress, { passive: true });
+        window.addEventListener('resize', calculateProgress);
+        calculateProgress();
+        requestAnimationFrame(renderGallery);
+
+        /* ---------- FAQ accordion ---------- */
+        const faqItems = document.querySelectorAll('[data-faq]');
+        faqItems.forEach((item) => {
+            const btn = item.querySelector('.faq-q');
+            const panel = item.querySelector('.faq-a');
+            btn.addEventListener('click', () => {
+                const isOpen = item.getAttribute('aria-expanded') === 'true';
+                if (isOpen) {
+                    item.setAttribute('aria-expanded', 'false');
+                    btn.setAttribute('aria-expanded', 'false');
+                    panel.style.maxHeight = '0px';
+                } else {
+                    item.setAttribute('aria-expanded', 'true');
+                    btn.setAttribute('aria-expanded', 'true');
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                }
+            });
+        });
+
+        /* ---------- Page-load fade is handled in CSS via @keyframes ---------- */
+    </script>
+
+</body>
+</html>

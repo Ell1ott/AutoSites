@@ -1,0 +1,1138 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">novine digital — Handcrafted Digital Objects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&amp;display=swap" rel="stylesheet" vid="7">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&amp;display=swap" rel="stylesheet">
+    <style vid="8">
+
+
+        :root {
+            --paper: #E6E4E2;
+            --terracotta: #CD9A7E;
+            --sage: #A8AB9D;
+            --ink: #3D352F;
+            --ink-faint: rgba(61, 53, 47, 0.1);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+
+
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.5;
+        }
+
+
+
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+
+
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+
+
+        .work-section {
+            background: var(--terracotta);
+            color: #4A3A31;
+        }
+
+        .card-layout {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-self: center;
+        }
+
+        .card-visual {
+            background: #D9B39F;
+            aspect-ratio: 1.6 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 2px 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+            opacity: 0.8;
+        }
+
+        .card-content {
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 42px;
+            font-weight: 200;
+            margin-bottom: 20px;
+        }
+
+        /* gallery */
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding-top: 140px;
+            padding-bottom: 140px;
+            background-image:
+                radial-gradient(rgba(61, 53, 47, 0.05) 1px, transparent 1px),
+                radial-gradient(rgba(61, 53, 47, 0.04) 1px, transparent 1px);
+            background-size: 3px 3px, 7px 7px;
+            background-position: 0 0, 1px 2px;
+        }
+
+        .gallery-wrap {
+            grid-column: 2 / 12;
+            width: 100%;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 18px;
+            margin-bottom: 56px;
+            gap: 24px;
+        }
+
+        .gallery-eyebrow {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            opacity: 0.6;
+            margin-bottom: 14px;
+        }
+
+        .gallery-title {
+            font-family: 'Fraunces', serif;
+            font-weight: 400;
+            font-style: italic;
+            font-size: clamp(48px, 7vw, 92px);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+
+        .gallery-counter {
+            font-family: 'Fraunces', serif;
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0.18em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .gallery-counter .num {
+            font-feature-settings: "tnum" 1;
+            font-variant-numeric: tabular-nums;
+            min-width: 28px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .gallery-counter .rule {
+            display: inline-block;
+            width: 22px;
+            height: 0.5px;
+            background: var(--ink);
+            opacity: 0.5;
+        }
+
+        /* Magazine spread carousel */
+        .gallery-stage {
+            position: relative;
+            perspective: 2400px;
+            perspective-origin: 50% 50%;
+        }
+
+        .gallery-spread {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9.5;
+            min-height: 520px;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.65, 0.05, 0.35, 1);
+            will-change: transform;
+        }
+
+        .gallery-spread.flip-next {
+            transform: rotateY(-12deg);
+        }
+
+        .gallery-spread.flip-prev {
+            transform: rotateY(12deg);
+        }
+
+        .gallery-page {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #ECEAE6;
+            box-shadow:
+                0 30px 60px rgba(61, 53, 47, 0.15),
+                0 1px 0 rgba(61, 53, 47, 0.06);
+            border: 0.5px solid rgba(61, 53, 47, 0.18);
+            opacity: 0;
+            visibility: hidden;
+            transform: rotateY(0deg);
+            backface-visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .gallery-page.is-active {
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+        }
+
+        .gallery-page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 56px;
+            transform: translateX(-50%);
+            background: linear-gradient(
+                to right,
+                rgba(61, 53, 47, 0) 0%,
+                rgba(61, 53, 47, 0.16) 45%,
+                rgba(61, 53, 47, 0.22) 50%,
+                rgba(61, 53, 47, 0.16) 55%,
+                rgba(61, 53, 47, 0) 100%
+            );
+            pointer-events: none;
+            z-index: 3;
+            mix-blend-mode: multiply;
+        }
+
+        .gallery-page::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(61, 53, 47, 0.05) 1px, transparent 1px);
+            background-size: 3px 3px;
+            pointer-events: none;
+            opacity: 0.5;
+            mix-blend-mode: multiply;
+            z-index: 1;
+        }
+
+        .gallery-plate {
+            position: relative;
+            overflow: hidden;
+            margin: 28px 0 28px 28px;
+            background: #d7d2ce;
+            border: 0.5px solid rgba(61, 53, 47, 0.22);
+            z-index: 2;
+        }
+
+        .gallery-plate img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(0.85) contrast(0.96);
+            mix-blend-mode: multiply;
+            opacity: 0.94;
+        }
+
+        .gallery-plate .plate-tag {
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            background: rgba(230, 228, 226, 0.85);
+            border: 0.5px solid rgba(61, 53, 47, 0.25);
+            backdrop-filter: blur(4px);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            padding: 6px 10px;
+        }
+
+        .gallery-plate .plate-corner {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            background: rgba(230, 228, 226, 0.85);
+            border: 0.5px solid rgba(61, 53, 47, 0.2);
+            padding: 4px 10px;
+        }
+
+        .gallery-editorial {
+            position: relative;
+            padding: 44px 44px 36px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .editorial-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid rgba(61, 53, 47, 0.18);
+            padding-bottom: 14px;
+            margin-bottom: 26px;
+            gap: 16px;
+        }
+
+        .editorial-folio {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 12px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .editorial-section-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            opacity: 0.55;
+        }
+
+        .editorial-title {
+            font-family: 'Fraunces', serif;
+            font-weight: 400;
+            font-size: clamp(34px, 4.4vw, 60px);
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            margin-bottom: 22px;
+        }
+
+        .editorial-title em {
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .editorial-body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 14.5px;
+            line-height: 1.72;
+            color: var(--ink);
+            opacity: 0.92;
+            max-width: 46ch;
+        }
+
+        .editorial-body::first-letter {
+            font-family: 'Fraunces', serif;
+            font-weight: 500;
+            font-style: normal;
+            float: left;
+            font-size: 64px;
+            line-height: 0.88;
+            padding: 6px 12px 0 0;
+            color: var(--ink);
+        }
+
+        .editorial-foot {
+            margin-top: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 24px;
+            border-top: 0.5px solid rgba(61, 53, 47, 0.18);
+            padding-top: 18px;
+        }
+
+        .editorial-index {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            opacity: 0.7;
+        }
+
+        .editorial-index ol {
+            list-style: none;
+            margin-top: 10px;
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            opacity: 0.85;
+        }
+
+        .editorial-index ol li {
+            padding: 3px 0;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .editorial-index ol li.is-current {
+            opacity: 1;
+            color: var(--ink);
+        }
+
+        .editorial-index ol li:not(.is-current) {
+            opacity: 0.45;
+        }
+
+        .editorial-index ol li .idx-num {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            min-width: 22px;
+        }
+
+        .editorial-plate-of {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 14px;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+
+        /* controls */
+        .gallery-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 36px;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-nav {
+            display: flex;
+            gap: 0;
+            border: 0.5px solid rgba(61, 53, 47, 0.3);
+        }
+
+        .gallery-nav button {
+            background: transparent;
+            border: none;
+            border-right: 0.5px solid rgba(61, 53, 47, 0.3);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            padding: 14px 22px;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gallery-nav button:last-child {
+            border-right: none;
+        }
+
+        .gallery-nav button:hover {
+            background: rgba(61, 53, 47, 0.06);
+        }
+
+        .gallery-nav .arrow {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 16px;
+            transform: translateY(-1px);
+        }
+
+        .gallery-pagination {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .gallery-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1px solid rgba(61, 53, 47, 0.4);
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .gallery-dot.active {
+            border-color: var(--ink);
+            background: var(--ink);
+        }
+
+        .gallery-hint {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-size: 12px;
+            opacity: 0.55;
+            letter-spacing: 0.04em;
+        }
+
+
+        .services-section {
+            background: var(--sage);
+            color: #353830;
+        }
+
+        .service-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 0.5px solid rgba(53, 56, 48, 0.2);
+            margin-top: 100px;
+        }
+
+        .service-item {
+            padding: 40px 20px;
+            border-right: 0.5px solid rgba(53, 56, 48, 0.2);
+        }
+
+        .service-item:last-child {
+            border-right: none;
+        }
+
+        .service-num {
+            font-size: 10px;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            max-width: 280px;
+            opacity: 0.8;
+        }
+
+
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: 0.5px solid currentColor;
+            text-decoration: none;
+            color: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.4s var(--transition);
+            position: relative;
+            background: transparent;
+        }
+
+        .btn:hover {
+            background: rgba(0,0,0,0.03);
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
+            transform: translateY(1px);
+        }
+
+
+
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .footer-main {
+            grid-column: 1 / 6;
+        }
+
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-size: 32px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        @media (max-width: 1024px) {
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .card-layout { grid-template-columns: 1fr; }
+            .service-grid { grid-template-columns: 1fr; }
+            .service-item { border-right: none; border-bottom: 0.5px solid rgba(53, 56, 48, 0.2); }
+            .gallery-wrap { grid-column: 1 / 13; }
+            .gallery-spread { aspect-ratio: auto; min-height: 0; }
+            .gallery-page { grid-template-columns: 1fr; }
+            .gallery-plate { margin: 22px 22px 0 22px; aspect-ratio: 4 / 3; }
+            .gallery-page::before {
+                top: 50%;
+                left: 0;
+                right: 0;
+                bottom: auto;
+                width: 100%;
+                height: 56px;
+                transform: translateY(-50%);
+                background: linear-gradient(
+                    to bottom,
+                    rgba(61, 53, 47, 0) 0%,
+                    rgba(61, 53, 47, 0.16) 45%,
+                    rgba(61, 53, 47, 0.22) 50%,
+                    rgba(61, 53, 47, 0.16) 55%,
+                    rgba(61, 53, 47, 0) 100%
+                );
+            }
+            .gallery-editorial {
+                padding: 28px 22px 28px 22px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+            .gallery-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .gallery-hint { text-align: center; }
+        }
+    </style>
+</head>
+<body vid="9">
+
+    <div class="frame" vid="10"></div>
+
+    <nav vid="11">
+        <div class="logo" vid="12">novine digital^</div>
+        <div class="nav-links" vid="13">
+            <div vid="14">
+                <span class="meta-label" vid="15">Location</span><br vid="16">
+                <a href="#" class="nav-item" vid="17">Amsterdam / Global</a>
+            </div>
+            <div vid="18">
+                <span class="meta-label" vid="19">Selected Works</span><br vid="20">
+                <a href="#" class="nav-item" vid="21">Archive 01—24</a>
+            </div>
+            <div vid="22">
+                <span class="meta-label" vid="23">Inquiry</span><br vid="24">
+                <a href="#" class="nav-item" vid="25">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="hero" vid="26">
+        <div class="axis axis-v" style="left: 40px;" vid="27"></div>
+        <div class="hero-main">
+            <h1 class="hero-title" vid="28">Handcrafted<br vid="29">Digital<br vid="30">Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta" vid="31">
+            <p class="meta-label" vid="32">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;" vid="33">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator" vid="34">
+            <span class="caret" vid="35">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+
+    <section class="work-section" vid="36">
+        <div class="card-layout" vid="37">
+            <div class="card-visual" vid="38">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Technical Detail" vid="39">
+            </div>
+            <div class="card-content" vid="40">
+                <div vid="41">
+                    <span class="meta-label" vid="42">Project 01 / Architecture</span>
+                    <h2 class="card-title" vid="43">Foundry Modern</h2>
+                    <p style="margin-bottom: 40px; opacity: 0.9;" vid="44">A high-performance CMS implementation for an architectural visualization studio. Every pixel considered.</p>
+                </div>
+                <a href="#" class="btn" vid="45">View Case Study</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="gallery-section" vid="81">
+        <div class="gallery-wrap">
+            <div class="gallery-header">
+                <div>
+                    <p class="gallery-eyebrow">Annual Edition / Vol. IV</p>
+                    <h2 class="gallery-title">Plates</h2>
+                </div>
+                <div class="gallery-counter" aria-live="polite">
+                    <span class="num" id="gallery-current">01</span>
+                    <span class="rule"></span>
+                    <span class="num" id="gallery-total">04</span>
+                </div>
+            </div>
+
+            <div class="gallery-stage">
+                <div class="gallery-spread" id="gallery-spread">
+                    <article class="gallery-page is-active" data-page="0">
+                        <figure class="gallery-plate">
+                            <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Amber textured visual study">
+                            <span class="plate-tag">Ref. 001</span>
+                            <span class="plate-corner">Plate I</span>
+                        </figure>
+                        <div class="gallery-editorial">
+                            <div>
+                                <div class="editorial-head">
+                                    <span class="editorial-folio">Folio I &middot; Pigment Studies</span>
+                                    <span class="editorial-section-label">Material</span>
+                                </div>
+                                <h3 class="editorial-title">Amber <em>Fluid</em></h3>
+                                <p class="editorial-body">Captured in a low, oblique light, this resin study behaves like a warm tide held still. The hue collects in pooled lobes that read less as image than as memory of late afternoon — sap, varnish, the inside of a violin.</p>
+                            </div>
+                            <div class="editorial-foot">
+                                <div class="editorial-index">
+                                    <span>Contents</span>
+                                    <ol>
+                                        <li class="is-current"><span class="idx-num">I</span><span>Amber Fluid</span></li>
+                                        <li><span class="idx-num">II</span><span>Chrome Void</span></li>
+                                        <li><span class="idx-num">III</span><span>Glass Motion</span></li>
+                                        <li><span class="idx-num">IV</span><span>Deep Ink</span></li>
+                                    </ol>
+                                </div>
+                                <span class="editorial-plate-of">Plate 1 of 4</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="gallery-page" data-page="1">
+                        <figure class="gallery-plate">
+                            <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Chromatic metallic color field">
+                            <span class="plate-tag">Ref. 002</span>
+                            <span class="plate-corner">Plate II</span>
+                        </figure>
+                        <div class="gallery-editorial">
+                            <div>
+                                <div class="editorial-head">
+                                    <span class="editorial-folio">Folio II &middot; Surface Studies</span>
+                                    <span class="editorial-section-label">Material</span>
+                                </div>
+                                <h3 class="editorial-title">Chrome <em>Void</em></h3>
+                                <p class="editorial-body">A polished sheet that refuses to declare a color of its own — only the room reflected, softened, partially erased. The pigment acts as a quiet witness, recording everything in its periphery without judgement.</p>
+                            </div>
+                            <div class="editorial-foot">
+                                <div class="editorial-index">
+                                    <span>Contents</span>
+                                    <ol>
+                                        <li><span class="idx-num">I</span><span>Amber Fluid</span></li>
+                                        <li class="is-current"><span class="idx-num">II</span><span>Chrome Void</span></li>
+                                        <li><span class="idx-num">III</span><span>Glass Motion</span></li>
+                                        <li><span class="idx-num">IV</span><span>Deep Ink</span></li>
+                                    </ol>
+                                </div>
+                                <span class="editorial-plate-of">Plate 2 of 4</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="gallery-page" data-page="2">
+                        <figure class="gallery-plate">
+                            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Glass-like abstract form">
+                            <span class="plate-tag">Ref. 003</span>
+                            <span class="plate-corner">Plate III</span>
+                        </figure>
+                        <div class="gallery-editorial">
+                            <div>
+                                <div class="editorial-head">
+                                    <span class="editorial-folio">Folio III &middot; Optical Studies</span>
+                                    <span class="editorial-section-label">Material</span>
+                                </div>
+                                <h3 class="editorial-title">Glass <em>Motion</em></h3>
+                                <p class="editorial-body">Light is bent here as if through a slow-moving lens — refraction caught between two breaths. The composition feels less photographed than overheard, the residue of an instrument tuning itself in another room.</p>
+                            </div>
+                            <div class="editorial-foot">
+                                <div class="editorial-index">
+                                    <span>Contents</span>
+                                    <ol>
+                                        <li><span class="idx-num">I</span><span>Amber Fluid</span></li>
+                                        <li><span class="idx-num">II</span><span>Chrome Void</span></li>
+                                        <li class="is-current"><span class="idx-num">III</span><span>Glass Motion</span></li>
+                                        <li><span class="idx-num">IV</span><span>Deep Ink</span></li>
+                                    </ol>
+                                </div>
+                                <span class="editorial-plate-of">Plate 3 of 4</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="gallery-page" data-page="3">
+                        <figure class="gallery-plate">
+                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Dark ink-like abstract composition">
+                            <span class="plate-tag">Ref. 004</span>
+                            <span class="plate-corner">Plate IV</span>
+                        </figure>
+                        <div class="gallery-editorial">
+                            <div>
+                                <div class="editorial-head">
+                                    <span class="editorial-folio">Folio IV &middot; Tonal Studies</span>
+                                    <span class="editorial-section-label">Material</span>
+                                </div>
+                                <h3 class="editorial-title">Deep <em>Ink</em></h3>
+                                <p class="editorial-body">A near-black field with weather inside it — the kind of dark that has been sat with, not merely applied. We read it as a closing chord: the rest of the volume condensed into a single, generous absence.</p>
+                            </div>
+                            <div class="editorial-foot">
+                                <div class="editorial-index">
+                                    <span>Contents</span>
+                                    <ol>
+                                        <li><span class="idx-num">I</span><span>Amber Fluid</span></li>
+                                        <li><span class="idx-num">II</span><span>Chrome Void</span></li>
+                                        <li><span class="idx-num">III</span><span>Glass Motion</span></li>
+                                        <li class="is-current"><span class="idx-num">IV</span><span>Deep Ink</span></li>
+                                    </ol>
+                                </div>
+                                <span class="editorial-plate-of">Plate 4 of 4</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="gallery-toolbar">
+                <div class="gallery-nav" role="group" aria-label="Gallery navigation">
+                    <button type="button" id="gallery-prev" aria-label="Previous plate">
+                        <span class="arrow">&larr;</span><span>Prev</span>
+                    </button>
+                    <button type="button" id="gallery-next" aria-label="Next plate">
+                        <span>Next</span><span class="arrow">&rarr;</span>
+                    </button>
+                </div>
+                <div class="gallery-pagination" id="gallery-pagination">
+                    <button type="button" class="gallery-dot active" data-index="0" aria-label="Plate 1"></button>
+                    <button type="button" class="gallery-dot" data-index="1" aria-label="Plate 2"></button>
+                    <button type="button" class="gallery-dot" data-index="2" aria-label="Plate 3"></button>
+                    <button type="button" class="gallery-dot" data-index="3" aria-label="Plate 4"></button>
+                </div>
+                <p class="gallery-hint">Use &larr; / &rarr; to turn the page</p>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="services-section" vid="46">
+        <div style="grid-column: 1 / 8;" vid="47">
+            <span class="meta-label" vid="48">Disciplines</span>
+            <h2 style="font-size: 64px; font-weight: 200; line-height: 1.1; margin-top: 20px;" vid="49">The Digital<br vid="50">Joinery Workshop</h2>
+        </div>
+
+        <div class="service-grid" vid="51">
+            <div class="service-item" vid="52">
+                <span class="service-num" vid="53">01/</span>
+                <h3 class="service-name" vid="54">Bespoke Development</h3>
+                <p class="service-desc" vid="55">Clean-room code. No bloat. Websites that load with the snap of a well-fitted dovetail joint.</p>
+            </div>
+            <div class="service-item" vid="56">
+                <span class="service-num" vid="57">02/</span>
+                <h3 class="service-name" vid="58">Adaptive CMS</h3>
+                <p class="service-desc" vid="59">Tailored content management systems designed for clarity and longevity. Control without the complexity.</p>
+            </div>
+            <div class="service-item" vid="60">
+                <span class="service-num" vid="61">03/</span>
+                <h3 class="service-name" vid="62">Organic SEO</h3>
+                <p class="service-desc" vid="63">Foundational visibility built into the code. We don't chase algorithms; we build for humans and machines alike.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer vid="64">
+        <div class="footer-main" vid="65">
+            <span class="meta-label" vid="66">Ready to Build?</span>
+            <div style="margin-top: 20px;" vid="67">
+                <a href="mailto:hello@novine.digital" class="big-link" vid="68">hello@novine.digital</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 300px; opacity: 0.6;" vid="69">
+                Based in the Netherlands. We work with clients who value the quiet power of exceptional craftsmanship.
+            </p>
+        </div>
+        <div class="footer-secondary" vid="70">
+            <div vid="71">
+                <span class="meta-label" vid="72">Connect</span><br vid="73">
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;" vid="74">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;" vid="75">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;" vid="76">Behance</a>
+            </div>
+            <div style="margin-top: 40px;" vid="77">
+                <span class="meta-label" vid="78">© 2024 novine digital^</span><br vid="79">
+                <span class="meta-label" vid="80">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script vid="81">
+
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+        (function initMagazineGallery() {
+            const spread = document.getElementById('gallery-spread');
+            if (!spread) return;
+            const pages = Array.from(spread.querySelectorAll('.gallery-page'));
+            const dots = Array.from(document.querySelectorAll('#gallery-pagination .gallery-dot'));
+            const prevBtn = document.getElementById('gallery-prev');
+            const nextBtn = document.getElementById('gallery-next');
+            const currentLabel = document.getElementById('gallery-current');
+            const totalLabel = document.getElementById('gallery-total');
+            const total = pages.length;
+            let active = 0;
+            let isAnimating = false;
+
+            const pad = (n) => String(n + 1).padStart(2, '0');
+            if (totalLabel) totalLabel.textContent = String(total).padStart(2, '0');
+
+            const turnPage = (nextIndex, direction) => {
+                if (isAnimating || nextIndex === active) return;
+                const target = ((nextIndex % total) + total) % total;
+                isAnimating = true;
+                spread.classList.add(direction > 0 ? 'flip-next' : 'flip-prev');
+
+                window.setTimeout(() => {
+                    pages[active].classList.remove('is-active');
+                    pages[target].classList.add('is-active');
+                    active = target;
+                    if (currentLabel) currentLabel.textContent = pad(active);
+                    dots.forEach((dot, i) => dot.classList.toggle('active', i === active));
+                    spread.classList.remove('flip-next', 'flip-prev');
+                    window.setTimeout(() => { isAnimating = false; }, 360);
+                }, 340);
+            };
+
+            const goNext = () => turnPage(active + 1, 1);
+            const goPrev = () => turnPage(active - 1, -1);
+
+            if (nextBtn) nextBtn.addEventListener('click', goNext);
+            if (prevBtn) prevBtn.addEventListener('click', goPrev);
+
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => {
+                    if (i === active) return;
+                    turnPage(i, i > active ? 1 : -1);
+                });
+            });
+
+            document.addEventListener('keydown', (event) => {
+                const rect = spread.getBoundingClientRect();
+                const inView = rect.top < window.innerHeight * 0.9 && rect.bottom > window.innerHeight * 0.1;
+                if (!inView) return;
+                if (event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    goNext();
+                } else if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    goPrev();
+                }
+            });
+        })();
+
+
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98) translateY(2px)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1) translateY(1px)';
+            });
+        });
+    </script>
+
+</body></html>

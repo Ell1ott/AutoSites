@@ -1,0 +1,960 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">novine digital — Handcrafted Digital Objects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+
+
+        :root {
+            --paper: #E6E4E2;
+            --terracotta: #CD9A7E;
+            --sage: #A8AB9D;
+            --ink: #3D352F;
+            --ink-faint: rgba(61, 53, 47, 0.1);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+
+
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.5;
+        }
+
+
+
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+
+
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+
+
+        .work-section {
+            background: var(--terracotta);
+            color: #4A3A31;
+        }
+
+        .card-layout {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-self: center;
+        }
+
+        .card-visual {
+            background: #D9B39F;
+            aspect-ratio: 1.6 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 2px 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+            opacity: 0.8;
+        }
+
+        .card-content {
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 42px;
+            font-weight: 200;
+            margin-bottom: 20px;
+        }
+
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding-top: 140px;
+            padding-bottom: 120px;
+        }
+
+        .gallery-wrap {
+            grid-column: 2 / 12;
+            width: 100%;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 18px;
+            margin-bottom: 56px;
+        }
+
+        .gallery-title {
+            font-size: clamp(40px, 6vw, 72px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+        }
+
+        .gallery-controls {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .gallery-counter {
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ink);
+            opacity: 0.7;
+            font-variant-numeric: tabular-nums;
+            min-width: 64px;
+            text-align: center;
+        }
+
+        .gallery-counter .gallery-counter-sep {
+            opacity: 0.4;
+            margin: 0 4px;
+        }
+
+        .gallery-arrows {
+            display: flex;
+            gap: 8px;
+        }
+
+        .gallery-arrow {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0.5px solid rgba(61, 53, 47, 0.35);
+            color: var(--ink);
+            font-size: 16px;
+            font-weight: 200;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s, transform 0.3s;
+            font-family: inherit;
+            line-height: 1;
+        }
+
+        .gallery-arrow:hover {
+            background: rgba(61, 53, 47, 0.05);
+            border-color: var(--ink);
+        }
+
+        .gallery-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .filmstrip {
+            position: relative;
+            background: #2a2521;
+            padding: 26px 0;
+            box-shadow: 0 30px 60px rgba(61, 53, 47, 0.18), inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+        }
+
+        .filmstrip::before,
+        .filmstrip::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 22px;
+            background-image: repeating-linear-gradient(
+                to right,
+                transparent 0,
+                transparent 16px,
+                #0d0a08 16px,
+                #0d0a08 30px,
+                transparent 30px,
+                transparent 46px
+            );
+            background-color: #1a1614;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .filmstrip::before {
+            top: 0;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .filmstrip::after {
+            bottom: 0;
+            border-top: 0.5px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .filmstrip-track {
+            display: flex;
+            gap: 18px;
+            padding: 30px clamp(40px, 12vw, 180px);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            cursor: grab;
+        }
+
+        .filmstrip-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filmstrip-track.is-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+            scroll-snap-type: none;
+            user-select: none;
+        }
+
+        .film-frame {
+            flex: 0 0 auto;
+            width: clamp(220px, 26vw, 320px);
+            aspect-ratio: 3 / 4;
+            position: relative;
+            scroll-snap-align: center;
+            background: #1a1614;
+            overflow: hidden;
+            transform: scale(0.92);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            will-change: transform;
+        }
+
+        .film-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(0.55) contrast(0.95) brightness(0.92);
+            transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        .film-frame.is-active {
+            transform: scale(1.04);
+        }
+
+        .film-frame.is-active img {
+            filter: saturate(1.05) contrast(1) brightness(1);
+        }
+
+        .film-frame-num {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 9px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(230, 228, 226, 0.85);
+            background: rgba(13, 10, 8, 0.55);
+            padding: 4px 8px;
+            border: 0.5px solid rgba(230, 228, 226, 0.18);
+            backdrop-filter: blur(2px);
+            font-variant-numeric: tabular-nums;
+            z-index: 2;
+        }
+
+        .film-caption {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 28px;
+            padding-bottom: 6px;
+            border-bottom: 0.5px solid var(--ink-faint);
+            min-height: 38px;
+            width: 100%;
+        }
+
+        .film-caption-left {
+            display: flex;
+            align-items: baseline;
+            gap: 18px;
+        }
+
+        .film-caption-ref {
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .film-caption-title {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+        }
+
+        .film-caption-meta {
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            opacity: 0.55;
+        }
+
+        .filmstrip-edge-fade {
+            position: absolute;
+            top: 22px;
+            bottom: 22px;
+            width: clamp(40px, 10vw, 120px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .filmstrip-edge-fade.left {
+            left: 0;
+            background: linear-gradient(to right, #2a2521 0%, rgba(42, 37, 33, 0) 100%);
+        }
+
+        .filmstrip-edge-fade.right {
+            right: 0;
+            background: linear-gradient(to left, #2a2521 0%, rgba(42, 37, 33, 0) 100%);
+        }
+
+        .services-section {
+            background: var(--sage);
+            color: #353830;
+        }
+
+        .service-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 0.5px solid rgba(53, 56, 48, 0.2);
+            margin-top: 100px;
+        }
+
+        .service-item {
+            padding: 40px 20px;
+            border-right: 0.5px solid rgba(53, 56, 48, 0.2);
+        }
+
+        .service-item:last-child {
+            border-right: none;
+        }
+
+        .service-num {
+            font-size: 10px;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            max-width: 280px;
+            opacity: 0.8;
+        }
+
+
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: 0.5px solid currentColor;
+            text-decoration: none;
+            color: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.4s var(--transition);
+            position: relative;
+            background: transparent;
+        }
+
+        .btn:hover {
+            background: rgba(0,0,0,0.03);
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
+            transform: translateY(1px);
+        }
+
+
+
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .footer-main {
+            grid-column: 1 / 6;
+        }
+
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-size: 32px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        @media (max-width: 1024px) {
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .card-layout { grid-template-columns: 1fr; }
+            .service-grid { grid-template-columns: 1fr; }
+            .service-item { border-right: none; border-bottom: 0.5px solid rgba(53, 56, 48, 0.2); }
+            .gallery-wrap { grid-column: 1 / 13; }
+            .filmstrip-track { padding: 24px clamp(24px, 14vw, 80px); }
+            .film-frame { width: clamp(200px, 56vw, 280px); }
+            .film-caption { flex-direction: column; gap: 6px; align-items: flex-start; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+            .gallery-header { flex-direction: column; align-items: flex-start; gap: 22px; }
+            .filmstrip-track { padding: 20px 30px; }
+            .film-frame { width: 70vw; }
+        }
+    </style>
+</head>
+<body vid="9">
+
+    <div class="frame" vid="10"></div>
+
+    <nav vid="11">
+        <div class="logo" vid="12">novine digital^</div>
+        <div class="nav-links" vid="13">
+            <div vid="14">
+                <span class="meta-label" vid="15">Location</span><br vid="16">
+                <a href="#" class="nav-item" vid="17">Amsterdam / Global</a>
+            </div>
+            <div vid="18">
+                <span class="meta-label" vid="19">Selected Works</span><br vid="20">
+                <a href="#" class="nav-item" vid="21">Archive 01—24</a>
+            </div>
+            <div vid="22">
+                <span class="meta-label" vid="23">Inquiry</span><br vid="24">
+                <a href="#" class="nav-item" vid="25">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="hero" vid="26">
+        <div class="axis axis-v" style="left: 40px;" vid="27"></div>
+        <div class="hero-main">
+            <h1 class="hero-title" vid="28">Handcrafted<br vid="29">Digital<br vid="30">Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta" vid="31">
+            <p class="meta-label" vid="32">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;" vid="33">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator" vid="34">
+            <span class="caret" vid="35">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+
+    <section class="work-section" vid="36">
+        <div class="card-layout" vid="37">
+            <div class="card-visual" vid="38">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Technical Detail" vid="39">
+            </div>
+            <div class="card-content" vid="40">
+                <div vid="41">
+                    <span class="meta-label" vid="42">Project 01 / Architecture</span>
+                    <h2 class="card-title" vid="43">Foundry Modern</h2>
+                    <p style="margin-bottom: 40px; opacity: 0.9;" vid="44">A high-performance CMS implementation for an architectural visualization studio. Every pixel considered.</p>
+                </div>
+                <a href="#" class="btn" vid="45">View Case Study</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="gallery-section" vid="81">
+        <div class="gallery-wrap">
+            <div class="gallery-header">
+                <h2 class="gallery-title">Gallerie</h2>
+                <div class="gallery-controls">
+                    <span class="gallery-counter" id="film-counter">
+                        <span id="film-counter-current">01</span><span class="gallery-counter-sep">/</span><span id="film-counter-total">06</span>
+                    </span>
+                    <div class="gallery-arrows">
+                        <button class="gallery-arrow" id="film-prev" aria-label="Previous frame">&#8592;</button>
+                        <button class="gallery-arrow" id="film-next" aria-label="Next frame">&#8594;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filmstrip" id="filmstrip">
+                <div class="filmstrip-edge-fade left"></div>
+                <div class="filmstrip-edge-fade right"></div>
+                <div class="filmstrip-track" id="filmstrip-track">
+                    <article class="film-frame" data-index="0" data-ref="001" data-title="Amber Fluid">
+                        <span class="film-frame-num">001</span>
+                        <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Amber textured visual study">
+                    </article>
+                    <article class="film-frame" data-index="1" data-ref="002" data-title="Chrome Void">
+                        <span class="film-frame-num">002</span>
+                        <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Chromatic metallic color field">
+                    </article>
+                    <article class="film-frame" data-index="2" data-ref="003" data-title="Glass Motion">
+                        <span class="film-frame-num">003</span>
+                        <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Glass-like abstract form">
+                    </article>
+                    <article class="film-frame" data-index="3" data-ref="004" data-title="Deep Ink">
+                        <span class="film-frame-num">004</span>
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Dark ink-like abstract composition">
+                    </article>
+                    <article class="film-frame" data-index="4" data-ref="005" data-title="Sienna Drift">
+                        <span class="film-frame-num">005</span>
+                        <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Warm abstract drift composition">
+                    </article>
+                    <article class="film-frame" data-index="5" data-ref="006" data-title="Sage Specimen">
+                        <span class="film-frame-num">006</span>
+                        <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Muted gradient field composition">
+                    </article>
+                </div>
+            </div>
+
+            <div class="film-caption" id="film-caption">
+                <div class="film-caption-left">
+                    <span class="film-caption-ref" id="film-caption-ref">Ref. 001</span>
+                    <span class="film-caption-title" id="film-caption-title">Amber Fluid</span>
+                </div>
+                <span class="film-caption-meta">35mm / Selected Edition</span>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="services-section" vid="46">
+        <div style="grid-column: 1 / 8;" vid="47">
+            <span class="meta-label" vid="48">Disciplines</span>
+            <h2 style="font-size: 64px; font-weight: 200; line-height: 1.1; margin-top: 20px;" vid="49">The Digital<br vid="50">Joinery Workshop</h2>
+        </div>
+
+        <div class="service-grid" vid="51">
+            <div class="service-item" vid="52">
+                <span class="service-num" vid="53">01/</span>
+                <h3 class="service-name" vid="54">Bespoke Development</h3>
+                <p class="service-desc" vid="55">Clean-room code. No bloat. Websites that load with the snap of a well-fitted dovetail joint.</p>
+            </div>
+            <div class="service-item" vid="56">
+                <span class="service-num" vid="57">02/</span>
+                <h3 class="service-name" vid="58">Adaptive CMS</h3>
+                <p class="service-desc" vid="59">Tailored content management systems designed for clarity and longevity. Control without the complexity.</p>
+            </div>
+            <div class="service-item" vid="60">
+                <span class="service-num" vid="61">03/</span>
+                <h3 class="service-name" vid="62">Organic SEO</h3>
+                <p class="service-desc" vid="63">Foundational visibility built into the code. We don't chase algorithms; we build for humans and machines alike.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer vid="64">
+        <div class="footer-main" vid="65">
+            <span class="meta-label" vid="66">Ready to Build?</span>
+            <div style="margin-top: 20px;" vid="67">
+                <a href="mailto:hello@novine.digital" class="big-link" vid="68">hello@novine.digital</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 300px; opacity: 0.6;" vid="69">
+                Based in the Netherlands. We work with clients who value the quiet power of exceptional craftsmanship.
+            </p>
+        </div>
+        <div class="footer-secondary" vid="70">
+            <div vid="71">
+                <span class="meta-label" vid="72">Connect</span><br vid="73">
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;" vid="74">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;" vid="75">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;" vid="76">Behance</a>
+            </div>
+            <div style="margin-top: 40px;" vid="77">
+                <span class="meta-label" vid="78">© 2024 novine digital^</span><br vid="79">
+                <span class="meta-label" vid="80">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script vid="81">
+
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+        (function initFilmstrip() {
+            const track = document.getElementById('filmstrip-track');
+            const frames = Array.from(document.querySelectorAll('.film-frame'));
+            const prevBtn = document.getElementById('film-prev');
+            const nextBtn = document.getElementById('film-next');
+            const counterCurrent = document.getElementById('film-counter-current');
+            const counterTotal = document.getElementById('film-counter-total');
+            const captionRef = document.getElementById('film-caption-ref');
+            const captionTitle = document.getElementById('film-caption-title');
+
+            if (!track || frames.length === 0) return;
+
+            const pad2 = (n) => String(n).padStart(2, '0');
+            counterTotal.textContent = pad2(frames.length);
+
+            let activeIndex = 0;
+
+            const setActive = (index) => {
+                activeIndex = index;
+                frames.forEach((f, i) => {
+                    f.classList.toggle('is-active', i === index);
+                });
+                counterCurrent.textContent = pad2(index + 1);
+                const frame = frames[index];
+                if (frame) {
+                    captionRef.textContent = `Ref. ${frame.dataset.ref}`;
+                    captionTitle.textContent = frame.dataset.title;
+                }
+                if (prevBtn) prevBtn.disabled = index === 0;
+                if (nextBtn) nextBtn.disabled = index === frames.length - 1;
+            };
+
+            const computeActiveFromScroll = () => {
+                const trackRect = track.getBoundingClientRect();
+                const center = trackRect.left + trackRect.width / 2;
+                let bestIndex = 0;
+                let bestDist = Infinity;
+                frames.forEach((frame, i) => {
+                    const r = frame.getBoundingClientRect();
+                    const fc = r.left + r.width / 2;
+                    const dist = Math.abs(fc - center);
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestIndex = i;
+                    }
+                });
+                if (bestIndex !== activeIndex) {
+                    setActive(bestIndex);
+                }
+            };
+
+            const scrollToIndex = (index, behavior = 'smooth') => {
+                const clamped = Math.max(0, Math.min(frames.length - 1, index));
+                const frame = frames[clamped];
+                if (!frame) return;
+                const trackRect = track.getBoundingClientRect();
+                const frameRect = frame.getBoundingClientRect();
+                const currentScroll = track.scrollLeft;
+                const frameCenter = (frameRect.left - trackRect.left) + currentScroll + frameRect.width / 2;
+                const target = frameCenter - track.clientWidth / 2;
+                track.scrollTo({ left: target, behavior });
+            };
+
+            let scrollRaf = null;
+            track.addEventListener('scroll', () => {
+                if (scrollRaf) cancelAnimationFrame(scrollRaf);
+                scrollRaf = requestAnimationFrame(computeActiveFromScroll);
+            }, { passive: true });
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => scrollToIndex(activeIndex - 1));
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => scrollToIndex(activeIndex + 1));
+            }
+
+            let isDown = false;
+            let dragStartX = 0;
+            let dragStartScroll = 0;
+            let lastDragX = 0;
+            let lastDragTime = 0;
+            let dragVelocity = 0;
+            let momentumRaf = null;
+            let movedDuringDrag = false;
+
+            const stopMomentum = () => {
+                if (momentumRaf) {
+                    cancelAnimationFrame(momentumRaf);
+                    momentumRaf = null;
+                }
+            };
+
+            const runMomentum = () => {
+                if (Math.abs(dragVelocity) < 0.4) {
+                    momentumRaf = null;
+                    requestAnimationFrame(() => scrollToIndex(activeIndex));
+                    return;
+                }
+                track.scrollLeft -= dragVelocity;
+                dragVelocity *= 0.94;
+                momentumRaf = requestAnimationFrame(runMomentum);
+            };
+
+            track.addEventListener('mousedown', (e) => {
+                isDown = true;
+                movedDuringDrag = false;
+                stopMomentum();
+                track.classList.add('is-dragging');
+                dragStartX = e.pageX;
+                dragStartScroll = track.scrollLeft;
+                lastDragX = e.pageX;
+                lastDragTime = performance.now();
+                dragVelocity = 0;
+            });
+
+            track.addEventListener('mouseleave', () => {
+                if (!isDown) return;
+                isDown = false;
+                track.classList.remove('is-dragging');
+                runMomentum();
+            });
+
+            track.addEventListener('mouseup', () => {
+                if (!isDown) return;
+                isDown = false;
+                track.classList.remove('is-dragging');
+                runMomentum();
+            });
+
+            track.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const dx = e.pageX - dragStartX;
+                if (Math.abs(dx) > 3) movedDuringDrag = true;
+                track.scrollLeft = dragStartScroll - dx;
+                const now = performance.now();
+                const dt = now - lastDragTime;
+                if (dt > 0) {
+                    dragVelocity = (e.pageX - lastDragX) / dt * 16;
+                }
+                lastDragX = e.pageX;
+                lastDragTime = now;
+            });
+
+            track.addEventListener('click', (e) => {
+                if (movedDuringDrag) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                const targetFrame = e.target.closest('.film-frame');
+                if (targetFrame) {
+                    const idx = Number(targetFrame.dataset.index);
+                    scrollToIndex(idx);
+                }
+            }, true);
+
+            window.addEventListener('resize', () => {
+                requestAnimationFrame(() => scrollToIndex(activeIndex, 'auto'));
+            });
+
+            requestAnimationFrame(() => {
+                scrollToIndex(0, 'auto');
+                setActive(0);
+            });
+        })();
+
+
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98) translateY(2px)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1) translateY(1px)';
+            });
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,481 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">NOVINE DIGITAL — Handcrafted Digital Objects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" vid="5"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" vid="6"></script>
+    <style vid="7">
+        
+
+        :root {
+            --bg: #000000;
+            --fg: #ffffff;
+            --dim: #666666;
+            --border: #222222;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        
+        #cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+        }
+
+        
+        .system-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 100;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 500;
+            border-bottom: 0.5px solid var(--border);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .system-bar .status-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .system-bar .dot {
+            width: 3px;
+            height: 3px;
+            background: var(--fg);
+            border-radius: 50%;
+        }
+
+        
+        .nav-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-top: 0.5px solid var(--border);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--fg);
+        }
+
+        
+        section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            position: relative;
+            padding: 100px 40px;
+            border-bottom: 0.5px solid var(--border);
+            overflow: hidden;
+        }
+
+        .content-wrap {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 100%;
+            height: 100%;
+        }
+
+        
+        .label {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .display-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        .metadata {
+            display: flex;
+            gap: 60px;
+            border-top: 0.5px solid var(--border);
+            padding-top: 30px;
+        }
+
+        .meta-item .key {
+            font-size: 9px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .meta-item .val {
+            font-size: 13px;
+            color: var(--fg);
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        
+        .sculpture-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 80%;
+            z-index: 1;
+        }
+
+        .sculpture-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0.8) contrast(1.1);
+            transition: transform 0.1s linear;
+        }
+
+        
+        #hero { justify-content: center; align-items: center; text-align: center; }
+        #hero .content-wrap { align-items: center; justify-content: center; }
+        #hero .display-title { text-align: center; margin-bottom: 20px; }
+
+        .red-dot-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .circle-fill {
+            width: 8px;
+            height: 8px;
+            background: #ff3b30;
+            border-radius: 50%;
+        }
+
+        .archive-num {
+            position: absolute;
+            top: 100px;
+            right: 40px;
+            font-size: 10px;
+            color: var(--dim);
+            font-family: monospace;
+        }
+
+        
+        .progress-container {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            width: 1px;
+            height: 40px;
+            background: var(--border);
+            position: relative;
+        }
+
+        .progress-active {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--fg);
+            height: 0%;
+        }
+
+        
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        @media (max-width: 768px) {
+            .metadata { flex-direction: column; gap: 20px; }
+            .sculpture-container { width: 90%; }
+            .display-title { font-size: 2.5rem; }
+            .system-bar, .nav-footer { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body vid="8">
+
+    <div id="cursor" vid="9"></div>
+    <div class="grain-overlay" vid="10"></div>
+
+    <div class="system-bar" vid="11">
+        <div class="status-dots" vid="12">
+            <div class="dot" vid="13"></div>
+            <div class="dot" vid="14"></div>
+            <div class="dot" vid="15"></div>
+            <div class="dot" vid="16"></div>
+            <div class="dot" vid="17"></div>
+        </div>
+        <div class="agency-name" vid="18">NOVINE DIGITAL / ATELIER</div>
+        <div class="clock" vid="19">04:21 PM — EST</div>
+    </div>
+
+    <div class="progress-container" vid="20">
+        <div class="progress-bar" vid="21"><div class="progress-active" id="p1" vid="22"></div></div>
+        <div class="progress-bar" vid="23"><div class="progress-active" id="p2" vid="24"></div></div>
+        <div class="progress-bar" vid="25"><div class="progress-active" id="p3" vid="26"></div></div>
+        <div class="progress-bar" vid="27"><div class="progress-active" id="p4" vid="28"></div></div>
+    </div>
+
+    <main vid="29">
+        
+        <section id="hero" vid="30">
+            <div class="archive-num" vid="31">#N01-2024</div>
+            <div class="sculpture-container" vid="32">
+                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&amp;fit=crop&amp;q=80&amp;w=2000" alt="Precision machinery" class="sculpture-img" vid="33">
+            </div>
+            <div class="content-wrap" vid="34">
+                <span class="label" vid="35">Handcrafted Digital Objects</span>
+                <h1 class="display-title" vid="36">Digital design with<br vid="37">physical intent.</h1>
+                <div class="red-dot-badge" vid="38">
+                    <div class="circle-fill" vid="39"></div>
+                    <span class="label" style="margin:0" vid="40">Excellence in Craft 2024</span>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="atelier" vid="41">
+            <div class="archive-num" vid="42">#N02-PHILOSOPHY</div>
+            <div class="sculpture-container" style="left: 70%;" vid="43">
+                <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=2000" alt="Minimal geometry" class="sculpture-img" vid="44">
+            </div>
+            <div class="content-wrap" vid="45">
+                <span class="label" vid="46">Our Approach</span>
+                <h2 class="display-title" vid="47">Built by hand,<br vid="48">not assembled.</h2>
+                <div class="metadata" vid="49">
+                    <div class="meta-item" vid="50">
+                        <span class="key" vid="51">Methodology</span>
+                        <div class="val" vid="52">We treat code like raw timber. Every line is written with purpose, ensuring structural integrity and tactile response.</div>
+                    </div>
+                    <div class="meta-item" vid="53">
+                        <span class="key" vid="54">Sensory</span>
+                        <div class="val" vid="55">Websites you can feel. Smooth transitions, weight, and visual balance that mirrors the physical world.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="specimen-a" vid="56">
+            <div class="archive-num" vid="57">#N03-WORK</div>
+            <div class="sculpture-container" style="left: 30%; width: 45%;" vid="58">
+                <img src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&amp;fit=crop&amp;q=80&amp;w=2000" alt="Architectural lamp" class="sculpture-img" vid="59">
+            </div>
+            <div class="content-wrap" style="align-items: flex-end; text-align: right;" vid="60">
+                <span class="label" vid="61">Case Study 01</span>
+                <h2 class="display-title" vid="62">The Lumen<br vid="63">Collective.</h2>
+                <div class="metadata" style="justify-content: flex-end;" vid="64">
+                    <div class="meta-item" vid="65">
+                        <span class="key" vid="66">Client</span>
+                        <div class="val" vid="67">Architectural Lighting Studio</div>
+                    </div>
+                    <div class="meta-item" vid="68">
+                        <span class="key" vid="69">Deliverable</span>
+                        <div class="val" vid="70">Immersive Portfolio &amp; Archive</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="connect" vid="71">
+            <div class="archive-num" vid="72">#N04-CONTACT</div>
+            <div class="sculpture-container" style="width: 100%; opacity: 0.4;" vid="73">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&amp;fit=crop&amp;q=80&amp;w=2000" alt="Data flow" class="sculpture-img" style="object-fit: cover;" vid="74">
+            </div>
+            <div class="content-wrap" vid="75">
+                <span class="label" vid="76">Collaborate</span>
+                <h2 class="display-title" vid="77">Let's build<br vid="78">something real.</h2>
+                <div class="metadata" vid="79">
+                    <div class="meta-item" vid="80">
+                        <span class="key" vid="81">Inquiries</span>
+                        <div class="val" vid="82">hello@novine.digital</div>
+                    </div>
+                    <div class="meta-item" vid="83">
+                        <span class="key" vid="84">Studio</span>
+                        <div class="val" vid="85">Brooklyn, NY / 40.6782° N</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="nav-footer" vid="86">
+        <div class="nav-links" vid="87">
+            <a href="#hero" class="active" vid="88">Index</a>
+            <a href="#atelier" vid="89">Philosophy</a>
+            <a href="#specimen-a" vid="90">Selected Work</a>
+            <a href="#connect" vid="91">Contact</a>
+        </div>
+        <div class="legal" vid="92">©2024 NOVINE DIGITAL — ALL RIGHTS RESERVED</div>
+    </div>
+
+    <script vid="93">
+        
+        gsap.registerPlugin(ScrollTrigger);
+
+        
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1
+            });
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                gsap.to(cursor, { scale: 4, duration: 0.3 });
+            });
+            link.addEventListener('mouseleave', () => {
+                gsap.to(cursor, { scale: 1, duration: 0.3 });
+            });
+        });
+
+        
+        gsap.utils.toArray('section').forEach((section, i) => {
+            const img = section.querySelector('.sculpture-img');
+            const title = section.querySelector('.display-title');
+            const meta = section.querySelector('.metadata');
+            const progress = document.getElementById(`p${i+1}`);
+
+            
+            gsap.fromTo(img, 
+                { y: 50, opacity: 0, scale: 0.9 }, 
+                { 
+                    y: -50, opacity: 1, scale: 1,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1
+                    }
+                }
+            );
+
+            
+            gsap.from([title, meta], {
+                y: 30,
+                opacity: 0,
+                stagger: 0.2,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                }
+            });
+
+            
+            gsap.to(progress, {
+                height: "100%",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top center",
+                    end: "bottom center",
+                    scrub: true,
+                    onToggle: self => {
+                        if(self.isActive) {
+                            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                            document.querySelectorAll('.nav-links a')[i].classList.add('active');
+                        }
+                    }
+                }
+            });
+        });
+
+        
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+            document.querySelector('.clock').innerText = `${timeStr} — EST`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+</body></html>

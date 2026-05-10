@@ -1,0 +1,403 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">NOVINE — Digital Craft</title>
+    <style vid="5">
+        
+
+        :root {
+            --bg: #000000;
+            --fg: #ffffff;
+            --fg-muted: #666666;
+            --accent: #9d8c7d; 
+            --hairline: rgba(255, 255, 255, 0.12);
+            --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-serif: "Newsreader", serif;
+            --font-mono: "JetBrains Mono", monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        
+
+        .frame {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            border: 1px solid var(--hairline);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px;
+        }
+
+        .header-meta {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--fg-muted);
+        }
+
+        .header-meta span { color: var(--fg); }
+
+        nav {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 101;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--fg-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: color 0.4s ease;
+        }
+
+        nav a.active, nav a:hover {
+            color: var(--fg);
+        }
+
+        
+
+        section {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8vw;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 12vw, 18rem);
+            font-weight: 400;
+            letter-spacing: -0.04em;
+            line-height: 0.8;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .hero-meta {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--accent);
+            margin-top: 10px;
+            display: flex;
+            gap: 20px;
+        }
+
+        
+
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .project {
+            grid-column: span 6;
+            position: relative;
+            margin-bottom: 10vh;
+        }
+
+        .project:nth-child(even) {
+            margin-top: 15vh;
+        }
+
+        .image-container {
+            width: 100%;
+            aspect-ratio: 4/5;
+            background: #080808;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--hairline);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) contrast(1.1) brightness(0.7);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project:hover img {
+            filter: grayscale(0) contrast(1) brightness(0.9);
+            transform: scale(1.03);
+        }
+
+        .project-info {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .project-title {
+            font-size: 18px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .project-category {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--fg-muted);
+            font-size: 14px;
+        }
+
+        .label-tag {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            border: 1px solid var(--hairline);
+            padding: 4px 8px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        
+
+        .details-block {
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .details-block h2 {
+            font-size: 42px;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+        }
+
+        .details-block p {
+            font-family: var(--font-serif);
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--fg-muted);
+            margin-bottom: 2rem;
+        }
+
+        
+
+        #spotlight {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle 300px at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.03) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--fg-muted); }
+
+        @media (max-width: 768px) {
+            .project { grid-column: span 12; }
+            .hero h1 { font-size: 5rem; }
+            nav { width: 90%; justify-content: space-between; }
+            .frame { padding: 15px; }
+        }
+    </style>
+</head>
+<body vid="6">
+
+    <div id="spotlight" vid="7"></div>
+
+    <div class="frame" vid="8">
+        <div class="header-meta" vid="9">
+            <div vid="10">INDEX // <span vid="11">NOVINE DIGITAL</span></div>
+            <div vid="12">STATUS: <span vid="13">ACTIVE_RELAY</span></div>
+            <div vid="14">LOC: <span vid="15">45.5230° N, 122.6765° W</span></div>
+        </div>
+        <div class="header-meta" vid="16">
+            <div vid="17">EST. 2024</div>
+            <div vid="18">[ ARCHIVE NO. 441-B ]</div>
+            <div vid="19">© ALL RIGHTS RESERVED</div>
+        </div>
+    </div>
+
+    <nav vid="20">
+        <a href="#work" class="active" vid="21">WORKS</a>
+        <a href="#about" vid="22">STUDIO</a>
+        <a href="#contact" vid="23">JOURNAL</a>
+        <a href="#contact" vid="24">INQUIRY</a>
+    </nav>
+
+    <main vid="25">
+        <section class="hero" vid="26">
+            <div class="label-tag" vid="27">BORN FROM THE VOID</div>
+            <h1 vid="28">NOVINE</h1>
+            <div class="hero-meta" vid="29">
+                <span vid="30">DIGITAL ARCHITECTURE</span>
+                <span vid="31">/</span>
+                <span vid="32">HAND-CRAFTED LOGIC</span>
+                <span vid="33">/</span>
+                <span vid="34">0.001 PRECISION</span>
+            </div>
+            
+            
+            <svg width="2" height="150" style="margin-top: 50px;" vid="35">
+                <line x1="1" y1="0" x2="1" y2="150" stroke="white" stroke-width="1" stroke-dasharray="4 4" opacity="0.3" vid="36"></line>
+            </svg>
+        </section>
+
+        <section id="work" vid="37">
+            <div class="work-grid" vid="38">
+                
+                
+                <div class="project" vid="39">
+                    <div class="image-container" vid="40">
+                        <img src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Minimal lamp" vid="41">
+                        <div style="position: absolute; top: 20px; right: 20px;" class="label-tag" vid="42">PROJECT_01</div>
+                    </div>
+                    <div class="project-info" vid="43">
+                        <div vid="44">
+                            <div class="project-title" vid="45">Lumina System</div>
+                            <div class="label-tag" vid="46">E-COMMERCE / WEBGL</div>
+                        </div>
+                        <div class="project-category" vid="47">Lighting &amp; Atmosphere</div>
+                    </div>
+                </div>
+
+                
+                <div class="project" vid="48">
+                    <div class="image-container" vid="49">
+                        <img src="https://images.unsplash.com/photo-1556020685-ae41abfc9365?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Minimal interior" vid="50">
+                        <div style="position: absolute; top: 20px; right: 20px;" class="label-tag" vid="51">PROJECT_02</div>
+                    </div>
+                    <div class="project-info" vid="52">
+                        <div vid="53">
+                            <div class="project-title" vid="54">The Monolith</div>
+                            <div class="label-tag" vid="55">EDITORIAL / ARCHITECTURE</div>
+                        </div>
+                        <div class="project-category" vid="56">Spatial Design</div>
+                    </div>
+                </div>
+
+                
+                <div class="project" vid="57">
+                    <div class="image-container" vid="58">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Minimal chair" vid="59">
+                        <div style="position: absolute; top: 20px; right: 20px;" class="label-tag" vid="60">PROJECT_03</div>
+                    </div>
+                    <div class="project-info" vid="61">
+                        <div vid="62">
+                            <div class="project-title" vid="63">Koda Chairs</div>
+                            <div class="label-tag" vid="64">IDENTITY / COMMERCE</div>
+                        </div>
+                        <div class="project-category" vid="65">Industrial Curation</div>
+                    </div>
+                </div>
+
+                
+                <div class="project" vid="66">
+                    <div class="image-container" vid="67">
+                        <img src="https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Minimal object" vid="68">
+                        <div style="position: absolute; top: 20px; right: 20px;" class="label-tag" vid="69">PROJECT_04</div>
+                    </div>
+                    <div class="project-info" vid="70">
+                        <div vid="71">
+                            <div class="project-title" vid="72">Vessel Lab</div>
+                            <div class="label-tag" vid="73">EXPERIENCE / 3D</div>
+                        </div>
+                        <div class="project-category" vid="74">Ceramic Archives</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="about" vid="75">
+            <div class="details-block" vid="76">
+                <div class="label-tag" style="margin-bottom: 2rem;" vid="77">PHILOSOPHY</div>
+                <h2 vid="78">Digital interfaces should be felt, not just seen.</h2>
+                <p vid="79">
+                    We approach web design with the rigor of a luthier and the restraint of an architect. Every interaction is measured, every transition is intentional, and every pixel serves a structural purpose. 
+                </p>
+                <p vid="80">
+                    Novine is a digital atelier for brands that value silence over noise, and quality over velocity. We build websites that age like physical objects — with grace, permanence, and soul.
+                </p>
+                <a href="#" style="color: var(--fg); text-decoration: none; font-size: 11px; letter-spacing: 0.2em; border-bottom: 1px solid var(--fg);" vid="81">LEARN OUR PROCESS</a>
+            </div>
+            
+            
+            <div style="position: absolute; right: 8vw; top: 50%; transform: translateY(-50%); width: 300px; height: 300px; border: 1px solid var(--hairline); opacity: 0.5;" vid="82">
+                <div style="position: absolute; top: 0; left: 50%; height: 100%; border-left: 1px solid var(--hairline);" vid="83"></div>
+                <div style="position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px solid var(--hairline);" vid="84"></div>
+                <div class="label-tag" style="position: absolute; bottom: -10px; right: -10px; background: black;" vid="85">AXIS_REF_0.4</div>
+            </div>
+        </section>
+    </main>
+
+    <script vid="86">
+        
+        const spotlight = document.getElementById('spotlight');
+        document.addEventListener('mousemove', (e) => {
+            spotlight.style.setProperty('--mouse-x', e.clientX + 'px');
+            spotlight.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+
+        
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        
+        window.addEventListener('scroll', () => {
+            const images = document.querySelectorAll('.image-container img');
+            images.forEach(img => {
+                const rect = img.getBoundingClientRect();
+                const offset = (window.innerHeight - rect.top) * 0.05;
+                img.style.transform = `translateY(${offset}px) scale(1.1)`;
+            });
+        });
+    </script>
+
+</body></html>

@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>novine digital^ — Handcrafted Digital Structures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter+Tight:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+/* =====================================================
+   BRUTALIST WORKSHOP / SWISS-INDUSTRIAL
+   novine.dk — design-v3-brutalist
+===================================================== */
+
+:root{
+  --cream:#EFE9E0;
+  --cream-deep:#E5DDD0;
+  --ink:#0E0E0E;
+  --ink-soft:#1A1A1A;
+  --line:rgba(14,14,14,.18);
+  --line-strong:rgba(14,14,14,.4);
+  --accent:#E8451A;
+  --accent-ink:#0E0E0E;
+  --col-gap:24px;
+  --pad:max(20px, 3vw);
+  --rule:2px;
+  --bar:6px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);color:var(--ink)}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{
+  font-family:'Inter Tight', system-ui, sans-serif;
+  font-weight:500;
+  font-size:16px;
+  line-height:1.4;
+  letter-spacing:-0.01em;
+  overflow-x:hidden;
+  cursor:none;
+}
+@media (max-width: 720px){ body{ cursor:auto; } }
+
+/* GRID BACKGROUND — visible 12-col scaffolding */
+.grid-bg{
+  position:fixed; inset:0;
+  pointer-events:none; z-index:1;
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:0;
+  padding:0 var(--pad);
+}
+.grid-bg span{
+  border-left:1px dashed rgba(14,14,14,.07);
+  height:100%;
+}
+.grid-bg span:first-child{ border-left:none; }
+.grid-bg::before, .grid-bg::after{
+  content:""; position:absolute; left:0; right:0;
+  height:1px; background:rgba(14,14,14,.07);
+}
+.grid-bg::before{ top:0; }
+.grid-bg::after{ bottom:0; }
+
+/* CURSOR — small black square crosshair */
+.cursor{
+  position:fixed; top:0; left:0;
+  width:18px; height:18px;
+  border:2px solid var(--ink);
+  background:transparent;
+  pointer-events:none; z-index:9999;
+  transform:translate(-50%, -50%);
+  transition:width .18s ease, height .18s ease, background .18s ease;
+  mix-blend-mode:multiply;
+}
+.cursor::before, .cursor::after{
+  content:""; position:absolute;
+  background:var(--ink);
+}
+.cursor::before{ left:50%; top:-6px; width:1px; height:6px; transform:translateX(-50%); }
+.cursor::after{ top:50%; left:-6px; width:6px; height:1px; transform:translateY(-50%); }
+.cursor.hot{
+  width:36px; height:36px;
+  background:var(--accent);
+  border-color:var(--accent);
+}
+@media (max-width:720px){ .cursor{ display:none; } }
+
+/* PAGE FRAME — registration marks */
+.frame{
+  position:fixed; inset:0;
+  pointer-events:none; z-index:5;
+}
+.reg{ position:absolute; width:18px; height:18px; color:var(--ink); font-family:'JetBrains Mono', monospace; font-size:18px; line-height:1; }
+.reg.tl{ top:14px; left:14px; }
+.reg.tr{ top:14px; right:14px; }
+.reg.bl{ bottom:14px; left:14px; }
+.reg.br{ bottom:14px; right:14px; }
+
+/* CONTAINER */
+.wrap{
+  position:relative; z-index:2;
+  padding:0 var(--pad);
+  max-width:1680px;
+  margin:0 auto;
+}
+.cols{
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+}
+
+/* TYPE — display */
+.display{
+  font-family:'Archivo Black', 'Inter Tight', sans-serif;
+  font-weight:900;
+  letter-spacing:-0.04em;
+  line-height:.85;
+  text-transform:uppercase;
+}
+.display-tight{
+  font-family:'Inter Tight', sans-serif;
+  font-weight:900;
+  letter-spacing:-0.05em;
+  line-height:.86;
+}
+.mono{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-weight:500;
+  letter-spacing:0.02em;
+  text-transform:uppercase;
+  font-size:11px;
+}
+
+/* TOP NAV */
+.nav{
+  position:relative; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px var(--pad) 14px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.nav-brand{
+  font-family:'Archivo Black', sans-serif;
+  font-size:14px; letter-spacing:-0.02em;
+  text-transform:lowercase;
+}
+.nav-brand sup{ color:var(--accent); }
+.nav-meta{ display:flex; gap:18px; align-items:center; }
+.nav-meta .mono{ opacity:.7; }
+.nav-cta{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.06em;
+  text-transform:uppercase;
+  background:var(--ink); color:var(--cream);
+  padding:8px 14px;
+  text-decoration:none;
+  border:2px solid var(--ink);
+  transition:background .15s, color .15s;
+}
+.nav-cta:hover{ background:var(--accent); border-color:var(--accent); color:var(--ink); }
+
+/* TICKER */
+.ticker{
+  border-bottom:var(--rule) solid var(--ink);
+  background:var(--ink); color:var(--cream);
+  overflow:hidden; white-space:nowrap;
+  position:relative; z-index:6;
+}
+.ticker-track{
+  display:inline-flex; gap:60px;
+  padding:10px 0;
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px; letter-spacing:0.18em;
+  animation:tick 36s linear infinite;
+  text-transform:uppercase;
+}
+.ticker-track span{ display:inline-flex; align-items:center; gap:12px; }
+.ticker-track .acc{ color:var(--accent); }
+@keyframes tick{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+
+/* SECTION SHELL */
+section{ position:relative; z-index:2; }
+.section-head{
+  display:grid;
+  grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  padding:32px 0 16px;
+  border-bottom:1px solid var(--line);
+  align-items:end;
+}
+.section-tag{
+  grid-column:1/4;
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px; letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.section-tag .acc{ color:var(--accent); }
+.section-tag .num{ font-weight:700; }
+.section-meta{ grid-column:10/13; text-align:right; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em; opacity:.7; text-transform:uppercase; }
+
+/* =====================================================
+   HERO
+===================================================== */
+.hero{
+  position:relative;
+  padding:64px 0 32px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.hero-meta{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+  margin-bottom:24px;
+}
+.hero-meta > div{ border-top:1px solid var(--ink); padding-top:8px; }
+.hero-meta .m1{ grid-column:1/3; }
+.hero-meta .m2{ grid-column:3/5; }
+.hero-meta .m3{ grid-column:5/7; }
+.hero-meta .m4{ grid-column:7/10; }
+.hero-meta .m5{ grid-column:10/13; text-align:right; }
+.hero-meta strong{ font-weight:700; }
+.hero-meta .acc{ color:var(--accent); }
+
+.hero-title-block{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  align-items:start;
+}
+.hero-h1{
+  grid-column:1/13;
+  font-family:'Archivo Black', sans-serif;
+  font-weight:900;
+  font-size:clamp(56px, 12vw, 200px);
+  line-height:.82;
+  letter-spacing:-0.045em;
+  text-transform:uppercase;
+  position:relative;
+}
+.hero-h1 .l1{ display:block; }
+.hero-h1 .l2{ display:block; padding-left:8vw; }
+.hero-h1 .l3{
+  display:block;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(80px, 22vw, 360px);
+  line-height:.78;
+  letter-spacing:-0.06em;
+  margin-top:-0.04em;
+  /* breaks the grid */
+  margin-left:-2vw; margin-right:-2vw;
+}
+.hero-h1 .caret{ color:var(--accent); }
+.hero-h1 .stroke{
+  -webkit-text-stroke:2px var(--ink);
+  color:transparent;
+}
+
+.hero-bottom{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-top:32px;
+  padding-top:18px;
+  border-top:1px solid var(--ink);
+}
+.hero-mission{
+  grid-column:1/7;
+  font-family:'Inter Tight', sans-serif;
+  font-weight:600;
+  font-size:clamp(18px, 1.7vw, 22px);
+  line-height:1.25;
+  max-width:60ch;
+  letter-spacing:-0.015em;
+}
+.hero-actions{
+  grid-column:7/13;
+  display:flex; gap:12px; flex-wrap:wrap;
+  align-items:flex-end; justify-content:flex-end;
+}
+.btn{
+  font-family:'JetBrains Mono', monospace;
+  text-transform:uppercase;
+  font-size:12px; letter-spacing:0.14em;
+  padding:14px 22px;
+  border:2px solid var(--ink);
+  background:var(--cream); color:var(--ink);
+  text-decoration:none;
+  display:inline-flex; align-items:center; gap:10px;
+  transition:background .15s, color .15s, transform .15s;
+  font-weight:700;
+}
+.btn:hover{ background:var(--ink); color:var(--cream); }
+.btn.primary{ background:var(--ink); color:var(--cream); }
+.btn.primary:hover{ background:var(--accent); color:var(--ink); border-color:var(--accent); }
+.btn .arrow{ font-family:'JetBrains Mono', monospace; }
+
+/* hero giant-letter */
+.hero-mark{
+  position:absolute;
+  right:var(--pad);
+  top:64px;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(140px, 22vw, 380px);
+  line-height:.8;
+  color:var(--accent);
+  z-index:0; pointer-events:none;
+  opacity:.0; /* placeholder; visual handled in title */
+}
+
+/* =====================================================
+   SECTION 2 — WHAT WE DO (stack)
+===================================================== */
+.what{
+  padding:64px 0 32px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.what-head{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-bottom:36px;
+}
+.what-head h2{
+  grid-column:1/10;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(48px, 8vw, 130px);
+  line-height:.88; letter-spacing:-0.04em;
+  text-transform:uppercase;
+}
+.what-grid{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:0;
+  border:var(--rule) solid var(--ink);
+  background:var(--ink);
+}
+.deliv{
+  grid-column:span 3;
+  background:var(--cream);
+  padding:28px 22px 28px;
+  border-right:var(--rule) solid var(--ink);
+  position:relative;
+  min-height:380px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  transition:background .2s, color .2s;
+}
+.deliv:last-child{ border-right:none; }
+.deliv:hover{ background:var(--ink); color:var(--cream); }
+.deliv:hover .deliv-num{ color:var(--accent); }
+.deliv-num{
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(80px, 9vw, 140px);
+  line-height:.85;
+  letter-spacing:-0.06em;
+  color:var(--ink);
+  transition:color .2s;
+}
+.deliv:hover .deliv-num{ color:var(--accent); }
+.deliv-mid{ margin-top:18px; }
+.deliv-title{
+  font-family:'Inter Tight', sans-serif;
+  font-weight:800;
+  font-size:22px;
+  letter-spacing:-0.02em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.deliv-body{
+  font-family:'Inter Tight', sans-serif;
+  font-weight:500; font-size:14.5px; line-height:1.45;
+  letter-spacing:-0.005em;
+}
+.deliv-tag{
+  margin-top:14px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase;
+  border-top:1px solid currentColor; padding-top:10px;
+  opacity:.75;
+}
+.what-foot{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-top:28px;
+}
+.what-foot p{
+  grid-column:6/13;
+  text-align:right;
+  font-family:'Inter Tight', sans-serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(20px, 2.3vw, 32px);
+  letter-spacing:-0.02em;
+}
+.what-foot p::before{
+  content:"⎯⎯⎯⎯ ";
+  font-family:'JetBrains Mono', monospace;
+  letter-spacing:-2px;
+  color:var(--accent);
+  font-style:normal;
+}
+
+/* =====================================================
+   SECTION 3 — GALLERIE
+===================================================== */
+.gallery{
+  padding:64px 0 32px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.gallery-head{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-bottom:36px; align-items:end;
+}
+.gallery-head h2{
+  grid-column:1/8;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(48px, 8vw, 130px);
+  line-height:.88; letter-spacing:-0.04em;
+  text-transform:uppercase;
+}
+.gallery-head .sub{
+  grid-column:8/13;
+  font-family:'Inter Tight', sans-serif;
+  font-style:italic;
+  font-size:clamp(16px, 1.4vw, 20px);
+  text-align:right;
+  border-top:2px solid var(--ink);
+  padding-top:10px;
+}
+.gallery-grid{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+}
+.card{
+  grid-column:span 6;
+  border:var(--rule) solid var(--ink);
+  background:var(--ink);
+  position:relative;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.card:nth-child(1){ grid-column:1/8; }
+.card:nth-child(2){ grid-column:8/13; }
+.card:nth-child(3){ grid-column:1/6; }
+.card:nth-child(4){ grid-column:6/13; }
+
+.card-img{
+  position:relative;
+  aspect-ratio:4/3;
+  overflow:hidden;
+  background:var(--ink);
+}
+.card-img img{
+  width:100%; height:100%; object-fit:cover;
+  filter:grayscale(100%) contrast(1.25) brightness(.75);
+  transition:filter .3s, transform .5s;
+}
+.card:hover .card-img img{ filter:grayscale(100%) contrast(1.45) brightness(.85); transform:scale(1.02); }
+.card-img::after{
+  content:"";
+  position:absolute; inset:0;
+  background:var(--accent);
+  mix-blend-mode:multiply;
+  opacity:.55;
+  transition:opacity .3s;
+}
+.card:hover .card-img::after{ opacity:.0; }
+.card-meta{
+  background:var(--ink); color:var(--cream);
+  padding:18px 20px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:20px;
+  border-top:2px solid var(--accent);
+}
+.card-meta .name{
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(20px, 2vw, 28px);
+  letter-spacing:-0.02em;
+  text-transform:uppercase;
+  line-height:1;
+}
+.card-meta .loc{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.14em;
+  text-transform:uppercase;
+  text-align:right;
+}
+.card-meta .loc small{ display:block; opacity:.55; margin-bottom:4px; }
+.card-tag{
+  position:absolute; top:14px; left:14px;
+  background:var(--accent); color:var(--ink);
+  padding:5px 9px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10px; letter-spacing:0.14em;
+  text-transform:uppercase; font-weight:700;
+  z-index:2;
+}
+
+/* =====================================================
+   SECTION 4 — PROCESS
+===================================================== */
+.process{
+  padding:64px 0 32px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.process-head{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-bottom:36px;
+}
+.process-head h2{
+  grid-column:1/10;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(48px, 8vw, 130px);
+  line-height:.88; letter-spacing:-0.04em;
+  text-transform:uppercase;
+}
+.process-list{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:0;
+  border-top:var(--rule) solid var(--ink);
+}
+.step{
+  grid-column:1/13;
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+  padding:30px 0 30px;
+  border-bottom:var(--rule) solid var(--ink);
+  position:relative;
+  transition:background .2s;
+}
+.step:hover{ background:var(--cream-deep); }
+.step .num{
+  grid-column:1/3;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(60px, 8vw, 120px);
+  line-height:.85;
+  letter-spacing:-0.05em;
+  color:var(--ink);
+}
+.step .num em{ font-style:normal; color:var(--accent); }
+.step .title{
+  grid-column:3/6;
+  font-family:'Inter Tight', sans-serif;
+  font-weight:800;
+  font-size:clamp(22px, 2.4vw, 36px);
+  text-transform:uppercase;
+  letter-spacing:-0.025em;
+  align-self:center;
+}
+.step .col{
+  align-self:center;
+}
+.step .col-vi{
+  grid-column:6/9;
+  border-left:1px solid var(--line-strong);
+  padding-left:18px;
+}
+.step .col-du{
+  grid-column:9/13;
+  border-left:1px solid var(--line-strong);
+  padding-left:18px;
+}
+.col-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:10.5px; letter-spacing:0.18em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  opacity:.65;
+}
+.col-text{
+  font-family:'Inter Tight', sans-serif;
+  font-weight:500;
+  font-size:15.5px; line-height:1.4;
+  letter-spacing:-0.005em;
+}
+.col-text.zero{
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(28px, 3vw, 44px);
+  text-transform:uppercase;
+  letter-spacing:-0.03em;
+  color:var(--accent);
+  line-height:1;
+}
+
+/* =====================================================
+   SECTION 5 — EMPATHY + FOUNDER
+===================================================== */
+.empathy{
+  padding:96px 0 48px;
+  border-bottom:var(--rule) solid var(--ink);
+  position:relative;
+}
+.empathy-quote{
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(40px, 7vw, 110px);
+  line-height:.92;
+  letter-spacing:-0.04em;
+  text-transform:uppercase;
+  max-width:18ch;
+  position:relative;
+}
+.empathy-quote::before{
+  content:"⌜";
+  position:absolute; top:-0.3em; left:-0.6em;
+  font-size:.6em; color:var(--accent);
+  font-family:'JetBrains Mono', monospace;
+}
+.empathy-quote::after{
+  content:"⌟";
+  font-size:.5em; color:var(--accent);
+  font-family:'JetBrains Mono', monospace;
+  margin-left:.2em;
+  vertical-align:bottom;
+}
+
+/* FOUNDER — irregular floating, breaks the grid */
+.founder{
+  position:relative;
+  margin-top:64px;
+  min-height:520px;
+  border-top:1px dashed var(--line-strong);
+  padding-top:32px;
+}
+.founder-tag{
+  position:absolute; top:32px; left:0;
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+}
+.founder-tag .acc{ color:var(--accent); }
+
+.founder-portrait{
+  position:absolute;
+  top:60px; left:6%;
+  width:clamp(220px, 26vw, 360px);
+  aspect-ratio:3/4;
+  background:var(--ink);
+  transform:rotate(-3deg);
+  z-index:2;
+  overflow:hidden;
+}
+.founder-portrait::before{
+  content:""; position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(45deg, var(--accent) 0 4px, transparent 4px 8px);
+  opacity:.95;
+  mix-blend-mode:screen;
+}
+.founder-portrait::after{
+  content:"E.F.";
+  position:absolute; right:14px; bottom:14px;
+  font-family:'Archivo Black', sans-serif;
+  font-size:42px; color:var(--cream);
+  letter-spacing:-0.03em;
+}
+.founder-portrait .frame-mark{
+  position:absolute; top:10px; left:10px;
+  font-family:'JetBrains Mono', monospace; color:var(--cream);
+  font-size:10px; letter-spacing:0.14em;
+  z-index:3;
+}
+
+.founder-name{
+  position:absolute;
+  top:120px; left:38%;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(48px, 7vw, 110px);
+  line-height:.85; letter-spacing:-0.04em;
+  text-transform:uppercase;
+  z-index:3;
+}
+.founder-name .stroke{
+  -webkit-text-stroke:2px var(--ink); color:transparent;
+  display:block;
+}
+.founder-note{
+  position:absolute;
+  top:300px; left:46%;
+  max-width:380px;
+  font-family:'Inter Tight', sans-serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:18px; line-height:1.35;
+  letter-spacing:-0.01em;
+  border-left:3px solid var(--accent);
+  padding-left:14px;
+  z-index:3;
+  transform:rotate(-1deg);
+}
+.founder-mail{
+  position:absolute;
+  bottom:0; right:4%;
+  font-family:'JetBrains Mono', monospace;
+  font-size:clamp(16px, 1.4vw, 22px);
+  letter-spacing:0.02em;
+  text-transform:lowercase;
+  border-bottom:3px solid var(--ink);
+  padding-bottom:4px;
+  text-decoration:none; color:var(--ink);
+  z-index:3;
+  transition:color .15s, border-color .15s;
+}
+.founder-mail:hover{ color:var(--accent); border-color:var(--accent); }
+.founder-mail::before{ content:"⎯⎯ "; color:var(--accent); }
+
+.founder-decor{
+  position:absolute;
+  top:30px; right:4%;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10px; letter-spacing:0.16em;
+  text-transform:uppercase;
+  text-align:right;
+  z-index:1;
+  opacity:.75;
+  line-height:1.6;
+}
+.founder-decor strong{ display:block; font-weight:700; color:var(--accent); }
+
+/* =====================================================
+   SECTION 6 — FAQ
+===================================================== */
+.faq{
+  padding:64px 0 32px;
+  border-bottom:var(--rule) solid var(--ink);
+}
+.faq-head{
+  display:grid; grid-template-columns:repeat(12, 1fr); gap:var(--col-gap);
+  margin-bottom:36px; align-items:end;
+}
+.faq-head h2{
+  grid-column:1/6;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(80px, 14vw, 220px);
+  line-height:.82;
+  letter-spacing:-0.05em;
+  text-transform:uppercase;
+}
+.faq-head h2 .acc{ color:var(--accent); }
+.faq-head .sub{
+  grid-column:7/13;
+  font-family:'Inter Tight', sans-serif;
+  font-weight:600;
+  font-size:18px;
+  text-align:right;
+  border-top:2px solid var(--ink);
+  padding-top:10px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+}
+.faq-list{
+  border-top:var(--rule) solid var(--ink);
+}
+.faq-item{
+  border-bottom:var(--rule) solid var(--ink);
+  position:relative;
+}
+.faq-q{
+  display:grid;
+  grid-template-columns:80px 1fr 60px;
+  gap:24px;
+  align-items:center;
+  padding:26px 0;
+  cursor:none;
+  list-style:none;
+  transition:background .15s;
+}
+.faq-q::-webkit-details-marker{ display:none; }
+.faq-item:hover .faq-q{ background:var(--cream-deep); padding-left:14px; padding-right:14px; }
+.faq-num{
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(36px, 4vw, 56px);
+  line-height:1; letter-spacing:-0.04em;
+}
+.faq-text{
+  font-family:'Inter Tight', sans-serif;
+  font-weight:700;
+  font-size:clamp(18px, 1.7vw, 26px);
+  letter-spacing:-0.02em;
+  text-transform:uppercase;
+}
+.faq-toggle{
+  font-family:'JetBrains Mono', monospace;
+  font-size:24px;
+  text-align:right;
+  font-weight:700;
+}
+.faq-item[open] .faq-toggle::before{ content:"[−]"; }
+.faq-item:not([open]) .faq-toggle::before{ content:"[+]"; }
+.faq-item[open] .faq-q{ background:var(--ink); color:var(--cream); padding-left:14px; padding-right:14px; }
+.faq-item[open] .faq-q .faq-num{ color:var(--accent); }
+.faq-a{
+  display:grid;
+  grid-template-columns:80px 1fr 60px;
+  gap:24px;
+  padding:6px 14px 28px;
+  font-family:'Inter Tight', sans-serif;
+  font-weight:500; font-size:16.5px; line-height:1.5;
+  letter-spacing:-0.005em;
+  background:var(--cream-deep);
+}
+.faq-a > div:nth-child(2){
+  max-width:72ch;
+  border-left:3px solid var(--accent);
+  padding-left:18px;
+}
+
+/* =====================================================
+   SECTION 7 — CONTACT CTA
+===================================================== */
+.cta{
+  padding:0;
+  background:var(--accent);
+  color:var(--ink);
+  border-bottom:var(--rule) solid var(--ink);
+  position:relative;
+  overflow:hidden;
+}
+.cta-inner{
+  padding:80px var(--pad) 64px;
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+  position:relative;
+  z-index:2;
+}
+.cta-tag{
+  grid-column:1/13;
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:14px;
+  margin-bottom:30px;
+  display:flex; justify-content:space-between;
+}
+.cta h2{
+  grid-column:1/13;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(56px, 11vw, 180px);
+  line-height:.85; letter-spacing:-0.05em;
+  text-transform:uppercase;
+  margin-bottom:32px;
+}
+.cta h2 .stroke{ -webkit-text-stroke:2px var(--ink); color:transparent; }
+.cta-grid{
+  grid-column:1/13;
+  display:grid; grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+  border-top:2px solid var(--ink);
+  padding-top:28px;
+}
+.cta-mail{
+  grid-column:1/8;
+  display:block;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(28px, 4.5vw, 64px);
+  letter-spacing:-0.03em;
+  line-height:1;
+  color:var(--ink);
+  text-decoration:none;
+  text-transform:lowercase;
+  position:relative;
+  transition:transform .15s;
+}
+.cta-mail:hover{ transform:translateX(8px); }
+.cta-mail::before{
+  content:"→ ";
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+}
+.cta-phone{
+  grid-column:8/13;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(24px, 3.5vw, 48px);
+  letter-spacing:-0.02em;
+  text-decoration:none; color:var(--ink);
+  text-align:right;
+  display:block;
+  border-left:2px solid var(--ink);
+  padding-left:24px;
+  transition:transform .15s;
+}
+.cta-phone:hover{ transform:translateX(-8px); }
+.cta-phone .lbl{
+  display:block;
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.18em;
+  font-weight:500;
+  margin-bottom:8px;
+  opacity:.65;
+  text-transform:uppercase;
+}
+.cta-reassure{
+  grid-column:1/13;
+  margin-top:40px;
+  font-family:'Inter Tight', sans-serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(18px, 1.7vw, 24px);
+  letter-spacing:-0.01em;
+  border-top:1px solid var(--ink);
+  padding-top:14px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.cta-reassure .mono{ font-style:normal; font-weight:500; opacity:.7; }
+
+/* mega number watermark */
+.cta-mark{
+  position:absolute;
+  right:-40px; bottom:-80px;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(280px, 50vw, 800px);
+  line-height:.75;
+  letter-spacing:-0.08em;
+  color:var(--ink);
+  opacity:.07;
+  z-index:1;
+  pointer-events:none;
+  text-transform:uppercase;
+}
+
+/* =====================================================
+   SECTION 8 — FOOTER
+===================================================== */
+footer{
+  background:var(--ink);
+  color:var(--cream);
+  padding:48px var(--pad) 28px;
+  position:relative; z-index:6;
+}
+.footer-grid{
+  display:grid; grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+  align-items:end;
+  border-bottom:1px solid rgba(239,233,224,.2);
+  padding-bottom:36px;
+  margin-bottom:18px;
+}
+.foot-brand{
+  grid-column:1/6;
+  font-family:'Archivo Black', sans-serif;
+  font-size:clamp(60px, 9vw, 140px);
+  line-height:.85;
+  letter-spacing:-0.04em;
+  text-transform:lowercase;
+}
+.foot-brand sup{ color:var(--accent); }
+.foot-mail{
+  grid-column:6/9;
+  display:block;
+  font-family:'JetBrains Mono', monospace;
+  font-size:clamp(16px, 1.5vw, 22px);
+  letter-spacing:0.02em;
+  text-transform:lowercase;
+  color:var(--cream);
+  text-decoration:none;
+  border-bottom:2px solid var(--accent);
+  padding-bottom:6px;
+}
+.foot-mail:hover{ color:var(--accent); }
+.foot-social{
+  grid-column:9/13;
+  display:flex; gap:14px; flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.foot-social a{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+  border:1px solid rgba(239,233,224,.4);
+  padding:8px 12px;
+  color:var(--cream); text-decoration:none;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.foot-social a:hover{ background:var(--accent); color:var(--ink); border-color:var(--accent); }
+.foot-bottom{
+  display:grid; grid-template-columns:repeat(12, 1fr);
+  gap:var(--col-gap);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:0.16em;
+  text-transform:uppercase;
+  opacity:.6;
+}
+.foot-bottom .a{ grid-column:1/6; }
+.foot-bottom .b{ grid-column:6/10; }
+.foot-bottom .c{ grid-column:10/13; text-align:right; }
+
+/* =====================================================
+   COUNTERS (animated)
+===================================================== */
+.counter{ font-variant-numeric: tabular-nums; }
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 980px){
+  .grid-bg{ display:none; }
+  .hero-h1 .l2{ padding-left:0; }
+  .hero-h1 .l3{ margin-left:0; margin-right:0; }
+  .hero-mission, .hero-actions{ grid-column:1/13 !important; }
+  .hero-actions{ justify-content:flex-start; }
+  .hero-meta .m1, .hero-meta .m2, .hero-meta .m3, .hero-meta .m4, .hero-meta .m5{ grid-column:span 6; text-align:left; }
+
+  .deliv{ grid-column:span 6; min-height:280px; border-bottom:var(--rule) solid var(--ink); }
+  .deliv:nth-child(odd){ border-right:var(--rule) solid var(--ink); }
+  .deliv:nth-child(even){ border-right:none; }
+  .deliv:nth-last-child(-n+2){ border-bottom:none; }
+
+  .card{ grid-column:1/13 !important; }
+
+  .step{ padding:24px 0; }
+  .step .num{ grid-column:1/4; }
+  .step .title{ grid-column:4/13; }
+  .step .col-vi{ grid-column:1/13; padding-left:0; border-left:none; border-top:1px solid var(--line-strong); padding-top:14px; }
+  .step .col-du{ grid-column:1/13; padding-left:0; border-left:none; border-top:1px solid var(--line-strong); padding-top:14px; }
+
+  .founder{ min-height:auto; padding-bottom:60px; }
+  .founder-portrait{ position:relative; left:0; top:0; transform:none; width:60%; margin-bottom:24px; }
+  .founder-name{ position:relative; left:0; top:0; }
+  .founder-note{ position:relative; left:0; top:0; transform:none; margin-top:18px; }
+  .founder-mail{ position:relative; bottom:auto; right:auto; display:inline-block; margin-top:24px; }
+  .founder-decor{ position:relative; right:auto; top:auto; text-align:left; margin-top:18px; }
+
+  .faq-q{ grid-template-columns:50px 1fr 40px; gap:14px; }
+  .faq-a{ grid-template-columns:1fr; padding-left:14px; padding-right:14px; }
+  .faq-a > div:nth-child(2){ padding-left:14px; }
+
+  .cta-mail{ grid-column:1/13; }
+  .cta-phone{ grid-column:1/13; border-left:none; border-top:2px solid var(--ink); padding-left:0; padding-top:18px; margin-top:18px; text-align:left; }
+
+  .foot-brand, .foot-mail, .foot-social{ grid-column:1/13; }
+  .foot-social{ justify-content:flex-start; }
+  .foot-bottom .a, .foot-bottom .b, .foot-bottom .c{ grid-column:1/13; text-align:left; }
+}
+@media (max-width: 560px){
+  .nav-meta .mono{ display:none; }
+  .what-foot p::before{ content:"⎯ "; }
+  .reg{ font-size:14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- registration marks -->
+<div class="frame" aria-hidden="true">
+  <div class="reg tl">⊕</div>
+  <div class="reg tr">⊕</div>
+  <div class="reg bl">⊕</div>
+  <div class="reg br">⊕</div>
+</div>
+
+<!-- 12-col grid background -->
+<div class="grid-bg" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<!-- cursor -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">novine digital<sup>^</sup></div>
+  <div class="nav-meta">
+    <span class="mono">§ INDEX ─ DESIGN.WORKSHOP</span>
+    <span class="mono">v3 / BRUTALIST</span>
+    <a class="nav-cta" href="#contact">Book et kald →</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>─ NOVINE.DK</span><span>·</span><span>KØBENHAVN</span><span>·</span>
+    <span class="acc">EST. 2026</span><span>·</span><span>HANDCRAFTED DIGITAL STRUCTURES</span><span>·</span>
+    <span>NOW BOOKING Q1</span><span>·</span><span class="acc">⊕</span><span>·</span>
+    <span>─ NOVINE.DK</span><span>·</span><span>KØBENHAVN</span><span>·</span>
+    <span class="acc">EST. 2026</span><span>·</span><span>HANDCRAFTED DIGITAL STRUCTURES</span><span>·</span>
+    <span>NOW BOOKING Q1</span><span>·</span><span class="acc">⊕</span><span>·</span>
+  </div>
+</div>
+
+<!-- ============= HERO ============= -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-meta">
+      <div class="m1"><strong>§ 01</strong></div>
+      <div class="m2">EST. 2026</div>
+      <div class="m3">KØBENHAVN, DK</div>
+      <div class="m4"><span class="acc">●</span> NOW / BOOKING Q1</div>
+      <div class="m5"><span id="clock">--:--:--</span> CET</div>
+    </div>
+
+    <div class="hero-title-block">
+      <h1 class="hero-h1">
+        <span class="l1">Handcrafted</span>
+        <span class="l2">Digital<span class="caret">^</span></span>
+        <span class="l3">Structures</span>
+      </h1>
+    </div>
+
+    <div class="hero-bottom">
+      <p class="hero-mission">
+        Building websites with the precision of a master joiner. We specialize in bespoke CMS architectures and organic SEO growth for the design-conscious.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#contact"><span>Book et kald</span><span class="arrow">→</span></a>
+        <a class="btn" href="#what"><span>Vores arbejde</span><span class="arrow">↓</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= WHAT WE DO ============= -->
+<section class="what" id="what">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag"><span class="num">§ 02</span> ─ <span class="acc">DELIVERABLES</span></div>
+      <div class="section-meta">04 KOMPONENTER · 01 TILBUD</div>
+    </div>
+
+    <div class="what-head">
+      <h2>Vi tager os<br/>af det hele.</h2>
+    </div>
+
+    <div class="what-grid">
+      <article class="deliv">
+        <div class="deliv-num">01</div>
+        <div class="deliv-mid">
+          <div class="deliv-title">Website</div>
+          <p class="deliv-body">Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+        </div>
+        <div class="deliv-tag">─ Bespoke / Hand-coded</div>
+      </article>
+      <article class="deliv">
+        <div class="deliv-num">02</div>
+        <div class="deliv-mid">
+          <div class="deliv-title">Hosting &amp; domæne</div>
+          <p class="deliv-body">Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+        </div>
+        <div class="deliv-tag">─ Inkluderet / Vedligeholdt</div>
+      </article>
+      <article class="deliv">
+        <div class="deliv-num">03</div>
+        <div class="deliv-mid">
+          <div class="deliv-title">CMS — hvis du vil</div>
+          <p class="deliv-body">Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+        </div>
+        <div class="deliv-tag">─ Optional / Ingen kode</div>
+      </article>
+      <article class="deliv">
+        <div class="deliv-num">04</div>
+        <div class="deliv-mid">
+          <div class="deliv-title">Findbar på Google</div>
+          <p class="deliv-body">Vi sørger for, at dine kunder finder dig på Google.</p>
+        </div>
+        <div class="deliv-tag">─ Organic SEO / Local</div>
+      </article>
+    </div>
+
+    <div class="what-foot">
+      <p>Du behøver ikke samle stykkerne selv.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============= GALLERIE ============= -->
+<section class="gallery">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag"><span class="num">§ 03</span> ─ <span class="acc">GALLERIE</span></div>
+      <div class="section-meta">04 PROJEKTER · INDEX</div>
+    </div>
+
+    <div class="gallery-head">
+      <h2>Steder vi<br/>har bygget.</h2>
+      <p class="sub">Steder vi har bygget websites til.</p>
+    </div>
+
+    <div class="gallery-grid">
+      <article class="card">
+        <div class="card-img">
+          <span class="card-tag">№ 01</span>
+          <img src="https://images.unsplash.com/photo-1568254183919-78a4f43a2877?auto=format&fit=crop&q=80&w=1000" alt="Bachs Bageri" loading="lazy"/>
+        </div>
+        <div class="card-meta">
+          <div class="name">Bachs Bageri</div>
+          <div class="loc"><small>LOC.</small>Frederiksberg</div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-img">
+          <span class="card-tag">№ 02</span>
+          <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&q=80&w=1000" alt="Café Solgaarden" loading="lazy"/>
+        </div>
+        <div class="card-meta">
+          <div class="name">Café Solgaarden</div>
+          <div class="loc"><small>LOC.</small>Aarhus</div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-img">
+          <span class="card-tag">№ 03</span>
+          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1000" alt="Restaurant Klint" loading="lazy"/>
+        </div>
+        <div class="card-meta">
+          <div class="name">Restaurant Klint</div>
+          <div class="loc"><small>LOC.</small>Aalborg</div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-img">
+          <span class="card-tag">№ 04</span>
+          <img src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&q=80&w=1000" alt="Spisehuset Nord" loading="lazy"/>
+        </div>
+        <div class="card-meta">
+          <div class="name">Spisehuset Nord</div>
+          <div class="loc"><small>LOC.</small>Helsingør</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============= PROCESS ============= -->
+<section class="process">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag"><span class="num">§ 04</span> ─ <span class="acc">PROCESS</span></div>
+      <div class="section-meta">05 STEPS · LINEAR</div>
+    </div>
+
+    <div class="process-head">
+      <h2>Fra første snak<br/>til lanceret site.</h2>
+    </div>
+
+    <div class="process-list">
+      <div class="step">
+        <div class="num">01<em>/</em></div>
+        <div class="title">Snak</div>
+        <div class="col col-vi">
+          <div class="col-label">Vi gør</div>
+          <div class="col-text">En kort samtale. Vi lærer dit sted at kende.</div>
+        </div>
+        <div class="col col-du">
+          <div class="col-label">Du gør</div>
+          <div class="col-text">Fortæller om dit sted. Det er alt.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">02<em>/</em></div>
+        <div class="title">Materialer</div>
+        <div class="col col-vi">
+          <div class="col-label">Vi gør</div>
+          <div class="col-text">Sender dig en kort tjekliste.</div>
+        </div>
+        <div class="col col-du">
+          <div class="col-label">Du gør</div>
+          <div class="col-text">Sender logo, åbningstider, et par billeder.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">03<em>/</em></div>
+        <div class="title">Design</div>
+        <div class="col col-vi">
+          <div class="col-label">Vi gør</div>
+          <div class="col-text">Tegner dit site fra bunden. Du ser det først.</div>
+        </div>
+        <div class="col col-du">
+          <div class="col-label">Du gør</div>
+          <div class="col-text">Siger hvad du synes. Vi justerer.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">04<em>/</em></div>
+        <div class="title">Byg &amp; lancering</div>
+        <div class="col col-vi">
+          <div class="col-label">Vi gør</div>
+          <div class="col-text">Bygger, hoster, sætter dig op på Google.</div>
+        </div>
+        <div class="col col-du">
+          <div class="col-label">Du gør</div>
+          <div class="col-text zero">Ingenting.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">05<em>/</em></div>
+        <div class="title">Overdragelse</div>
+        <div class="col col-vi">
+          <div class="col-label">Vi gør</div>
+          <div class="col-text">Viser dig CMS'en på 5 minutter — hvis du vil.</div>
+        </div>
+        <div class="col col-du">
+          <div class="col-label">Du gør</div>
+          <div class="col-text">Klipper båndet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= EMPATHY + FOUNDER ============= -->
+<section class="empathy">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag"><span class="num">§ 05</span> ─ <span class="acc">MANIFEST</span></div>
+      <div class="section-meta">FOUNDER / NOTE</div>
+    </div>
+
+    <p class="empathy-quote">
+      De fleste cafe-ejere har ikke tid til at sidde og gøre det selv. Det giver mening. Det er derfor vi findes.
+    </p>
+
+    <div class="founder">
+      <div class="founder-tag">⊕ <span class="acc">FOUNDER</span> / SOLO PRACTICE / KBH</div>
+
+      <div class="founder-portrait">
+        <div class="frame-mark">⊕ PORTRAIT.001</div>
+      </div>
+
+      <div class="founder-name">
+        <span>Elliott</span>
+        <span class="stroke">Friedrich</span>
+      </div>
+
+      <p class="founder-note">
+        Startede novine fordi for mange små steder fortjener bedre end en skabelon.
+      </p>
+
+      <a class="founder-mail" href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+
+      <div class="founder-decor">
+        <strong>DIRECT LINE</strong>
+        ─ ingen filtre<br/>
+        ─ ingen sælgere<br/>
+        ─ kun mig
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FAQ ============= -->
+<section class="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag"><span class="num">§ 06</span> ─ <span class="acc">QUESTIONS</span></div>
+      <div class="section-meta">05 ITEMS · EXPAND</div>
+    </div>
+
+    <div class="faq-head">
+      <h2>F<span class="acc">·</span>A<span class="acc">·</span>Q</h2>
+      <p class="sub">De spørgsmål vi får oftest.</p>
+    </div>
+
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-q">
+          <div class="faq-num">01</div>
+          <div class="faq-text">Hvad koster det?</div>
+          <div class="faq-toggle"></div>
+        </summary>
+        <div class="faq-a">
+          <div></div>
+          <div>Vi sender et fast tilbud efter første snak. Ingen overraskelser, ingen timeregning.</div>
+          <div></div>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          <div class="faq-num">02</div>
+          <div class="faq-text">Hvor lang tid tager det?</div>
+          <div class="faq-toggle"></div>
+        </summary>
+        <div class="faq-a">
+          <div></div>
+          <div>Typisk 3–6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.</div>
+          <div></div>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          <div class="faq-num">03</div>
+          <div class="faq-text">Skal jeg selv vedligeholde det?</div>
+          <div class="faq-toggle"></div>
+        </summary>
+        <div class="faq-a">
+          <div></div>
+          <div>Nej. Du behøver ikke røre noget. Men du KAN — vores CMS er lavet, så du kan ændre menukort, åbningstider eller priser på 30 sekunder. Helt uden teknisk viden.</div>
+          <div></div>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          <div class="faq-num">04</div>
+          <div class="faq-text">Hvad sker der hvis jeg en dag vil flytte væk fra jer?</div>
+          <div class="faq-toggle"></div>
+        </summary>
+        <div class="faq-a">
+          <div></div>
+          <div>Dit domæne er dit. Dit indhold er dit. Vi hjælper dig videre uden bøvl. Vi vil hellere du bliver, fordi du gerne vil — ikke fordi du skal.</div>
+          <div></div>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">
+          <div class="faq-num">05</div>
+          <div class="faq-text">Hvad hvis jeg ikke kan lide designet?</div>
+          <div class="faq-toggle"></div>
+        </summary>
+        <div class="faq-a">
+          <div></div>
+          <div>Så laver vi det om. Du betaler ikke for noget, du ikke kan stå inde for.</div>
+          <div></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CONTACT CTA ============= -->
+<section class="cta" id="contact">
+  <div class="cta-mark" aria-hidden="true">⊕</div>
+  <div class="cta-inner">
+    <div class="cta-tag">
+      <span>§ 07 ─ CONTACT</span>
+      <span>DIRECT / NO INTERMEDIARY</span>
+    </div>
+    <h2>
+      Et kort kald.<br/>
+      <span class="stroke">Ingen forpligtelse.</span>
+    </h2>
+    <div class="cta-grid">
+      <a class="cta-mail" href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+      <a class="cta-phone" href="tel:+4591804039">
+        <span class="lbl">─ DIRECT LINE</span>
+        +45 91 80 40 39
+      </a>
+    </div>
+    <div class="cta-reassure">
+      <span><em>Du taler med Elliott — ikke en sælger.</em></span>
+      <span class="mono">⊕ NOVINE / KBH / 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
+<footer>
+  <div class="footer-grid">
+    <div class="foot-brand">novine<br/>digital<sup>^</sup></div>
+    <a class="foot-mail" href="mailto:hello@novine.dk">hello@novine.dk</a>
+    <div class="foot-social">
+      <a href="#" aria-label="Instagram">[ IG ] Instagram</a>
+      <a href="#" aria-label="LinkedIn">[ IN ] LinkedIn</a>
+      <a href="#" aria-label="Are.na">[ AR ] Are.na</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="a">© 2026 NOVINE DIGITAL APS</div>
+    <div class="b">─ HANDCRAFTED IN KØBENHAVN</div>
+    <div class="c">v3 / BRUTALIST WORKSHOP</div>
+  </div>
+</footer>
+
+<script>
+/* ============ CURSOR ============ */
+(function(){
+  const c = document.getElementById('cursor');
+  if(!c) return;
+  let x = window.innerWidth/2, y = window.innerHeight/2;
+  let tx = x, ty = y;
+  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+  function loop(){
+    x += (tx - x) * 0.28;
+    y += (ty - y) * 0.28;
+    c.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+  const hot = 'a, button, summary, .deliv, .card, .step, .faq-item';
+  document.querySelectorAll(hot).forEach(el => {
+    el.addEventListener('mouseenter', () => c.classList.add('hot'));
+    el.addEventListener('mouseleave', () => c.classList.remove('hot'));
+  });
+})();
+
+/* ============ CLOCK ============ */
+(function(){
+  const el = document.getElementById('clock');
+  if(!el) return;
+  function tick(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    el.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  tick(); setInterval(tick, 1000);
+})();
+
+/* ============ FAQ — single-open accordion ============ */
+(function(){
+  const items = document.querySelectorAll('.faq-item');
+  items.forEach(item => {
+    item.addEventListener('toggle', () => {
+      if(item.open){
+        items.forEach(o => { if(o !== item) o.open = false; });
+      }
+    });
+  });
+})();
+
+/* ============ SCROLL REVEAL — simple ============ */
+(function(){
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.deliv, .card, .step, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>

@@ -8,6 +8,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Superpowers (brainstorm sessions, etc.)
+.superpowers/
+
 # Env files
 .env
 .env.*

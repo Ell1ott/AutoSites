@@ -1,0 +1,770 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">novine digital — Handcrafted Digital Objects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+
+
+        :root {
+            --paper: #E6E4E2;
+            --terracotta: #CD9A7E;
+            --sage: #A8AB9D;
+            --ink: #3D352F;
+            --ink-faint: rgba(61, 53, 47, 0.1);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+
+
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.5;
+        }
+
+
+
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+
+
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+
+
+        .work-section {
+            background: var(--terracotta);
+            color: #4A3A31;
+        }
+
+        .card-layout {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-self: center;
+        }
+
+        .card-visual {
+            background: #D9B39F;
+            aspect-ratio: 1.6 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 2px 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+            opacity: 0.8;
+        }
+
+        .card-content {
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 42px;
+            font-weight: 200;
+            margin-bottom: 20px;
+        }
+
+        /* === GALLERY V3: FEATURED STAGE + LIST === */
+
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding-top: 160px;
+            padding-bottom: 160px;
+        }
+
+        .gallery-wrap {
+            grid-column: 2 / 12;
+            width: 100%;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 22px;
+            margin-bottom: 80px;
+            gap: 40px;
+        }
+
+        .gallery-title {
+            font-size: clamp(40px, 6vw, 80px);
+            line-height: 0.92;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+        }
+
+        .gallery-title em { font-style: italic; font-weight: 200; opacity: 0.55; }
+
+        .gallery-counter {
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            text-align: right;
+        }
+
+        .gallery-feature {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 80px;
+            align-items: stretch;
+        }
+
+        .gallery-stage {
+            position: relative;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 0.5px solid var(--ink-faint);
+            background: #d7d2ce;
+        }
+
+        .gallery-stage-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+            filter: saturate(0.82) contrast(0.95);
+            opacity: 0;
+            transform: scale(1.04);
+            transition: opacity 0.9s var(--transition), transform 1.4s var(--transition), filter 0.6s var(--transition);
+            will-change: opacity, transform;
+        }
+
+        .gallery-stage-img.is-active {
+            opacity: 0.95;
+            transform: scale(1);
+        }
+
+        .gallery-stage::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 60%, rgba(61,53,47,0.18));
+            pointer-events: none;
+        }
+
+        .gallery-stage-meta {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            color: var(--paper);
+            mix-blend-mode: difference;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .gallery-stage-meta .stage-num {
+            font-size: 14px;
+            letter-spacing: 0.16em;
+            font-weight: 300;
+        }
+
+        .gallery-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            border-top: 0.5px solid var(--ink-faint);
+            align-self: stretch;
+        }
+
+        .gallery-list-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            column-gap: 24px;
+            row-gap: 4px;
+            padding: 22px 0;
+            border-bottom: 0.5px solid var(--ink-faint);
+            cursor: pointer;
+            align-items: baseline;
+            color: var(--ink);
+            opacity: 0.55;
+            transition: padding-left 0.5s var(--transition), opacity 0.5s var(--transition);
+        }
+
+        .gallery-list-item:hover { padding-left: 12px; opacity: 0.85; }
+
+        .gallery-list-item.is-active { padding-left: 22px; opacity: 1; }
+
+        .gallery-list-item.is-active::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 30px;
+            width: 7px;
+            height: 7px;
+            background: var(--ink);
+            transform: rotate(45deg);
+        }
+
+        .gallery-list-num {
+            font-size: 10px;
+            letter-spacing: 0.24em;
+            opacity: 0.7;
+            align-self: start;
+            padding-top: 6px;
+        }
+
+        .gallery-list-name {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            line-height: 1.15;
+        }
+
+        .gallery-list-year {
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            opacity: 0.55;
+            align-self: start;
+            padding-top: 10px;
+        }
+
+        .gallery-list-tag {
+            grid-column: 2 / 3;
+            font-size: 10px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .gallery-list-cta {
+            margin-top: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            opacity: 0.65;
+        }
+
+        /* === END GALLERY V3 === */
+
+
+        .services-section {
+            background: var(--sage);
+            color: #353830;
+        }
+
+        .service-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 0.5px solid rgba(53, 56, 48, 0.2);
+            margin-top: 100px;
+        }
+
+        .service-item {
+            padding: 40px 20px;
+            border-right: 0.5px solid rgba(53, 56, 48, 0.2);
+        }
+
+        .service-item:last-child {
+            border-right: none;
+        }
+
+        .service-num {
+            font-size: 10px;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            max-width: 280px;
+            opacity: 0.8;
+        }
+
+
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: 0.5px solid currentColor;
+            text-decoration: none;
+            color: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.4s var(--transition);
+            position: relative;
+            background: transparent;
+        }
+
+        .btn:hover {
+            background: rgba(0,0,0,0.03);
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
+            transform: translateY(1px);
+        }
+
+
+
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .footer-main {
+            grid-column: 1 / 6;
+        }
+
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-size: 32px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        @media (max-width: 1024px) {
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .card-layout { grid-template-columns: 1fr; }
+            .service-grid { grid-template-columns: 1fr; }
+            .service-item { border-right: none; border-bottom: 0.5px solid rgba(53, 56, 48, 0.2); }
+            .gallery-wrap { grid-column: 1 / 13; }
+            .gallery-feature { grid-template-columns: 1fr; gap: 40px; }
+            .gallery-stage { aspect-ratio: 4 / 3; }
+            .gallery-list-name { font-size: 20px; }
+            .gallery-header { flex-wrap: wrap; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body vid="9">
+
+    <div class="frame" vid="10"></div>
+
+    <nav vid="11">
+        <div class="logo" vid="12">novine digital^</div>
+        <div class="nav-links" vid="13">
+            <div vid="14">
+                <span class="meta-label" vid="15">Location</span><br vid="16">
+                <a href="#" class="nav-item" vid="17">Amsterdam / Global</a>
+            </div>
+            <div vid="18">
+                <span class="meta-label" vid="19">Selected Works</span><br vid="20">
+                <a href="#" class="nav-item" vid="21">Archive 01—24</a>
+            </div>
+            <div vid="22">
+                <span class="meta-label" vid="23">Inquiry</span><br vid="24">
+                <a href="#" class="nav-item" vid="25">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="hero" vid="26">
+        <div class="axis axis-v" style="left: 40px;" vid="27"></div>
+        <div class="hero-main">
+            <h1 class="hero-title" vid="28">Handcrafted<br vid="29">Digital<br vid="30">Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta" vid="31">
+            <p class="meta-label" vid="32">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;" vid="33">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator" vid="34">
+            <span class="caret" vid="35">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+
+    <section class="work-section" vid="36">
+        <div class="card-layout" vid="37">
+            <div class="card-visual" vid="38">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Technical Detail" vid="39">
+            </div>
+            <div class="card-content" vid="40">
+                <div vid="41">
+                    <span class="meta-label" vid="42">Project 01 / Architecture</span>
+                    <h2 class="card-title" vid="43">Foundry Modern</h2>
+                    <p style="margin-bottom: 40px; opacity: 0.9;" vid="44">A high-performance CMS implementation for an architectural visualization studio. Every pixel considered.</p>
+                </div>
+                <a href="#" class="btn" vid="45">View Case Study</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="gallery-section" vid="81">
+        <div class="gallery-wrap">
+            <div class="gallery-header">
+                <h2 class="gallery-title">Now <em>Showing</em></h2>
+                <div class="gallery-counter">
+                    <span class="meta-label" style="display:block; margin-bottom:6px;">Currently Featured</span>
+                    <span id="gallery-counter-current">01</span> / 06
+                </div>
+            </div>
+
+            <div class="gallery-feature">
+                <div class="gallery-stage" id="gallery-stage">
+                    <img class="gallery-stage-img is-active" data-stage="0" src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Amber Fluid">
+                    <img class="gallery-stage-img" data-stage="1" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Chrome Void">
+                    <img class="gallery-stage-img" data-stage="2" src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Glass Motion">
+                    <img class="gallery-stage-img" data-stage="3" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Deep Ink">
+                    <img class="gallery-stage-img" data-stage="4" src="https://images.unsplash.com/photo-1604147495798-57beb5d6af73?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Paper Pulp">
+                    <img class="gallery-stage-img" data-stage="5" src="https://images.unsplash.com/photo-1582138825658-89691476a6c5?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Quiet Stone">
+                    <div class="gallery-stage-meta">
+                        <span class="stage-num" id="stage-num">001</span>
+                        <span id="stage-name">Amber Fluid · 2024</span>
+                    </div>
+                </div>
+
+                <ul class="gallery-list" id="gallery-list">
+                    <li class="gallery-list-item is-active" data-target="0">
+                        <span class="gallery-list-num">001</span>
+                        <span class="gallery-list-name">Amber Fluid</span>
+                        <span class="gallery-list-year">2024</span>
+                        <span class="gallery-list-tag">Visual Study · Pigment</span>
+                    </li>
+                    <li class="gallery-list-item" data-target="1">
+                        <span class="gallery-list-num">002</span>
+                        <span class="gallery-list-name">Chrome Void</span>
+                        <span class="gallery-list-year">2024</span>
+                        <span class="gallery-list-tag">Identity · Metallic</span>
+                    </li>
+                    <li class="gallery-list-item" data-target="2">
+                        <span class="gallery-list-num">003</span>
+                        <span class="gallery-list-name">Glass Motion</span>
+                        <span class="gallery-list-year">2023</span>
+                        <span class="gallery-list-tag">Web · Motion</span>
+                    </li>
+                    <li class="gallery-list-item" data-target="3">
+                        <span class="gallery-list-num">004</span>
+                        <span class="gallery-list-name">Deep Ink</span>
+                        <span class="gallery-list-year">2023</span>
+                        <span class="gallery-list-tag">Editorial · CMS</span>
+                    </li>
+                    <li class="gallery-list-item" data-target="4">
+                        <span class="gallery-list-num">005</span>
+                        <span class="gallery-list-name">Paper Pulp</span>
+                        <span class="gallery-list-year">2023</span>
+                        <span class="gallery-list-tag">Print · Texture</span>
+                    </li>
+                    <li class="gallery-list-item" data-target="5">
+                        <span class="gallery-list-num">006</span>
+                        <span class="gallery-list-name">Quiet Stone</span>
+                        <span class="gallery-list-year">2022</span>
+                        <span class="gallery-list-tag">Architecture · CMS</span>
+                    </li>
+                    <li class="gallery-list-cta">
+                        <span>Hover to preview</span>
+                        <span>Browse archive ↗</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="services-section" vid="46">
+        <div style="grid-column: 1 / 8;" vid="47">
+            <span class="meta-label" vid="48">Disciplines</span>
+            <h2 style="font-size: 64px; font-weight: 200; line-height: 1.1; margin-top: 20px;" vid="49">The Digital<br vid="50">Joinery Workshop</h2>
+        </div>
+
+        <div class="service-grid" vid="51">
+            <div class="service-item" vid="52">
+                <span class="service-num" vid="53">01/</span>
+                <h3 class="service-name" vid="54">Bespoke Development</h3>
+                <p class="service-desc" vid="55">Clean-room code. No bloat. Websites that load with the snap of a well-fitted dovetail joint.</p>
+            </div>
+            <div class="service-item" vid="56">
+                <span class="service-num" vid="57">02/</span>
+                <h3 class="service-name" vid="58">Adaptive CMS</h3>
+                <p class="service-desc" vid="59">Tailored content management systems designed for clarity and longevity. Control without the complexity.</p>
+            </div>
+            <div class="service-item" vid="60">
+                <span class="service-num" vid="61">03/</span>
+                <h3 class="service-name" vid="62">Organic SEO</h3>
+                <p class="service-desc" vid="63">Foundational visibility built into the code. We don't chase algorithms; we build for humans and machines alike.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer vid="64">
+        <div class="footer-main" vid="65">
+            <span class="meta-label" vid="66">Ready to Build?</span>
+            <div style="margin-top: 20px;" vid="67">
+                <a href="mailto:hello@novine.digital" class="big-link" vid="68">hello@novine.digital</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 300px; opacity: 0.6;" vid="69">
+                Based in the Netherlands. We work with clients who value the quiet power of exceptional craftsmanship.
+            </p>
+        </div>
+        <div class="footer-secondary" vid="70">
+            <div vid="71">
+                <span class="meta-label" vid="72">Connect</span><br vid="73">
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;" vid="74">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;" vid="75">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;" vid="76">Behance</a>
+            </div>
+            <div style="margin-top: 40px;" vid="77">
+                <span class="meta-label" vid="78">© 2024 novine digital^</span><br vid="79">
+                <span class="meta-label" vid="80">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script vid="81">
+
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+        const galleryListItems = document.querySelectorAll('.gallery-list-item[data-target]');
+        const galleryStageImgs = document.querySelectorAll('.gallery-stage-img');
+        const stageNumEl = document.getElementById('stage-num');
+        const stageNameEl = document.getElementById('stage-name');
+        const counterEl = document.getElementById('gallery-counter-current');
+
+        const stageMeta = [
+            ['001', 'Amber Fluid · 2024'],
+            ['002', 'Chrome Void · 2024'],
+            ['003', 'Glass Motion · 2023'],
+            ['004', 'Deep Ink · 2023'],
+            ['005', 'Paper Pulp · 2023'],
+            ['006', 'Quiet Stone · 2022']
+        ];
+
+        const setStage = (idx) => {
+            galleryStageImgs.forEach(img => img.classList.toggle('is-active', Number(img.dataset.stage) === idx));
+            galleryListItems.forEach(li => li.classList.toggle('is-active', Number(li.dataset.target) === idx));
+            if (stageNumEl) stageNumEl.textContent = stageMeta[idx][0];
+            if (stageNameEl) stageNameEl.textContent = stageMeta[idx][1];
+            if (counterEl) counterEl.textContent = String(idx + 1).padStart(2, '0');
+        };
+
+        galleryListItems.forEach(item => {
+            item.addEventListener('mouseenter', () => setStage(Number(item.dataset.target)));
+            item.addEventListener('click', () => setStage(Number(item.dataset.target)));
+        });
+
+
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98) translateY(2px)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1) translateY(1px)';
+            });
+        });
+    </script>
+
+</body></html>

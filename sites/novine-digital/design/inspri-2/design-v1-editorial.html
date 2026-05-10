@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>novine digital^ — En Søndagslæsning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,400;1,9..144,500&family=Newsreader:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4EFE6;
+    --paper-warm: #EBE3D4;
+    --paper-shadow: #DCD2BD;
+    --ink: #1B1614;
+    --ink-soft: #2E2622;
+    --ink-faded: rgba(27, 22, 20, 0.55);
+    --ink-hair: rgba(27, 22, 20, 0.18);
+    --ink-mist: rgba(27, 22, 20, 0.08);
+    --oxblood: #7A2E22;
+    --oxblood-deep: #5E2118;
+    --ochre: #A4732A;
+    --display: 'DM Serif Display', 'Playfair Display', Georgia, serif;
+    --text: 'Fraunces', 'Newsreader', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--text);
+    font-weight: 400;
+    line-height: 1.55;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Paper grain texture */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      radial-gradient(rgba(27,22,20,0.035) 1px, transparent 1px),
+      radial-gradient(rgba(27,22,20,0.025) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 1px;
+    mix-blend-mode: multiply;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      radial-gradient(ellipse at top, transparent 40%, rgba(120, 85, 50, 0.08) 100%),
+      linear-gradient(180deg, rgba(120,85,50,0.04) 0%, transparent 30%, transparent 70%, rgba(120,85,50,0.05) 100%);
+    mix-blend-mode: multiply;
+  }
+
+  ::selection { background: var(--oxblood); color: var(--paper); }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- LAYOUT ---------- */
+  .sheet {
+    position: relative;
+    z-index: 5;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 56px;
+  }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--ink);
+    margin: 0;
+  }
+  .rule.thin { border-top: 0.5px solid var(--ink-hair); }
+  .rule.double {
+    border: 0;
+    border-top: 1px solid var(--ink);
+    position: relative;
+  }
+  .rule.double::after {
+    content: "";
+    display: block;
+    border-top: 1px solid var(--ink);
+    margin-top: 3px;
+  }
+  .rule.thick { border-top: 3px solid var(--ink); }
+
+  .rubric {
+    font-family: var(--text);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--oxblood);
+  }
+
+  .meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  /* ---------- MASTHEAD ---------- */
+  .masthead {
+    padding-top: 28px;
+    padding-bottom: 18px;
+    position: relative;
+  }
+  .top-strip {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: center;
+    padding-bottom: 14px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .top-strip .left { text-align: left; }
+  .top-strip .center {
+    text-align: center;
+    font-family: var(--text);
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 12px;
+    color: var(--ink-faded);
+  }
+  .top-strip .right { text-align: right; }
+  .top-strip .price {
+    display: inline-block;
+    border: 1px solid var(--ink);
+    padding: 3px 8px;
+    margin-right: 10px;
+  }
+
+  .nameplate {
+    font-family: var(--display);
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    font-size: clamp(64px, 13vw, 188px);
+    text-align: center;
+    padding: 18px 0 8px;
+    position: relative;
+  }
+  .nameplate .caret {
+    color: var(--oxblood);
+    font-family: var(--text);
+    font-weight: 300;
+    font-size: 0.45em;
+    vertical-align: super;
+    margin-left: 0.05em;
+  }
+  .nameplate .a-amp {
+    font-style: italic;
+    color: var(--oxblood);
+  }
+
+  .sub-strip {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 14px 0 10px;
+  }
+  .sub-strip .stars {
+    text-align: center;
+    color: var(--oxblood);
+    letter-spacing: 0.4em;
+    font-size: 14px;
+  }
+  .sub-strip .left, .sub-strip .right {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+  .sub-strip .right { text-align: right; }
+
+  .weather-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .weather-cell {
+    text-align: center;
+    padding: 4px 10px;
+    border-right: 1px solid var(--ink-hair);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+  .weather-cell:last-child { border-right: 0; }
+  .weather-cell strong {
+    display: block;
+    font-family: var(--text);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    margin-top: 2px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 70px 0 90px;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .hero-kicker {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .hero-kicker .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--oxblood);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(54px, 7vw, 110px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+  }
+  .hero h1 em {
+    font-family: var(--text);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--oxblood);
+  }
+  .hero h1 .caret {
+    font-family: var(--text);
+    font-weight: 300;
+    font-size: 0.4em;
+    color: var(--oxblood);
+    vertical-align: super;
+  }
+
+  .hero-byline {
+    font-family: var(--text);
+    font-style: italic;
+    color: var(--ink-faded);
+    font-size: 14px;
+    margin-bottom: 22px;
+    letter-spacing: 0.02em;
+  }
+  .hero-byline span { color: var(--ink); font-style: normal; font-weight: 500; }
+
+  .hero-deck {
+    font-family: var(--text);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 540px;
+    column-count: 1;
+  }
+  .hero-deck::first-letter {
+    initial-letter: 3 2;
+    -webkit-initial-letter: 3 2;
+    font-family: var(--display);
+    font-weight: 400;
+    color: var(--oxblood);
+    margin-right: 10px;
+    margin-top: 4px;
+    line-height: 0.85;
+  }
+
+  .hero-side {
+    border-left: 1px solid var(--ink-hair);
+    padding-left: 32px;
+    padding-top: 8px;
+  }
+  .hero-side .rubric { margin-bottom: 14px; display: block; }
+  .hero-side h3 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.05;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .hero-side p {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    column-count: 1;
+  }
+  .hero-side hr { margin: 18px 0; }
+  .hero-side .stat-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding-top: 6px;
+  }
+  .hero-side .stat strong {
+    font-family: var(--display);
+    font-size: 32px;
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .hero-side .stat span {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  /* Decorative ornament */
+  .ornament {
+    text-align: center;
+    color: var(--oxblood);
+    font-family: var(--display);
+    font-size: 22px;
+    letter-spacing: 0.6em;
+    padding: 18px 0;
+  }
+
+  /* ---------- SECTION HEADER ---------- */
+  .section-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+    padding: 26px 0 14px;
+  }
+  .section-head .chap {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--oxblood);
+  }
+  .section-head .dash {
+    border-top: 1px solid var(--ink-hair);
+    transform: translateY(-4px);
+  }
+  .section-head .pageno {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(46px, 6.4vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    padding-top: 4px;
+    padding-bottom: 14px;
+  }
+  .section-title em { font-family: var(--text); font-style: italic; color: var(--oxblood); font-weight: 500; }
+
+  /* ---------- WHAT WE DO ---------- */
+  .offer {
+    padding: 30px 0 80px;
+  }
+  .offer-grid {
+    display: grid;
+    grid-template-columns: 1fr 2.1fr;
+    gap: 56px;
+    padding-top: 16px;
+  }
+  .offer-aside .rubric { display: block; margin-bottom: 14px; }
+  .offer-aside p {
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .offer-aside .ornament-block {
+    display: inline-block;
+    border: 1px solid var(--ink);
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .offer-list { list-style: none; }
+  .offer-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 28px;
+    align-items: start;
+    padding: 28px 0;
+    border-top: 1px solid var(--ink);
+    position: relative;
+  }
+  .offer-row:last-child { border-bottom: 1px solid var(--ink); }
+  .offer-row .roman {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 60px;
+    line-height: 0.85;
+    color: var(--oxblood);
+    letter-spacing: -0.02em;
+  }
+  .offer-row h3 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .offer-row p {
+    font-family: var(--text);
+    font-size: 16.5px;
+    line-height: 1.55;
+    max-width: 620px;
+    color: var(--ink-soft);
+  }
+  .offer-row .tag {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+  .offer-closing {
+    margin-top: 48px;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(28px, 3.6vw, 46px);
+    line-height: 1.2;
+    color: var(--oxblood);
+    letter-spacing: -0.005em;
+  }
+  .offer-closing::before, .offer-closing::after {
+    content: "·";
+    margin: 0 22px;
+    color: var(--ink-hair);
+  }
+
+  /* ---------- GALLERY ---------- */
+  .gallery {
+    padding: 30px 0 80px;
+  }
+  .gallery-intro {
+    text-align: center;
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-faded);
+    padding: 6px 0 36px;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .gallery-cell {
+    border-right: 1px solid var(--ink-hair);
+    padding: 26px 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .gallery-cell:last-child { border-right: 0; }
+  .gallery-cell .roman {
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--oxblood);
+    letter-spacing: 0.04em;
+    font-style: italic;
+  }
+  .gallery-photo {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--paper-shadow);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--ink-hair);
+  }
+  .gallery-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.15) brightness(0.94) sepia(0.18);
+    transition: transform 1.2s ease;
+  }
+  .gallery-cell:hover .gallery-photo img { transform: scale(1.04); }
+  .gallery-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(27,22,20,0.5) 0.6px, transparent 0.6px);
+    background-size: 3px 3px;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .gallery-cell h4 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .gallery-cell .place {
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-faded);
+    letter-spacing: 0.02em;
+  }
+  .gallery-cell .caption {
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-faded);
+    line-height: 1.4;
+    border-top: 1px solid var(--ink-hair);
+    padding-top: 10px;
+  }
+
+  /* ---------- PROCESS ---------- */
+  .process {
+    padding: 30px 0 90px;
+  }
+  .process-deck {
+    text-align: center;
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-faded);
+    max-width: 640px;
+    margin: 0 auto 36px;
+    line-height: 1.55;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr 1.1fr 1.1fr;
+    gap: 0;
+    border-top: 3px solid var(--ink);
+  }
+  .process-grid.head {
+    border-bottom: 1px solid var(--ink);
+    border-top: 0;
+  }
+  .process-row {
+    display: contents;
+  }
+  .process-cell {
+    padding: 28px 22px;
+    border-bottom: 1px solid var(--ink-hair);
+    border-right: 1px solid var(--ink-hair);
+  }
+  .process-cell:last-child { border-right: 0; }
+  .process-row.heading .process-cell {
+    padding: 12px 22px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--ink);
+  }
+  .process-num {
+    font-family: var(--display);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--oxblood);
+    letter-spacing: -0.02em;
+  }
+  .process-step {
+    font-family: var(--display);
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .process-action {
+    font-family: var(--text);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .process-action.you {
+    font-style: italic;
+  }
+  .process-action.punchline {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 36px;
+    color: var(--oxblood);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    padding-top: 4px;
+  }
+
+  /* ---------- EMPATHY + FOUNDER ---------- */
+  .empathy {
+    padding: 60px 0 70px;
+    position: relative;
+  }
+  .pull-quote {
+    position: relative;
+    text-align: center;
+    padding: 30px 4% 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .pull-quote .open-q,
+  .pull-quote .close-q {
+    font-family: var(--display);
+    font-size: clamp(180px, 26vw, 360px);
+    line-height: 0.7;
+    color: var(--oxblood);
+    opacity: 0.85;
+    position: absolute;
+    font-style: italic;
+  }
+  .pull-quote .open-q { top: -10px; left: -10px; }
+  .pull-quote .close-q { bottom: -90px; right: 0; }
+  .pull-quote blockquote {
+    font-family: var(--display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(36px, 5.6vw, 78px);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+    position: relative;
+    z-index: 2;
+  }
+
+  .founder {
+    padding: 80px 0 60px;
+    position: relative;
+    min-height: 720px;
+  }
+  .founder-stage {
+    position: relative;
+    height: 720px;
+  }
+  .founder-portrait {
+    position: absolute;
+    top: 40px;
+    left: 6%;
+    width: 320px;
+    height: 420px;
+    border: 1px solid var(--ink);
+    background:
+      repeating-linear-gradient(135deg, var(--paper-warm) 0 4px, var(--paper-shadow) 4px 8px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .founder-portrait::before {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    background:
+      radial-gradient(circle at 50% 38%, var(--paper-shadow) 0 90px, transparent 91px),
+      radial-gradient(ellipse at 50% 78%, var(--paper-shadow) 0 130px, transparent 131px);
+    background-color: var(--paper-warm);
+    background-blend-mode: multiply;
+    filter: contrast(1.05);
+  }
+  .founder-portrait::after {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    background-image: radial-gradient(rgba(27,22,20,0.6) 0.7px, transparent 0.7px);
+    background-size: 3px 3px;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+  }
+  .portrait-caption {
+    position: absolute;
+    top: 470px;
+    left: 6%;
+    width: 320px;
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-faded);
+    line-height: 1.5;
+    border-top: 1px solid var(--ink-hair);
+    padding-top: 10px;
+  }
+  .founder-name {
+    position: absolute;
+    top: 40px;
+    right: 4%;
+    text-align: right;
+    max-width: 540px;
+  }
+  .founder-name .small {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--oxblood);
+    margin-bottom: 12px;
+  }
+  .founder-name h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(56px, 8vw, 116px);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+  }
+  .founder-name h2 em {
+    font-family: var(--text);
+    font-style: italic;
+    color: var(--oxblood);
+  }
+  .founder-note {
+    position: absolute;
+    top: 260px;
+    right: 4%;
+    max-width: 380px;
+    text-align: left;
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--oxblood);
+    padding-left: 18px;
+  }
+  .founder-direct {
+    position: absolute;
+    bottom: 70px;
+    right: 4%;
+    text-align: right;
+  }
+  .founder-direct .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 8px;
+  }
+  .founder-direct a {
+    font-family: var(--display);
+    font-size: clamp(22px, 2.6vw, 38px);
+    color: var(--oxblood);
+    border-bottom: 1px solid var(--oxblood);
+    padding-bottom: 4px;
+  }
+  .founder-signature {
+    position: absolute;
+    bottom: 30px;
+    left: 38%;
+    font-family: 'DM Serif Display', cursive;
+    font-style: italic;
+    font-size: 36px;
+    color: var(--oxblood);
+    transform: rotate(-3deg);
+    letter-spacing: -0.02em;
+  }
+  .founder-stamp {
+    position: absolute;
+    top: 540px;
+    left: 30%;
+    transform: rotate(-7deg);
+    border: 2px solid var(--oxblood);
+    color: var(--oxblood);
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq {
+    padding: 30px 0 80px;
+  }
+  .faq-list {
+    border-top: 3px solid var(--ink);
+    margin-top: 14px;
+  }
+  details.faq-item {
+    border-bottom: 1px solid var(--ink-hair);
+    padding: 26px 0;
+    cursor: pointer;
+  }
+  details.faq-item summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 60px 1fr 40px;
+    gap: 24px;
+    align-items: baseline;
+  }
+  details.faq-item summary::-webkit-details-marker { display: none; }
+  details.faq-item .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--oxblood);
+    padding-top: 4px;
+  }
+  details.faq-item .q {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(24px, 2.6vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    transition: color 0.3s;
+  }
+  details.faq-item .toggle {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 28px;
+    color: var(--oxblood);
+    text-align: right;
+    transition: transform 0.3s ease;
+  }
+  details.faq-item[open] .toggle { transform: rotate(45deg); }
+  details.faq-item[open] .q { color: var(--oxblood); }
+  details.faq-item .a {
+    grid-column: 2 / 3;
+    font-family: var(--text);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    margin-left: 84px;
+    max-width: 720px;
+    column-count: 1;
+    padding-left: 16px;
+    border-left: 1px solid var(--oxblood);
+  }
+  details.faq-item .a::first-letter {
+    font-family: var(--display);
+    font-size: 1.3em;
+    color: var(--oxblood);
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact {
+    padding: 90px 0 110px;
+    text-align: center;
+    position: relative;
+  }
+  .contact .rubric { display: inline-block; margin-bottom: 28px; }
+  .contact h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(56px, 8.8vw, 148px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  .contact h2 em {
+    font-family: var(--text);
+    font-style: italic;
+    color: var(--oxblood);
+    font-weight: 500;
+  }
+  .contact .reassurance {
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-faded);
+    margin-bottom: 60px;
+  }
+  .contact-card {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    align-items: stretch;
+    max-width: 920px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    background:
+      linear-gradient(var(--paper-warm), var(--paper-warm));
+    background-blend-mode: multiply;
+  }
+  .contact-card .col {
+    padding: 36px 30px;
+    text-align: center;
+  }
+  .contact-card .col .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    margin-bottom: 14px;
+  }
+  .contact-card .col a, .contact-card .col span {
+    font-family: var(--display);
+    font-size: clamp(22px, 2.8vw, 38px);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .contact-card .col a:hover { color: var(--oxblood); }
+  .contact-card .divider {
+    width: 1px;
+    background: var(--ink-hair);
+    align-self: stretch;
+  }
+  .contact-ornament {
+    margin-top: 48px;
+    color: var(--oxblood);
+    font-family: var(--display);
+    font-size: 24px;
+    letter-spacing: 0.5em;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 70px 0 40px;
+    position: relative;
+    z-index: 5;
+    margin-top: 30px;
+  }
+  footer .sheet { padding: 0 56px; }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 50px;
+    border-bottom: 1px solid rgba(244, 239, 230, 0.18);
+  }
+  .footer-brand {
+    font-family: var(--display);
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .footer-brand .caret { color: #C77562; font-size: 0.5em; vertical-align: super; }
+  .footer-brand .tag {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--text);
+    font-style: italic;
+    font-size: 16px;
+    color: rgba(244,239,230,0.6);
+    line-height: 1.4;
+    max-width: 360px;
+  }
+  .footer-col h5 {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(244,239,230,0.55);
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(244,239,230,0.18);
+    padding-bottom: 8px;
+  }
+  .footer-col a, .footer-col p {
+    display: block;
+    font-family: var(--text);
+    font-size: 16px;
+    color: var(--paper);
+    line-height: 1.7;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: #C77562; }
+  .footer-col p { color: rgba(244,239,230,0.7); font-style: italic; }
+
+  .colophon {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    padding-top: 28px;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(244,239,230,0.55);
+  }
+  .colophon .center { text-align: center; }
+  .colophon .right { text-align: right; }
+
+  /* ---------- ANIMATION ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 1.1s cubic-bezier(.2,.6,.2,1), transform 1.1s cubic-bezier(.2,.6,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-side { border-left: 0; padding-left: 0; border-top: 1px solid var(--ink-hair); padding-top: 28px; }
+    .offer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .gallery-cell:nth-child(2) { border-right: 0; }
+    .gallery-cell:nth-child(1), .gallery-cell:nth-child(2) { border-bottom: 1px solid var(--ink-hair); }
+    .process-grid { grid-template-columns: 60px 1fr 1fr 1fr; }
+    .founder-stage { height: auto; }
+    .founder-portrait, .portrait-caption, .founder-name, .founder-note,
+    .founder-direct, .founder-signature, .founder-stamp {
+      position: relative; top: auto; right: auto; bottom: auto; left: auto;
+      margin: 0 auto 32px; transform: none;
+    }
+    .founder-name { text-align: center; }
+    .founder-direct { text-align: center; }
+    .founder-note { margin: 0 auto 32px; max-width: 540px; }
+  }
+
+  @media (max-width: 768px) {
+    .sheet { padding: 0 24px; }
+    .top-strip { grid-template-columns: 1fr; gap: 6px; text-align: center; }
+    .top-strip .left, .top-strip .center, .top-strip .right { text-align: center; }
+    .nameplate { font-size: 64px; }
+    .weather-bar { display: none; }
+    .sub-strip { grid-template-columns: 1fr; gap: 6px; }
+    .sub-strip .left, .sub-strip .right { text-align: center; }
+    .hero { padding: 40px 0 60px; }
+    .hero h1 { font-size: 52px; }
+    .hero-deck { font-size: 18px; }
+    .section-title { font-size: 42px; }
+    .offer-row { grid-template-columns: 1fr; gap: 8px; }
+    .offer-row .roman { font-size: 36px; }
+    .offer-row .tag { position: relative; top: auto; right: auto; margin-top: 8px; }
+    .offer-row h3 { font-size: 26px; }
+    .gallery-grid { grid-template-columns: 1fr; }
+    .gallery-cell { border-right: 0; border-bottom: 1px solid var(--ink-hair); }
+    .gallery-cell:last-child { border-bottom: 0; }
+    .process-grid { grid-template-columns: 1fr; }
+    .process-grid.head { display: none; }
+    .process-cell { border-right: 0; padding: 14px 4px; }
+    .process-cell:first-child { padding-top: 24px; }
+    .process-cell:nth-child(2) { padding-bottom: 4px; }
+    .pull-quote .open-q { top: -30px; left: 0; font-size: 140px; }
+    .pull-quote .close-q { bottom: -50px; right: 0; font-size: 140px; }
+    .pull-quote blockquote { font-size: 32px; }
+    .founder-name h2 { font-size: 56px; }
+    .founder-note { font-size: 18px; }
+    .footer-top { grid-template-columns: 1fr; gap: 30px; }
+    .footer-brand { font-size: 42px; }
+    .colophon { grid-template-columns: 1fr; gap: 8px; text-align: center; }
+    .colophon .center, .colophon .right { text-align: center; }
+    .contact-card { grid-template-columns: 1fr; }
+    .contact-card .divider { display: none; }
+    .contact-card .col { border-bottom: 1px solid var(--ink-hair); }
+    .contact-card .col:last-child { border-bottom: 0; }
+    details.faq-item summary { grid-template-columns: 40px 1fr 30px; gap: 14px; }
+    details.faq-item .a { margin-left: 54px; padding-left: 12px; font-size: 15.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== MASTHEAD ============== -->
+<section class="masthead sheet">
+  <div class="top-strip">
+    <div class="left">
+      <span>Søndag</span> &nbsp;·&nbsp; <span>7 Maj 2026</span>
+    </div>
+    <div class="center">"Et håndværk er en samtale mellem hænder og tid."</div>
+    <div class="right">
+      <span class="price">DKK 00,00</span>
+      Vol. I &nbsp;·&nbsp; No. 01
+    </div>
+  </div>
+  <hr class="rule" />
+  <h1 class="nameplate">novine digital<span class="caret">^</span></h1>
+  <hr class="rule double" />
+  <div class="sub-strip">
+    <div class="left">Et søndagsmagasin om håndværk, web &amp; sind</div>
+    <div class="stars">⁕ &nbsp; ⁕ &nbsp; ⁕</div>
+    <div class="right">Trykt i København &nbsp;·&nbsp; Læses overalt</div>
+  </div>
+  <div class="weather-bar">
+    <div class="weather-cell">Hjemmeside <strong>Skræddersyet</strong></div>
+    <div class="weather-cell">Hosting <strong>Indbygget</strong></div>
+    <div class="weather-cell">CMS <strong>Frivilligt</strong></div>
+    <div class="weather-cell">Google <strong>Findbar</strong></div>
+    <div class="weather-cell">Pris <strong>Fast tilbud</strong></div>
+  </div>
+</section>
+
+<!-- ============== HERO ============== -->
+<section class="hero sheet">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-kicker">
+        <span class="dot"></span>
+        <span class="rubric">Forsiden — Søndagsfeatuet</span>
+      </div>
+      <h1 class="reveal">Handcrafted<br/><em>Digital</em> Structures<span class="caret">^</span></h1>
+      <p class="hero-byline">Af <span>redaktionen</span> &nbsp;·&nbsp; <em>en feature om et lille bureau, der bygger hjemmesider som var de møbler.</em></p>
+      <p class="hero-deck">
+        Building websites with the precision of a master joiner. We specialize in bespoke CMS architectures and organic SEO growth for the design-conscious.
+      </p>
+    </div>
+
+    <aside class="hero-side">
+      <span class="rubric">Redaktørens Note</span>
+      <h3>Om hvorfor en hjemmeside fortjener mere end en skabelon.</h3>
+      <p>I en tid hvor ethvert sted ligner det næste, har vi sat os for at bygge digitale rum med samme omhu som en bagermester ælter sin dej — langsomt, og med opmærksomhed.</p>
+      <hr class="rule thin" />
+      <div class="stat-row">
+        <div class="stat"><strong>I.</strong><span>Et bureau</span></div>
+        <div class="stat"><strong>IV.</strong><span>Komponenter</span></div>
+        <div class="stat"><strong>3–6</strong><span>Uger / projekt</span></div>
+        <div class="stat"><strong>00</strong><span>Skabeloner</span></div>
+      </div>
+    </aside>
+  </div>
+  <div class="ornament">⁕ ⁕ ⁕</div>
+</section>
+
+<!-- ============== SECTION 2 — WHAT WE DO ============== -->
+<section class="offer sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel I — Tilbuddet</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 02</span>
+  </div>
+  <h2 class="section-title reveal">Vi tager os <em>af det hele.</em></h2>
+
+  <div class="offer-grid">
+    <div class="offer-aside">
+      <span class="rubric">Manifest</span>
+      <p>Hjemmeside, hosting, domæne og en plads på Google. Fire komponenter, samlet i én og samme bunke — fordi du kun skal have ét sted at gå hen.</p>
+      <p>Du logger ikke ind nogen steder. Du venter ikke på en udvikler. Du modtager noget færdigt.</p>
+      <span class="ornament-block">Et bureau · ét tilbud</span>
+    </div>
+
+    <ol class="offer-list">
+      <li class="offer-row">
+        <div class="roman">I.</div>
+        <div>
+          <h3>Website</h3>
+          <p>Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+          <span class="tag">N°. 01 / Bygget i hånden</span>
+        </div>
+      </li>
+      <li class="offer-row">
+        <div class="roman">II.</div>
+        <div>
+          <h3>Hosting &amp; domæne</h3>
+          <p>Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+          <span class="tag">N°. 02 / Indbygget</span>
+        </div>
+      </li>
+      <li class="offer-row">
+        <div class="roman">III.</div>
+        <div>
+          <h3>CMS — hvis du vil</h3>
+          <p>Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+          <span class="tag">N°. 03 / Frivilligt</span>
+        </div>
+      </li>
+      <li class="offer-row">
+        <div class="roman">IV.</div>
+        <div>
+          <h3>Findbar på Google</h3>
+          <p>Vi sørger for, at dine kunder finder dig på Google.</p>
+          <span class="tag">N°. 04 / Organisk</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <p class="offer-closing reveal">Du behøver ikke samle stykkerne selv.</p>
+</section>
+
+<!-- ============== SECTION 3 — GALLERIE ============== -->
+<section class="gallery sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel II — Gallerie</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 04</span>
+  </div>
+  <h2 class="section-title reveal"><em>Gallerie.</em></h2>
+  <p class="gallery-intro">Steder vi har bygget websites til.</p>
+
+  <div class="gallery-grid">
+    <article class="gallery-cell">
+      <div class="roman">I.</div>
+      <div class="gallery-photo">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=1000" alt="Bachs Bageri" loading="lazy" />
+      </div>
+      <h4>Bachs Bageri</h4>
+      <div class="place">Frederiksberg</div>
+      <p class="caption"><em>Et stenovnsbageri, der vågner før byen — fotograferet en tirsdag i februar.</em></p>
+    </article>
+    <article class="gallery-cell">
+      <div class="roman">II.</div>
+      <div class="gallery-photo">
+        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=1000" alt="Café Solgaarden" loading="lazy" />
+      </div>
+      <h4>Café Solgaarden</h4>
+      <div class="place">Aarhus</div>
+      <p class="caption"><em>Eftermiddagsstemning i et lille gårdrum, hvor lyset falder bag espressomaskinen.</em></p>
+    </article>
+    <article class="gallery-cell">
+      <div class="roman">III.</div>
+      <div class="gallery-photo">
+        <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=1000" alt="Restaurant Klint" loading="lazy" />
+      </div>
+      <h4>Restaurant Klint</h4>
+      <div class="place">Aalborg</div>
+      <p class="caption"><em>Køkkenets stilhed mellem to serveringer — en sjælden anledning at fange.</em></p>
+    </article>
+    <article class="gallery-cell">
+      <div class="roman">IV.</div>
+      <div class="gallery-photo">
+        <img src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&q=80&w=1000" alt="Spisehuset Nord" loading="lazy" />
+      </div>
+      <h4>Spisehuset Nord</h4>
+      <div class="place">Helsingør</div>
+      <p class="caption"><em>En vinteraften, hvor stearinlysene først blev tændt klokken halv fire.</em></p>
+    </article>
+  </div>
+</section>
+
+<!-- ============== SECTION 4 — PROCESS ============== -->
+<section class="process sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel III — Processen</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 06</span>
+  </div>
+  <h2 class="section-title reveal">Fra første snak<br/>til <em>lanceret</em> site.</h2>
+  <p class="process-deck">Et simpelt forløb i fem skridt. Vi tager os af alt det tunge — du tager dig af alt det, kun du kan: at fortælle os om dit sted.</p>
+
+  <div class="process-grid head">
+    <div class="process-row heading">
+      <div class="process-cell">N°.</div>
+      <div class="process-cell">Skridt</div>
+      <div class="process-cell">Vi gør</div>
+      <div class="process-cell">Du gør</div>
+    </div>
+  </div>
+  <div class="process-grid">
+    <div class="process-row">
+      <div class="process-cell"><div class="process-num">01/</div></div>
+      <div class="process-cell"><div class="process-step">Snak</div></div>
+      <div class="process-cell process-action">En kort samtale. Vi lærer dit sted at kende.</div>
+      <div class="process-cell process-action you">Fortæller om dit sted. Det er alt.</div>
+    </div>
+    <div class="process-row">
+      <div class="process-cell"><div class="process-num">02/</div></div>
+      <div class="process-cell"><div class="process-step">Materialer</div></div>
+      <div class="process-cell process-action">Sender dig en kort tjekliste.</div>
+      <div class="process-cell process-action you">Sender logo, åbningstider, et par billeder.</div>
+    </div>
+    <div class="process-row">
+      <div class="process-cell"><div class="process-num">03/</div></div>
+      <div class="process-cell"><div class="process-step">Design</div></div>
+      <div class="process-cell process-action">Tegner dit site fra bunden. Du ser det først.</div>
+      <div class="process-cell process-action you">Siger hvad du synes. Vi justerer.</div>
+    </div>
+    <div class="process-row">
+      <div class="process-cell"><div class="process-num">04/</div></div>
+      <div class="process-cell"><div class="process-step">Byg &amp; lancering</div></div>
+      <div class="process-cell process-action">Bygger, hoster, sætter dig op på Google.</div>
+      <div class="process-cell process-action punchline">Ingenting.</div>
+    </div>
+    <div class="process-row">
+      <div class="process-cell"><div class="process-num">05/</div></div>
+      <div class="process-cell"><div class="process-step">Overdragelse</div></div>
+      <div class="process-cell process-action">Viser dig CMS'en på 5 minutter — hvis du vil.</div>
+      <div class="process-cell process-action you">Klipper båndet.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 5 — EMPATHY + FOUNDER ============== -->
+<section class="empathy sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel IV — Hvorfor</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 08</span>
+  </div>
+  <div class="pull-quote reveal">
+    <span class="open-q">“</span>
+    <blockquote>De fleste cafe-ejere har ikke tid til at sidde og gøre det selv. Det giver mening. Det er derfor vi findes.</blockquote>
+    <span class="close-q">”</span>
+  </div>
+</section>
+
+<section class="founder sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel V — Manden bag</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 10</span>
+  </div>
+  <div class="founder-stage">
+    <div class="founder-portrait" aria-label="Portrait placeholder"></div>
+    <p class="portrait-caption"><em>Elliott, fotograferet i sit værksted en regnvåd onsdag morgen. Skrivebordet bærer spor af blæk og kaffe.</em></p>
+
+    <div class="founder-name">
+      <div class="small">Grundlæggeren</div>
+      <h2>Elliott<br/><em>Friedrich.</em></h2>
+    </div>
+
+    <div class="founder-note">
+      "Startede novine fordi for mange små steder fortjener bedre end en skabelon."
+    </div>
+
+    <div class="founder-stamp">— Personligt bygget —</div>
+
+    <div class="founder-signature">~ Elliott</div>
+
+    <div class="founder-direct">
+      <div class="label">Skriv direkte</div>
+      <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 6 — FAQ ============== -->
+<section class="faq sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel VI — Spørgsmål</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 12</span>
+  </div>
+  <h2 class="section-title reveal">Spørgsmål, vi <em>ofte</em> får.</h2>
+
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary>
+        <span class="num">N°. 01</span>
+        <span class="q">Hvad koster det?</span>
+        <span class="toggle">+</span>
+      </summary>
+      <div class="a">Vi sender et fast tilbud efter første snak. Ingen overraskelser, ingen timeregning.</div>
+    </details>
+    <details class="faq-item">
+      <summary>
+        <span class="num">N°. 02</span>
+        <span class="q">Hvor lang tid tager det?</span>
+        <span class="toggle">+</span>
+      </summary>
+      <div class="a">Typisk 3–6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.</div>
+    </details>
+    <details class="faq-item">
+      <summary>
+        <span class="num">N°. 03</span>
+        <span class="q">Skal jeg selv vedligeholde det?</span>
+        <span class="toggle">+</span>
+      </summary>
+      <div class="a">Nej. Du behøver ikke røre noget. Men du KAN — vores CMS er lavet, så du kan ændre menukort, åbningstider eller priser på 30 sekunder. Helt uden teknisk viden.</div>
+    </details>
+    <details class="faq-item">
+      <summary>
+        <span class="num">N°. 04</span>
+        <span class="q">Hvad sker der hvis jeg en dag vil flytte væk fra jer?</span>
+        <span class="toggle">+</span>
+      </summary>
+      <div class="a">Dit domæne er dit. Dit indhold er dit. Vi hjælper dig videre uden bøvl. Vi vil hellere du bliver, fordi du gerne vil — ikke fordi du skal.</div>
+    </details>
+    <details class="faq-item">
+      <summary>
+        <span class="num">N°. 05</span>
+        <span class="q">Hvad hvis jeg ikke kan lide designet?</span>
+        <span class="toggle">+</span>
+      </summary>
+      <div class="a">Så laver vi det om. Du betaler ikke for noget, du ikke kan stå inde for.</div>
+    </details>
+  </div>
+</section>
+
+<!-- ============== SECTION 7 — CONTACT ============== -->
+<section class="contact sheet">
+  <div class="section-head">
+    <span class="chap">Kapitel VII — Henvendelse</span>
+    <span class="dash"></span>
+    <span class="pageno">Side · 14</span>
+  </div>
+  <span class="rubric">Et lille tilbud</span>
+  <h2 class="reveal">Et kort kald.<br/>Ingen <em>forpligtelse.</em></h2>
+  <p class="reassurance">Du taler med Elliott — ikke en sælger.</p>
+
+  <div class="contact-card">
+    <div class="col">
+      <div class="label">Skriv</div>
+      <a href="mailto:elliott@novine.dk">elliott@novine.dk</a>
+    </div>
+    <div class="divider"></div>
+    <div class="col">
+      <div class="label">Ring</div>
+      <a href="tel:+4591804039">+45 91 80 40 39</a>
+    </div>
+  </div>
+
+  <div class="contact-ornament">⁕ ⁕ ⁕</div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="sheet">
+    <div class="footer-top">
+      <div class="footer-brand">
+        novine digital<span class="caret">^</span>
+        <span class="tag">Et lille søndagsmagasin om håndværk, web og det at bygge noget langsomt — for steder, der fortjener mere end en skabelon.</span>
+      </div>
+      <div class="footer-col">
+        <h5>Kontakt</h5>
+        <a href="mailto:hello@novine.dk">hello@novine.dk</a>
+        <a href="tel:+4591804039">+45 91 80 40 39</a>
+        <p>Mandag — fredag</p>
+      </div>
+      <div class="footer-col">
+        <h5>Følg</h5>
+        <a href="#" aria-label="Instagram">Instagram</a>
+        <a href="#" aria-label="LinkedIn">LinkedIn</a>
+        <a href="#" aria-label="Behance">Behance</a>
+      </div>
+      <div class="footer-col">
+        <h5>Kapitler</h5>
+        <a href="#">Tilbuddet</a>
+        <a href="#">Gallerie</a>
+        <a href="#">Processen</a>
+        <a href="#">Spørgsmål</a>
+      </div>
+    </div>
+
+    <div class="colophon">
+      <div class="left">© MMXXVI · novine digital</div>
+      <div class="center">Sat med Fraunces &amp; DM Serif Display · Trykt i hånden</div>
+      <div class="right">Vol. I · No. 01 · Søndag</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Slow reveal on scroll for editorial gravitas
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -80px 0px' });
+  reveals.forEach(r => io.observe(r));
+
+  // Faint masthead parallax
+  const nameplate = document.querySelector('.nameplate');
+  const masthead = document.querySelector('.masthead');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (nameplate && y < 800) {
+      nameplate.style.transform = `translateY(${y * 0.08}px)`;
+      nameplate.style.opacity = Math.max(0.2, 1 - y / 700);
+    }
+  }, { passive: true });
+
+  // Accordion: only one FAQ open at a time
+  const faqItems = document.querySelectorAll('details.faq-item');
+  faqItems.forEach(item => {
+    item.addEventListener('toggle', () => {
+      if (item.open) {
+        faqItems.forEach(other => { if (other !== item) other.open = false; });
+      }
+      const t = item.querySelector('.toggle');
+      if (t) t.textContent = item.open ? '×' : '+';
+    });
+  });
+</script>
+
+</body>
+</html>

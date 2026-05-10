@@ -1,0 +1,946 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">novine digital — Handcrafted Digital Objects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="5">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&amp;display=swap" rel="stylesheet" vid="7">
+    <style vid="8">
+
+
+        :root {
+            --paper: #E6E4E2;
+            --terracotta: #CD9A7E;
+            --sage: #A8AB9D;
+            --ink: #3D352F;
+            --ink-faint: rgba(61, 53, 47, 0.1);
+            --transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+
+
+        .frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 1px solid var(--ink-faint);
+            z-index: 100;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            opacity: 0.6;
+        }
+
+        .caret {
+            display: inline-block;
+            transform: translateY(-2px);
+            margin-left: 2px;
+            font-weight: 200;
+        }
+
+
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 101;
+        }
+
+        .logo {
+            font-size: 24px;
+            letter-spacing: -0.02em;
+            font-weight: 300;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 60px;
+            text-align: right;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.5;
+        }
+
+
+
+        section {
+            min-height: 100vh;
+            padding: 120px 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            position: relative;
+        }
+
+
+
+        .hero {
+            background: var(--paper);
+            align-items: center;
+        }
+
+        .hero-main {
+            grid-column: 1 / 10;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 36%);
+            align-items: center;
+            gap: clamp(20px, 4vw, 56px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 120px);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            font-weight: 300;
+            z-index: 2;
+        }
+
+        .hero-art {
+            justify-self: end;
+            width: min(400%, 1400px);
+            --hero-art-x: 65%;
+            --hero-parallax-y: 0px;
+            transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
+            transform-origin: center right;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .hero-art img {
+            display: block;
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        .hero-meta {
+            grid-column: 10 / 13;
+            align-self: end;
+            padding-bottom: 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+        }
+
+
+
+        .work-section {
+            background: var(--terracotta);
+            color: #4A3A31;
+        }
+
+        .card-layout {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-self: center;
+        }
+
+        .card-visual {
+            background: #D9B39F;
+            aspect-ratio: 1.6 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 2px 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mix-blend-mode: multiply;
+            opacity: 0.8;
+        }
+
+        .card-content {
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 42px;
+            font-weight: 200;
+            margin-bottom: 20px;
+        }
+
+        .gallery-section {
+            background: var(--paper);
+            color: var(--ink);
+            min-height: auto;
+            padding: 140px 0 0;
+            grid-template-columns: 1fr;
+            display: block;
+        }
+
+        .gallery-wrap {
+            width: 100%;
+            padding: 0 40px;
+        }
+
+        .gallery-masthead {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 32px;
+            border-bottom: 0.5px solid var(--ink-faint);
+            padding-bottom: 22px;
+            margin-bottom: 56px;
+        }
+
+        .gallery-mast-left {
+            display: flex;
+            align-items: baseline;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-title {
+            font-size: clamp(56px, 9vw, 128px);
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+            font-weight: 200;
+        }
+
+        .gallery-issue {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            opacity: 0.55;
+            transform: translateY(-6px);
+            white-space: nowrap;
+        }
+
+        .gallery-mast-right {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+            opacity: 0.55;
+            text-align: right;
+            line-height: 1.7;
+            padding-bottom: 6px;
+        }
+
+        .gallery-mosaic {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(180px, 22vw);
+            gap: 14px;
+            margin-bottom: 88px;
+        }
+
+        .mosaic-card {
+            position: relative;
+            overflow: hidden;
+            background: #d7d2ce;
+            border: 0.5px solid rgba(61, 53, 47, 0.18);
+            cursor: pointer;
+            clip-path: inset(0 0 0 0);
+            transition: clip-path 1.05s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+
+        .mosaic-card.is-pending[data-wipe="left"]    { clip-path: inset(0 100% 0 0); }
+        .mosaic-card.is-pending[data-wipe="right"]   { clip-path: inset(0 0 0 100%); }
+        .mosaic-card.is-pending[data-wipe="top"]     { clip-path: inset(0 0 100% 0); }
+        .mosaic-card.is-pending[data-wipe="bottom"]  { clip-path: inset(100% 0 0 0); }
+        .mosaic-card.is-pending[data-wipe="center"]  { clip-path: inset(0 50% 0 50%); }
+
+        .mosaic-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.55) contrast(0.95);
+            transition: filter var(--transition), transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+            mix-blend-mode: multiply;
+        }
+
+        .mosaic-card:hover img {
+            filter: saturate(1.05) contrast(1);
+            transform: scale(1.03);
+        }
+
+        .mosaic-tag {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--paper);
+            background: rgba(61, 53, 47, 0.55);
+            backdrop-filter: blur(2px);
+            padding: 5px 9px;
+            z-index: 3;
+        }
+
+        .mosaic-caret {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            font-size: 22px;
+            font-weight: 200;
+            color: var(--paper);
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: 3;
+        }
+
+        .mosaic-card:hover .mosaic-caret {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mosaic-foot {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 18px 16px 16px;
+            color: var(--paper);
+            background: linear-gradient(180deg, rgba(61, 53, 47, 0) 0%, rgba(61, 53, 47, 0.55) 70%, rgba(61, 53, 47, 0.78) 100%);
+            z-index: 2;
+        }
+
+        .mosaic-rule {
+            display: block;
+            height: 0.5px;
+            width: 0;
+            background: var(--paper);
+            margin-bottom: 10px;
+            transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mosaic-card:hover .mosaic-rule {
+            width: 100%;
+        }
+
+        .mosaic-title {
+            font-size: clamp(20px, 2vw, 30px);
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            margin-bottom: 6px;
+        }
+
+        .mosaic-meta {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            opacity: 0.85;
+        }
+
+        .mosaic-card[data-pos="hero"]      { grid-column: span 7; grid-row: span 2; }
+        .mosaic-card[data-pos="portrait"]  { grid-column: span 5; grid-row: span 2; }
+        .mosaic-card[data-pos="small-a"]   { grid-column: span 4; grid-row: span 1; }
+        .mosaic-card[data-pos="small-b"]   { grid-column: span 3; grid-row: span 1; }
+        .mosaic-card[data-pos="letter"]    { grid-column: span 12; grid-row: span 1; }
+
+
+
+        .marquee-belt {
+            position: relative;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            overflow: hidden;
+            border-top: 0.5px solid var(--ink-faint);
+            border-bottom: 0.5px solid var(--ink-faint);
+            background: var(--paper);
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee-drift 64s linear infinite;
+            will-change: transform;
+        }
+
+        .marquee-belt.is-slow .marquee-track {
+            animation-duration: 640s;
+        }
+
+        @keyframes marquee-drift {
+            from { transform: translate3d(0, 0, 0); }
+            to   { transform: translate3d(-50%, 0, 0); }
+        }
+
+        .ref-plate {
+            flex: 0 0 auto;
+            width: 220px;
+            height: 120px;
+            display: flex;
+            align-items: stretch;
+            border-right: 0.5px solid var(--ink-faint);
+            position: relative;
+        }
+
+        .ref-thumb {
+            width: 80px;
+            height: 100%;
+            overflow: hidden;
+            background: #d7d2ce;
+            border-right: 0.5px solid var(--ink-faint);
+        }
+
+        .ref-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.7) contrast(0.95);
+            mix-blend-mode: multiply;
+        }
+
+        .ref-meta {
+            flex: 1;
+            padding: 12px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .ref-num {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            opacity: 0.55;
+        }
+
+        .ref-name {
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: -0.005em;
+        }
+
+        .ref-tag {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            opacity: 0.55;
+        }
+
+
+        .services-section {
+            background: var(--sage);
+            color: #353830;
+        }
+
+        .service-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 0.5px solid rgba(53, 56, 48, 0.2);
+            margin-top: 100px;
+        }
+
+        .service-item {
+            padding: 40px 20px;
+            border-right: 0.5px solid rgba(53, 56, 48, 0.2);
+        }
+
+        .service-item:last-child {
+            border-right: none;
+        }
+
+        .service-num {
+            font-size: 10px;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            max-width: 280px;
+            opacity: 0.8;
+        }
+
+
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: 0.5px solid currentColor;
+            text-decoration: none;
+            color: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: all 0.4s var(--transition);
+            position: relative;
+            background: transparent;
+        }
+
+        .btn:hover {
+            background: rgba(0,0,0,0.03);
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
+            transform: translateY(1px);
+        }
+
+
+
+        footer {
+            background: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .footer-main {
+            grid-column: 1 / 6;
+        }
+
+        .footer-secondary {
+            grid-column: 8 / 13;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .big-link {
+            font-size: 32px;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+
+        .axis {
+            position: absolute;
+            background: var(--ink-faint);
+        }
+        .axis-v { width: 0.5px; height: 100%; top: 0; }
+        .axis-h { height: 0.5px; width: 100%; left: 0; }
+
+        @media (max-width: 1024px) {
+            .hero-main {
+                grid-column: 1 / 13;
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .hero-art {
+                justify-self: start;
+                width: min(180%, 760px);
+                --hero-art-x: 20%;
+                opacity: 0.6;
+            }
+            .card-layout { grid-template-columns: 1fr; }
+            .service-grid { grid-template-columns: 1fr; }
+            .service-item { border-right: none; border-bottom: 0.5px solid rgba(53, 56, 48, 0.2); }
+
+            .gallery-mosaic {
+                grid-template-columns: 1fr;
+                grid-auto-rows: auto;
+                gap: 12px;
+            }
+            .mosaic-card[data-pos] {
+                grid-column: 1 / -1;
+                grid-row: auto;
+                aspect-ratio: 4 / 3;
+            }
+            .mosaic-card[data-pos="portrait"] {
+                aspect-ratio: 3 / 4;
+            }
+            .mosaic-card[data-pos="letter"] {
+                aspect-ratio: 16 / 7;
+            }
+            .gallery-masthead {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+            .gallery-mast-right { text-align: left; }
+            .ref-plate { width: 180px; height: 100px; }
+            .ref-thumb { width: 64px; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-art {
+                width: min(150%, 520px);
+                --hero-art-x: 0%;
+                opacity: 0.5;
+            }
+            .ref-plate { width: 160px; height: 92px; }
+            .ref-thumb { width: 56px; }
+            .ref-name { font-size: 12px; }
+        }
+    </style>
+</head>
+<body vid="9">
+
+    <div class="frame" vid="10"></div>
+
+    <nav vid="11">
+        <div class="logo" vid="12">novine digital^</div>
+        <div class="nav-links" vid="13">
+            <div vid="14">
+                <span class="meta-label" vid="15">Location</span><br vid="16">
+                <a href="#" class="nav-item" vid="17">Amsterdam / Global</a>
+            </div>
+            <div vid="18">
+                <span class="meta-label" vid="19">Selected Works</span><br vid="20">
+                <a href="#" class="nav-item" vid="21">Archive 01—24</a>
+            </div>
+            <div vid="22">
+                <span class="meta-label" vid="23">Inquiry</span><br vid="24">
+                <a href="#" class="nav-item" vid="25">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="hero" vid="26">
+        <div class="axis axis-v" style="left: 40px;" vid="27"></div>
+        <div class="hero-main">
+            <h1 class="hero-title" vid="28">Handcrafted<br vid="29">Digital<br vid="30">Structures^</h1>
+            <div class="hero-art">
+                <img src="./vector-2.svg" alt="" aria-hidden="true">
+            </div>
+        </div>
+        <div class="hero-meta" vid="31">
+            <p class="meta-label" vid="32">Mission Statement</p>
+            <p style="font-size: 14px; margin-top: 10px;" vid="33">
+                Building websites with the precision of a master joiner.
+                We specialize in bespoke CMS architectures and organic
+                SEO growth for the design-conscious.
+            </p>
+        </div>
+        <div class="scroll-indicator" vid="34">
+            <span class="caret" vid="35">^</span> SCROLL TO DISCOVER
+        </div>
+    </section>
+
+
+    <section class="work-section" vid="36">
+        <div class="card-layout" vid="37">
+            <div class="card-visual" vid="38">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Technical Detail" vid="39">
+            </div>
+            <div class="card-content" vid="40">
+                <div vid="41">
+                    <span class="meta-label" vid="42">Project 01 / Architecture</span>
+                    <h2 class="card-title" vid="43">Foundry Modern</h2>
+                    <p style="margin-bottom: 40px; opacity: 0.9;" vid="44">A high-performance CMS implementation for an architectural visualization studio. Every pixel considered.</p>
+                </div>
+                <a href="#" class="btn" vid="45">View Case Study</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="gallery-section" vid="81">
+        <div class="gallery-wrap">
+            <div class="gallery-masthead">
+                <div class="gallery-mast-left">
+                    <h2 class="gallery-title">Gallerie</h2>
+                    <span class="gallery-issue">Issue 04 · Selected Index</span>
+                </div>
+                <div class="gallery-mast-right">
+                    Editorial Mosaic<br>
+                    Folio · MMXXIV
+                </div>
+            </div>
+
+            <div class="gallery-mosaic" id="gallery-mosaic">
+                <article class="mosaic-card is-pending" data-pos="hero" data-wipe="left" style="--reveal-delay: 0ms;">
+                    <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=1400" alt="Amber textured visual study">
+                    <span class="mosaic-tag">Feature 01</span>
+                    <span class="mosaic-caret">^</span>
+                    <div class="mosaic-foot">
+                        <span class="mosaic-rule"></span>
+                        <h3 class="mosaic-title">Amber Fluid</h3>
+                        <span class="mosaic-meta">Work · 2024 · Digital</span>
+                    </div>
+                </article>
+
+                <article class="mosaic-card is-pending" data-pos="portrait" data-wipe="right" style="--reveal-delay: 80ms;">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Dark ink-like abstract composition">
+                    <span class="mosaic-tag">Plate 02</span>
+                    <span class="mosaic-caret">^</span>
+                    <div class="mosaic-foot">
+                        <span class="mosaic-rule"></span>
+                        <h3 class="mosaic-title">Deep Ink</h3>
+                        <span class="mosaic-meta">Work · 2024 · Print</span>
+                    </div>
+                </article>
+
+                <article class="mosaic-card is-pending" data-pos="small-a" data-wipe="top" style="--reveal-delay: 160ms;">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Chromatic metallic color field">
+                    <span class="mosaic-tag">Frag. 03</span>
+                    <span class="mosaic-caret">^</span>
+                    <div class="mosaic-foot">
+                        <span class="mosaic-rule"></span>
+                        <h3 class="mosaic-title">Chrome Void</h3>
+                        <span class="mosaic-meta">Study · 2024 · Material</span>
+                    </div>
+                </article>
+
+                <article class="mosaic-card is-pending" data-pos="small-b" data-wipe="bottom" style="--reveal-delay: 240ms;">
+                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=1000" alt="Glass-like abstract form">
+                    <span class="mosaic-tag">Frag. 04</span>
+                    <span class="mosaic-caret">^</span>
+                    <div class="mosaic-foot">
+                        <span class="mosaic-rule"></span>
+                        <h3 class="mosaic-title">Glass Motion</h3>
+                        <span class="mosaic-meta">Study · 2024 · Optic</span>
+                    </div>
+                </article>
+
+                <article class="mosaic-card is-pending" data-pos="letter" data-wipe="center" style="--reveal-delay: 320ms;">
+                    <img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&amp;fit=crop&amp;q=80&amp;w=1800" alt="Earth-toned wide composition">
+                    <span class="mosaic-tag">Spread 05</span>
+                    <span class="mosaic-caret">^</span>
+                    <div class="mosaic-foot">
+                        <span class="mosaic-rule"></span>
+                        <h3 class="mosaic-title">Clay Horizon</h3>
+                        <span class="mosaic-meta">Editorial · 2024 · Long Form</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div class="marquee-belt" id="marquee-belt" aria-label="Reference archive ticker">
+            <div class="marquee-track" id="marquee-track">
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 001</span><span class="ref-name">Amber Fluid</span><span class="ref-tag">Digital</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 002</span><span class="ref-name">Chrome Void</span><span class="ref-tag">Material</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 003</span><span class="ref-name">Glass Motion</span><span class="ref-tag">Optic</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 004</span><span class="ref-name">Deep Ink</span><span class="ref-tag">Print</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 005</span><span class="ref-name">Clay Horizon</span><span class="ref-tag">Spread</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 006</span><span class="ref-name">Foundry Lab</span><span class="ref-tag">Build</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 007</span><span class="ref-name">Resin Drift</span><span class="ref-tag">Texture</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 008</span><span class="ref-name">Loam Pass</span><span class="ref-tag">Color</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 009</span><span class="ref-name">Vellum</span><span class="ref-tag">Surface</span></div>
+                </div>
+                <div class="ref-plate">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 010</span><span class="ref-name">Sienna Field</span><span class="ref-tag">Tone</span></div>
+                </div>
+
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 001</span><span class="ref-name">Amber Fluid</span><span class="ref-tag">Digital</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 002</span><span class="ref-name">Chrome Void</span><span class="ref-tag">Material</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 003</span><span class="ref-name">Glass Motion</span><span class="ref-tag">Optic</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 004</span><span class="ref-name">Deep Ink</span><span class="ref-tag">Print</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 005</span><span class="ref-name">Clay Horizon</span><span class="ref-tag">Spread</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 006</span><span class="ref-name">Foundry Lab</span><span class="ref-tag">Build</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 007</span><span class="ref-name">Resin Drift</span><span class="ref-tag">Texture</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 008</span><span class="ref-name">Loam Pass</span><span class="ref-tag">Color</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 009</span><span class="ref-name">Vellum</span><span class="ref-tag">Surface</span></div>
+                </div>
+                <div class="ref-plate" aria-hidden="true">
+                    <div class="ref-thumb"><img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&amp;fit=crop&amp;q=80&amp;w=300" alt=""></div>
+                    <div class="ref-meta"><span class="ref-num">Ref 010</span><span class="ref-name">Sienna Field</span><span class="ref-tag">Tone</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="services-section" vid="46">
+        <div style="grid-column: 1 / 8;" vid="47">
+            <span class="meta-label" vid="48">Disciplines</span>
+            <h2 style="font-size: 64px; font-weight: 200; line-height: 1.1; margin-top: 20px;" vid="49">The Digital<br vid="50">Joinery Workshop</h2>
+        </div>
+
+        <div class="service-grid" vid="51">
+            <div class="service-item" vid="52">
+                <span class="service-num" vid="53">01/</span>
+                <h3 class="service-name" vid="54">Bespoke Development</h3>
+                <p class="service-desc" vid="55">Clean-room code. No bloat. Websites that load with the snap of a well-fitted dovetail joint.</p>
+            </div>
+            <div class="service-item" vid="56">
+                <span class="service-num" vid="57">02/</span>
+                <h3 class="service-name" vid="58">Adaptive CMS</h3>
+                <p class="service-desc" vid="59">Tailored content management systems designed for clarity and longevity. Control without the complexity.</p>
+            </div>
+            <div class="service-item" vid="60">
+                <span class="service-num" vid="61">03/</span>
+                <h3 class="service-name" vid="62">Organic SEO</h3>
+                <p class="service-desc" vid="63">Foundational visibility built into the code. We don't chase algorithms; we build for humans and machines alike.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <footer vid="64">
+        <div class="footer-main" vid="65">
+            <span class="meta-label" vid="66">Ready to Build?</span>
+            <div style="margin-top: 20px;" vid="67">
+                <a href="mailto:hello@novine.digital" class="big-link" vid="68">hello@novine.digital</a>
+            </div>
+            <p style="margin-top: 40px; font-size: 13px; max-width: 300px; opacity: 0.6;" vid="69">
+                Based in the Netherlands. We work with clients who value the quiet power of exceptional craftsmanship.
+            </p>
+        </div>
+        <div class="footer-secondary" vid="70">
+            <div vid="71">
+                <span class="meta-label" vid="72">Connect</span><br vid="73">
+                <a href="#" class="nav-item" style="display:block; margin-top:10px;" vid="74">Instagram</a>
+                <a href="#" class="nav-item" style="display:block;" vid="75">LinkedIn</a>
+                <a href="#" class="nav-item" style="display:block;" vid="76">Behance</a>
+            </div>
+            <div style="margin-top: 40px;" vid="77">
+                <span class="meta-label" vid="78">© 2024 novine digital^</span><br vid="79">
+                <span class="meta-label" vid="80">All Rights Reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script vid="81">
+
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroTitle = document.querySelector('.hero-title');
+            const heroArt = document.querySelector('.hero-art');
+            heroTitle.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (heroArt) {
+                heroArt.style.setProperty('--hero-parallax-y', `${scrolled * 0.1}px`);
+            }
+        });
+
+
+        const mosaicCards = Array.from(document.querySelectorAll('.mosaic-card'));
+        if (mosaicCards.length) {
+            const revealObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const delay = parseInt(el.style.getPropertyValue('--reveal-delay')) || 0;
+                        window.setTimeout(() => {
+                            el.classList.remove('is-pending');
+                        }, delay);
+                        obs.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+            mosaicCards.forEach(card => revealObserver.observe(card));
+        }
+
+
+        const marqueeBelt = document.getElementById('marquee-belt');
+        if (marqueeBelt) {
+            marqueeBelt.addEventListener('mouseenter', () => marqueeBelt.classList.add('is-slow'));
+            marqueeBelt.addEventListener('mouseleave', () => marqueeBelt.classList.remove('is-slow'));
+        }
+
+
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98) translateY(2px)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1) translateY(1px)';
+            });
+        });
+    </script>
+
+</body></html>
