@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
@@ -10,7 +9,7 @@ import {
   StarIcon,
 } from "@hugeicons/core-free-icons"
 
-import { api } from "@/lib/api"
+import { useFieldsQuery } from "@/hooks/use-fields"
 import {
   operatorsForField,
   valueWidgetForField,
@@ -553,15 +552,9 @@ export function FilterBuilder({
   fields,
   fieldFilter,
 }: Props) {
-  // Only fetch when the parent didn't pass fields. staleTime keeps the cache
-  // warm between page nav.
-  const fetched = useQuery({
-    queryKey: ["fields"],
-    queryFn: () => api.fields(),
-    staleTime: 60_000,
-    retry: false,
-    enabled: !fields,
-  })
+  // Shared `/fields` cache — `hooks/use-fields.ts` exposes the same query key
+  // used by the leads page so we only fetch the schema once per session.
+  const fetched = useFieldsQuery()
 
   const allFields = useMemo(() => {
     if (fields) return fields
