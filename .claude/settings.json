@@ -66,7 +66,27 @@
       "Bash(git -C /Users/elliottfriedrich/Documents/GitHub/AutoSites/ status --short)",
       "mcp__context7__query-docs",
       "mcp__supabase__list_migrations",
-      "Bash(uv run *)"
+      "Bash(uv run *)",
+      "Bash(mkdir -p \"/Users/elliottfriedrich/Documents/GitHub/AutoSites/admin-next/app/@modal/\\(.\\)leads/[id]\")",
+      "Bash(curl -s http://localhost:3000/leads/mock-001)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(bun test *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/healthz)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/tasks)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/tasks/design_prompt)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/leads)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/queue)",
+      "Bash(curl -s http://localhost:3000/tasks/design_prompt)",
+      "Bash(curl -s http://localhost:3000/_next/static/chunks/_app-pages-browser_components_tasks_task-list_tsx.js)",
+      "Bash(curl -s http://localhost:3000/tasks)",
+      "Bash(pkill -9 -f \"next dev\")",
+      "Bash(NEXT_PUBLIC_USE_MOCKS=1 NEXT_PUBLIC_PI_URL=http://localhost:9999 bun run dev)",
+      "Bash(echo \"PID=$!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/healthz)"
+    ],
+    "additionalDirectories": [
+      "/Users/elliottfriedrich/Documents/GitHub/AutoSites/admin-next/app/@modal/(.)leads"
     ]
   }
 }
