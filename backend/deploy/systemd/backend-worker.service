@@ -1,0 +1,18 @@
+[Unit]
+Description=AutoSites backend worker (job runner)
+After=network-online.target backend-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/%i/AutoSites/backend
+EnvironmentFile=/home/%i/AutoSites/backend/.env
+ExecStart=/home/%i/.local/bin/uv run python -m workers.runner
+Restart=on-failure
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

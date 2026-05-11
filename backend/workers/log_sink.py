@@ -111,7 +111,9 @@ class ApiSink:
                 job_id = payload.get("job_id")
                 if not isinstance(job_id, str):
                     continue
-                for q in list(self._subs.get(job_id, [])):
+                subs = list(self._subs.get(job_id, []))
+                logger.debug("uds recv job=%s event=%s subs=%d", job_id, payload.get("event"), len(subs))
+                for q in subs:
                     try:
                         q.put_nowait(payload)
                     except asyncio.QueueFull:
