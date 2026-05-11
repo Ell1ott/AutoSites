@@ -18,8 +18,10 @@ const fontMono = Geist_Mono({
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode
+  modal: React.ReactNode
 }>) {
   return (
     <html
@@ -38,6 +40,7 @@ export default function RootLayout({
                   <main className="flex-1 overflow-auto">{children}</main>
                 </div>
                 <SelectionPill />
+                {modal}
               </div>
             </TooltipProvider>
           </Providers>
