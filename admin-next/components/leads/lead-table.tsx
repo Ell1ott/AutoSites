@@ -38,9 +38,19 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import type { CSSProperties, ReactNode } from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
+import { AlertCircleIcon } from "@hugeicons/core-free-icons"
+
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { useAiTasks } from "@/hooks/use-ai-tasks"
 import { useFields } from "@/hooks/use-fields"
 import { readField } from "@/lib/filter"
+import { missingInputsForLead } from "@/lib/missing-inputs"
 import { useSelectionStore } from "@/lib/store/selection"
 import { useUiStore } from "@/lib/store/ui"
 import {
@@ -107,6 +117,8 @@ function isSortKeyHidden(
 const SCREENSHOT_COL_ID = "screenshot"
 
 const SELECT_COL_ID = "select"
+
+const MISSING_COL_ID = "missing-inputs"
 
 /** Merge persisted order with the current catalog (new columns append). */
 function mergeColumnOrder(saved: string[], catalogIds: string[]): string[] {
@@ -227,6 +239,46 @@ function LeadTableSelectCell({
         onCheckboxClick(placeId, e)
       }}
     />
+  )
+}
+
+function MissingInputsCell({
+  lead,
+  task,
+}: {
+  lead: SlimLead
+  task: { config: import("@/lib/types").AiTaskConfig }
+}) {
+  const missing = missingInputsForLead(lead, task.config)
+  if (missing.length === 0) return null
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex h-4 w-4 cursor-help items-center justify-center text-amber-600 dark:text-amber-400"
+            aria-label={`Missing: ${missing.join(", ")}`}
+          >
+            <HugeiconsIcon
+              icon={AlertCircleIcon}
+              size={12}
+              strokeWidth={1.75}
+            />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <div className="flex flex-col gap-0.5 text-left">
+            <span className="font-medium">Missing inputs</span>
+            <ul className="list-disc pl-3.5">
+              {missing.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 
@@ -351,6 +403,19 @@ export function LeadTable({
   const { onCheckboxClick } = useRowSelection(rows)
   const { fields } = useFields()
 
+  // Chosen AI task (from SelectionPill). When set, we surface a ⚠ on rows
+  // whose required inputs are missing.
+  const taskName = useSelectionStore((s) => s.taskName)
+  const { tasks } = useAiTasks()
+  const currentTask = useMemo(
+    () => tasks.find((t) => t.name === taskName) ?? null,
+    [tasks, taskName],
+  )
+  const showMissingCol =
+    !!currentTask &&
+    currentTask.task_type !== "browser_agent" &&
+    currentTask.task_type !== "variant"
+
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
   const sensors = useSensors(
@@ -465,6 +530,7 @@ export function LeadTable({
   const mergedSizing = useMemo(() => {
     const out: Record<string, number> = {}
     out[SELECT_COL_ID] = 32
+    if (showMissingCol) out[MISSING_COL_ID] = 22
     if (showScreenshot) out[SCREENSHOT_COL_ID] = 56
     for (const oc of orderedDataColumns) {
       const id = oc.id
@@ -472,15 +538,16 @@ export function LeadTable({
       out[id] = sanitizedSizingStored[id] ?? def
     }
     return out
-  }, [orderedDataColumns, showScreenshot, sanitizedSizingStored])
+  }, [orderedDataColumns, showScreenshot, showMissingCol, sanitizedSizingStored])
 
   const fullColumnOrder = useMemo(
     () => [
       SELECT_COL_ID,
+      ...(showMissingCol ? [MISSING_COL_ID] : []),
       ...(showScreenshot ? [SCREENSHOT_COL_ID] : []),
       ...orderedDataColumns.map((c) => c.id),
     ],
-    [showScreenshot, orderedDataColumns],
+    [showScreenshot, showMissingCol, orderedDataColumns],
   )
 
   const columns = useMemo((): ColumnDef<SlimLead>[] => {
@@ -501,6 +568,22 @@ export function LeadTable({
         ),
       }),
     ]
+
+    if (showMissingCol && currentTask) {
+      defs.push(
+        columnHelper.display({
+          id: MISSING_COL_ID,
+          size: 22,
+          minSize: 22,
+          maxSize: 22,
+          enableResizing: false,
+          header: () => null,
+          cell: ({ row }) => (
+            <MissingInputsCell lead={row.original} task={currentTask} />
+          ),
+        }),
+      )
+    }
 
     if (showScreenshot) {
       defs.push(
@@ -555,7 +638,7 @@ export function LeadTable({
     }
 
     return defs
-  }, [orderedDataColumns, showScreenshot, onCheckboxClick])
+  }, [orderedDataColumns, showScreenshot, showMissingCol, currentTask, onCheckboxClick])
 
   const overlayMeta = useMemo(() => {
     if (!activeDragId) return null
@@ -638,7 +721,8 @@ export function LeadTable({
 
   const headerGroup = table.getHeaderGroups()[0]
   const headers = headerGroup?.headers ?? []
-  const leadingCount = 1 + (showScreenshot ? 1 : 0)
+  const leadingCount =
+    1 + (showMissingCol ? 1 : 0) + (showScreenshot ? 1 : 0)
   const leadingHeaders = headers.slice(0, leadingCount)
   const draggableHeaders = headers.slice(leadingCount)
 

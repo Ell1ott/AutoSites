@@ -11,6 +11,12 @@ import { create } from "zustand"
 
 type SelectionState = {
   selected: Set<string> // place_ids
+  /**
+   * Name of the AI task chosen in the SelectionPill. Shared globally so the
+   * leads overview can highlight rows that don't satisfy the task's deps even
+   * before the user clicks Run.
+   */
+  taskName: string
   toggle: (id: string) => void
   add: (id: string) => void
   addMany: (ids: string[]) => void
@@ -18,10 +24,14 @@ type SelectionState = {
   clear: () => void
   has: (id: string) => boolean
   size: () => number
+  setTaskName: (name: string) => void
 }
 
 export const useSelectionStore = create<SelectionState>((set, get) => ({
   selected: new Set<string>(),
+  taskName: "",
+  setTaskName: (name) =>
+    set((s) => (s.taskName === name ? s : { taskName: name })),
   toggle: (id) =>
     set((s) => {
       const next = new Set(s.selected)

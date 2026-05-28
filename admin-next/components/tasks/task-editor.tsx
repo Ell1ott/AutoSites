@@ -34,6 +34,10 @@ import { AiEventStream } from "@/components/ai/ai-event-stream"
 import { FilterBuilder } from "@/components/filter/filter-builder"
 import { JobResultView } from "@/components/jobs/job-result-view"
 import { MiniLeadPanel } from "@/components/leads/mini-lead-panel"
+import {
+  ParallelStepper,
+  defaultWorkers,
+} from "@/components/tasks/parallel-stepper"
 import { useAiTasks, upsertLocalMockTask } from "@/hooks/use-ai-tasks"
 import { useFields } from "@/hooks/use-fields"
 import { useLeads } from "@/hooks/use-leads"
@@ -338,6 +342,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
   const [runError, setRunError] = useState<string | null>(null)
   const [events, setEvents] = useState<JobEvent[]>([])
   const [running, setRunning] = useState(false)
+  const [workersOverride, setWorkersOverride] = useState<number | null>(null)
 
   // Mirror useLeads here so we can filter selectedIds → valid before submitting.
   const allLeadsQuery = useLeads()
@@ -421,6 +426,10 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
         }
       } else if (!isVariant && Object.keys(overrides).length) {
         baseArgs.overrides = overrides
+      }
+      if (!isVariant && !isBrowserAgent) {
+        baseArgs.workers =
+          workersOverride ?? defaultWorkers(validIds.length)
       }
       const { id } = await api.startJob(jobKind, baseArgs)
       setJobId(id)
@@ -719,6 +728,15 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                   )}
                   Run on selected ({validIds.length})
                 </Button>
+                {!isVariant && !isBrowserAgent ? (
+                  <ParallelStepper
+                    value={
+                      workersOverride ?? defaultWorkers(validIds.length)
+                    }
+                    onChange={setWorkersOverride}
+                    disabled={running}
+                  />
+                ) : null}
                 {selectedIds.size === 0 ? (
                   <span className="text-[12px] text-muted-foreground">
                     Select leads below to test this task.

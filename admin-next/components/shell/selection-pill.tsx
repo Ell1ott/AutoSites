@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -10,11 +10,17 @@ import {
 } from "@hugeicons/core-free-icons"
 
 import { api } from "@/lib/api"
+import { useLeads } from "@/hooks/use-leads"
 import { useSelectionStore } from "@/lib/store/selection"
 import { useTrackJob } from "@/lib/store/job-toaster"
 import { cn } from "@/lib/utils"
 import { jobKindForTask } from "@/lib/job-kind"
-import type { AiTask } from "@/lib/types"
+import {
+  ParallelStepper,
+  defaultWorkers,
+} from "@/components/tasks/parallel-stepper"
+import { missingInputsForLead } from "@/lib/missing-inputs"
+import type { AiTask, SlimLead } from "@/lib/types"
 
 /**
  * Bottom-center pill that appears whenever the user has any leads selected.
@@ -26,10 +32,11 @@ export function SelectionPill() {
   const size = useSelectionStore((s) => s.selected.size)
   const selected = useSelectionStore((s) => s.selected)
   const clear = useSelectionStore((s) => s.clear)
+  const taskName = useSelectionStore((s) => s.taskName)
+  const setTaskName = useSelectionStore((s) => s.setTaskName)
   const trackJob = useTrackJob()
   const qc = useQueryClient()
 
-  const [taskName, setTaskName] = useState<string>("")
   const [runError, setRunError] = useState<string | null>(null)
 
   const tasksQuery = useQuery({
@@ -40,15 +47,28 @@ export function SelectionPill() {
     enabled: size > 0,
   })
 
+  // Cached lead rows used to check missing inputs against the chosen task.
+  // No extra fetch — useLeads is the same query the table uses.
+  const leadsQuery = useLeads()
+  const leadsById = useMemo<Map<string, SlimLead>>(() => {
+    const m = new Map<string, SlimLead>()
+    for (const l of leadsQuery.data ?? []) m.set(l.place_id, l)
+    return m
+  }, [leadsQuery.data])
+
   const runMut = useMutation({
-    mutationFn: async (task: AiTask) => {
-      const kind = jobKindForTask(task)
-      const placeIds = Array.from(selected)
+    mutationFn: async (input: { task: AiTask; placeIds: string[] }) => {
+      const kind = jobKindForTask(input.task)
       const res = await api.startJob(kind, {
-        task: task.name,
-        place_ids: placeIds,
+        task: input.task.name,
+        place_ids: input.placeIds,
       })
-      return { id: res.id, kind, task, placeCount: placeIds.length }
+      return {
+        id: res.id,
+        kind,
+        task: input.task,
+        placeCount: input.placeIds.length,
+      }
     },
     onSuccess: ({ id, kind, task, placeCount }) => {
       trackJob(id, {
@@ -64,18 +84,46 @@ export function SelectionPill() {
     },
   })
 
-  if (size === 0) return null
-
   const tasks = tasksQuery.data ?? []
   const tasksError = tasksQuery.isError
   const tasksEmpty = !tasksError && tasksQuery.isSuccess && tasks.length === 0
   const currentTask = tasks.find((t) => t.name === taskName)
-  const canRun = !!currentTask && !runMut.isPending
+
+  const { validIds, skippedCount } = useMemo(() => {
+    if (
+      !currentTask ||
+      currentTask.task_type === "browser_agent" ||
+      currentTask.task_type === "variant"
+    ) {
+      return { validIds: Array.from(selected), skippedCount: 0 }
+    }
+    const valid: string[] = []
+    let skipped = 0
+    for (const id of selected) {
+      const lead = leadsById.get(id)
+      // Unknown lead (e.g. selected on a different page) → trust it; backend
+      // will still skip with MissingInputError if deps are absent.
+      if (!lead) {
+        valid.push(id)
+        continue
+      }
+      if (missingInputsForLead(lead, currentTask.config).length > 0) {
+        skipped += 1
+      } else {
+        valid.push(id)
+      }
+    }
+    return { validIds: valid, skippedCount: skipped }
+  }, [currentTask, selected, leadsById])
+
+  if (size === 0) return null
+
+  const canRun = !!currentTask && !runMut.isPending && validIds.length > 0
 
   function handleRun() {
-    if (!currentTask) return
+    if (!currentTask || validIds.length === 0) return
     setRunError(null)
-    runMut.mutate(currentTask)
+    runMut.mutate({ task: currentTask, placeIds: validIds })
   }
 
   return (
@@ -151,6 +199,17 @@ export function SelectionPill() {
           />
         </button>
 
+        {skippedCount > 0 ? (
+          <span
+            className="px-1 text-[11px] text-amber-400"
+            title={`${skippedCount} selected lead${
+              skippedCount === 1 ? "" : "s"
+            } missing required inputs — will be skipped on Run`}
+          >
+            {skippedCount} skip
+          </span>
+        ) : null}
+
         <button
           type="button"
           onClick={handleRun}
@@ -161,7 +220,11 @@ export function SelectionPill() {
           )}
         >
           <HugeiconsIcon icon={PlayIcon} size={12} strokeWidth={2} />
-          {runMut.isPending ? "Starting…" : "Run"}
+          {runMut.isPending
+            ? "Starting…"
+            : skippedCount > 0
+              ? `Run ${validIds.length}`
+              : "Run"}
         </button>
 
         <button

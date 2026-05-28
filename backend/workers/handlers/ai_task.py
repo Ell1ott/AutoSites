@@ -71,7 +71,9 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
         log.finished(summary={"task": task_name, "processed": 0})
         return {"task": task_name, "processed": 0, "generated": 0, "skipped": 0, "failed": 0}
 
-    workers = max(1, min(int(task_config.get("workers") or _DEFAULT_WORKERS), _MAX_WORKERS))
+    workers_override = args.get("workers")
+    workers_raw = workers_override if workers_override is not None else task_config.get("workers")
+    workers = max(1, min(int(workers_raw or _DEFAULT_WORKERS), _MAX_WORKERS))
     log.started(
         task=task_name,
         total=len(targets),
