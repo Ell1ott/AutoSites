@@ -16,11 +16,11 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="grid h-full grid-cols-[minmax(0,30%)_minmax(0,70%)] divide-x divide-border">
-      <div className="overflow-y-auto">
+    <div className="grid h-full grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+      <div className="min-h-0 overflow-y-auto border-r border-border/60">
         <TaskList selectedTaskName={selected} onSelect={pick} />
       </div>
-      <div className="overflow-y-auto">
+      <div className="min-h-0 overflow-y-auto">
         <TaskEditor taskName={selected} />
       </div>
     </div>

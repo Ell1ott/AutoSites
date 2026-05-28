@@ -15,13 +15,47 @@ def append(
     value: Any,
     model: str | None = None,
     run_id: str | None = None,
+    prompt_text: str | None = None,
+    raw_response: str | None = None,
+    image_b64: str | None = None,
+    provider: str | None = None,
+    duration_ms: int | None = None,
 ) -> int:
     cur = conn.execute(
-        "INSERT INTO ai_outputs_log (place_id, task, value, model, run_id) "
-        "VALUES (?, ?, ?, ?, ?)",
-        (place_id, task, json.dumps(value), model, run_id),
+        "INSERT INTO ai_outputs_log "
+        "(place_id, task, value, model, run_id, prompt_text, raw_response, image_b64, provider, duration_ms) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            place_id,
+            task,
+            json.dumps(value),
+            model,
+            run_id,
+            prompt_text,
+            raw_response,
+            image_b64,
+            provider,
+            duration_ms,
+        ),
     )
     return int(cur.lastrowid)
+
+
+def get(conn: sqlite3.Connection, log_id: int) -> dict[str, Any] | None:
+    row = conn.execute(
+        "SELECT id, place_id, task, value, model, run_id, created_at, "
+        "prompt_text, raw_response, image_b64, provider, duration_ms "
+        "FROM ai_outputs_log WHERE id = ?",
+        (log_id,),
+    ).fetchone()
+    if row is None:
+        return None
+    d = dict(row)
+    try:
+        d["value"] = json.loads(d["value"])
+    except (TypeError, ValueError):
+        pass
+    return d
 
 
 def history(

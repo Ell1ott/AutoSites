@@ -1,10 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Add01Icon } from "@hugeicons/core-free-icons"
+import {
+  Add01Icon,
+  Search01Icon,
+  Task01Icon,
+} from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,10 +32,14 @@ type Props = {
   onSelect: (taskName: string) => void
 }
 
-// kebab-case validator: alphanumeric + hyphens + underscores. Allowed first
-// char is a letter.
 function isValidName(name: string): boolean {
   return /^[a-z][a-z0-9_-]*$/.test(name)
+}
+
+const TYPE_META: Record<AiTaskType, { label: string; color: string }> = {
+  place: { label: "LLM", color: "var(--chart-1)" },
+  browser_agent: { label: "Agent", color: "var(--chart-4)" },
+  variant: { label: "Variant", color: "var(--chart-3)" },
 }
 
 export function TaskList({
@@ -41,12 +49,22 @@ export function TaskList({
   const { tasks, isPending, isError, usingMockFallback } = useAiTasks()
   const qc = useQueryClient()
 
-  const sorted = React.useMemo(
+  const sorted = useMemo(
     () => tasks.slice().sort((a, b) => a.sort_order - b.sort_order),
     [tasks],
   )
 
-  // ----- enabled toggle (optimistic patch) -----
+  const [query, setQuery] = useState("")
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return sorted
+    return sorted.filter(
+      (t) =>
+        t.name.toLowerCase().includes(q) ||
+        (t.label ?? "").toLowerCase().includes(q),
+    )
+  }, [sorted, query])
+
   const toggleMut = useMutation({
     mutationFn: async ({ name, enabled }: { name: string; enabled: boolean }) =>
       api.patchAiTask(name, { enabled }),
@@ -62,8 +80,6 @@ export function TaskList({
       return { prev }
     },
     onError: (_err, _args, ctx) => {
-      // Mock-friendly: if backend rejects and we're in mocks mode, persist the
-      // toggle to localStorage instead. Otherwise roll back the optimistic write.
       if (USING_MOCKS) {
         const cur = qc.getQueryData<AiTask[]>(["ai-tasks"])
         const tgt = cur?.find((t) => t.name === _args.name)
@@ -73,8 +89,6 @@ export function TaskList({
       if (ctx?.prev) qc.setQueryData(["ai-tasks"], ctx.prev)
     },
     onSettled: () => {
-      // Refetch only if we're not in offline-mock mode (so we don't blow away
-      // optimistic writes that the backend would 404 on).
       if (!USING_MOCKS) qc.invalidateQueries({ queryKey: ["ai-tasks"] })
     },
   })
@@ -149,8 +163,6 @@ export function TaskList({
         qc.setQueryData<AiTask[]>(["ai-tasks"], (prev) =>
           prev ? [...prev, fake] : [fake],
         )
-        // Re-evaluate the mock fallback path; some consumers read from the
-        // hook's merged output rather than the raw query data.
         onSelect(fake.name)
         setPopoverOpen(false)
         resetDraft()
@@ -166,188 +178,231 @@ export function TaskList({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background px-3 py-2">
-        <h2 className="text-[13px] font-medium">Tasks</h2>
-        <Popover
-          open={popoverOpen}
-          onOpenChange={(o) => {
-            setPopoverOpen(o)
-            if (!o) resetDraft()
-          }}
-        >
-          <PopoverTrigger asChild>
-            <Button type="button" size="xs" variant="outline">
-              <HugeiconsIcon icon={Add01Icon} size={12} strokeWidth={1.75} />
-              New task
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-72 p-3" sideOffset={4}>
-            <div className="flex flex-col gap-2">
-              <div className="text-[12px] font-medium">New task</div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Name
-                </label>
-                <Input
-                  autoFocus
-                  value={draftName}
-                  onChange={(e) =>
-                    setDraftName(
-                      e.target.value
-                        .toLowerCase()
-                        .replace(/\s+/g, "_")
-                        .replace(/[^a-z0-9_-]/g, ""),
-                    )
-                  }
-                  placeholder="e.g. visual_rating"
-                  className="h-8 font-mono text-[12px]"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Label
-                </label>
-                <Input
-                  value={draftLabel}
-                  onChange={(e) => setDraftLabel(e.target.value)}
-                  placeholder="Visual rating"
-                  className="h-8 text-[12px]"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Type
-                </label>
-                <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant={draftType === "place" ? "secondary" : "outline"}
-                    onClick={() => setDraftType("place")}
-                  >
-                    Per-place
-                  </Button>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant={
-                      draftType === "browser_agent" ? "secondary" : "outline"
+      {/* Header */}
+      <div className="sticky top-0 z-10 border-b border-border/60 bg-background px-5 pb-4 pt-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-[15px] font-semibold tracking-tight">Tasks</h2>
+            <p className="text-[11px] text-muted-foreground">
+              {sorted.filter((t) => t.enabled).length} active ·{" "}
+              {sorted.length - sorted.filter((t) => t.enabled).length} paused
+            </p>
+          </div>
+          <Popover
+            open={popoverOpen}
+            onOpenChange={(o) => {
+              setPopoverOpen(o)
+              if (!o) resetDraft()
+            }}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 cursor-pointer gap-1.5"
+              >
+                <HugeiconsIcon icon={Add01Icon} size={13} strokeWidth={1.75} />
+                New task
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-4" sideOffset={6}>
+              <div className="flex flex-col gap-3">
+                <div className="text-[13px] font-semibold">New task</div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Name
+                  </label>
+                  <Input
+                    autoFocus
+                    value={draftName}
+                    onChange={(e) =>
+                      setDraftName(
+                        e.target.value
+                          .toLowerCase()
+                          .replace(/\s+/g, "_")
+                          .replace(/[^a-z0-9_-]/g, ""),
+                      )
                     }
-                    onClick={() => setDraftType("browser_agent")}
+                    placeholder="e.g. visual_rating"
+                    className="h-8 font-mono text-[12px]"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Label
+                  </label>
+                  <Input
+                    value={draftLabel}
+                    onChange={(e) => setDraftLabel(e.target.value)}
+                    placeholder="Visual rating"
+                    className="h-8 text-[12px]"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Type
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {(["place", "browser_agent", "variant"] as AiTaskType[]).map(
+                      (t) => {
+                        const active = draftType === t
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setDraftType(t)}
+                            className={cn(
+                              "cursor-pointer rounded-md border px-2 py-1.5 text-[11px] font-medium transition-colors",
+                              active
+                                ? "border-foreground/20 bg-muted text-foreground"
+                                : "border-border bg-background text-muted-foreground hover:text-foreground",
+                            )}
+                          >
+                            {TYPE_META[t].label}
+                          </button>
+                        )
+                      },
+                    )}
+                  </div>
+                </div>
+                {draftError ? (
+                  <p className="text-[11px] text-destructive">{draftError}</p>
+                ) : null}
+                <div className="flex justify-end gap-1.5 pt-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => {
+                      setPopoverOpen(false)
+                      resetDraft()
+                    }}
+                    disabled={creating}
                   >
-                    Browser agent
+                    Cancel
                   </Button>
                   <Button
                     type="button"
                     size="xs"
-                    variant={draftType === "variant" ? "secondary" : "outline"}
-                    onClick={() => setDraftType("variant")}
+                    onClick={() => void createTask()}
+                    disabled={creating || draftName.trim() === ""}
                   >
-                    Variant
+                    Create
                   </Button>
                 </div>
               </div>
-              {draftError ? (
-                <p className="text-[11px] text-destructive">{draftError}</p>
-              ) : null}
-              <div className="flex justify-end gap-1.5 pt-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  onClick={() => {
-                    setPopoverOpen(false)
-                    resetDraft()
-                  }}
-                  disabled={creating}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  size="xs"
-                  onClick={() => void createTask()}
-                  disabled={creating || draftName.trim() === ""}
-                >
-                  Create
-                </Button>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Search */}
+        <div className="relative mt-3">
+          <HugeiconsIcon
+            icon={Search01Icon}
+            size={13}
+            strokeWidth={1.75}
+            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search tasks"
+            className="h-8 pl-8 text-[12px]"
+          />
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-3 py-3">
         {usingMockFallback ? (
-          <div className="px-3 py-1.5 text-[11px] text-yellow-600 dark:text-yellow-500">
+          <div className="mb-2 px-1 text-[11px] text-yellow-600 dark:text-yellow-500">
             Backend offline — using mock tasks.
           </div>
         ) : null}
 
         {isPending ? (
-          <div className="flex flex-col gap-1 p-2">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="flex flex-col gap-1.5">
+            {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="h-12 animate-pulse rounded-md bg-muted/40"
+                className="h-[52px] animate-pulse rounded-md bg-muted/40"
               />
             ))}
           </div>
         ) : isError ? (
-          <div className="p-4 text-[12px] text-muted-foreground">
+          <div className="p-6 text-center text-[12px] text-muted-foreground">
             Couldn&apos;t load tasks.
           </div>
-        ) : sorted.length === 0 ? (
-          <div className="p-4 text-[12px] text-muted-foreground">
-            No tasks yet. Create one above.
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 px-6 py-10 text-center">
+            <HugeiconsIcon
+              icon={Task01Icon}
+              size={20}
+              strokeWidth={1.5}
+              className="text-muted-foreground"
+            />
+            <p className="text-[12px] text-muted-foreground">
+              {sorted.length === 0
+                ? "No tasks yet. Create one above."
+                : "No tasks match your search."}
+            </p>
           </div>
         ) : (
-          <ul className="flex flex-col">
-            {sorted.map((t) => {
+          <ul className="flex flex-col gap-0.5">
+            {filtered.map((t) => {
               const active = t.name === selectedTaskName
+              const meta = TYPE_META[t.task_type]
               return (
-                <li
-                  key={t.name}
-                  className={cn(
-                    "flex items-center gap-2 border-b border-border/60 px-3 py-2 transition-colors",
-                    active ? "bg-accent" : "hover:bg-muted/40",
-                  )}
-                >
-                  <button
-                    type="button"
-                    onClick={() => onSelect(t.name)}
-                    className="group/row min-w-0 flex-1 text-left"
+                <li key={t.name}>
+                  <div
+                    className={cn(
+                      "group flex items-center gap-2.5 rounded-md px-3 py-2.5 transition-colors",
+                      active ? "bg-muted" : "hover:bg-muted/50",
+                    )}
                   >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate text-[13px] font-medium">
+                    <span
+                      aria-hidden
+                      className="h-2 w-2 shrink-0 rounded-full transition-opacity"
+                      style={{
+                        backgroundColor: meta.color,
+                        opacity: t.enabled ? 1 : 0.3,
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => onSelect(t.name)}
+                      className="min-w-0 flex-1 cursor-pointer text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "truncate text-[13px] font-medium",
+                            !t.enabled && "text-muted-foreground",
+                          )}
+                        >
                           {t.label || t.name}
                         </span>
-                        {t.task_type === "browser_agent" ? (
-                          <span className="inline-flex h-4 items-center rounded-sm border border-border bg-muted/50 px-1 text-[9px] uppercase tracking-wide text-muted-foreground">
-                            agent
-                          </span>
-                        ) : null}
-                        {t.task_type === "variant" ? (
-                          <span className="inline-flex h-4 items-center rounded-sm border border-border bg-muted/50 px-1 text-[9px] uppercase tracking-wide text-muted-foreground">
-                            variant
-                          </span>
-                        ) : null}
+                        <span
+                          className="shrink-0 text-[10px] font-medium uppercase tracking-wide"
+                          style={{ color: meta.color }}
+                        >
+                          {meta.label}
+                        </span>
                       </div>
-                      <div className="truncate font-mono text-[10px] text-muted-foreground">
+                      <div className="mt-0.5 truncate font-mono text-[10.5px] text-muted-foreground">
                         {t.name}
                       </div>
-                    </div>
-                  </button>
-                  <EnabledToggle
-                    enabled={t.enabled}
-                    onToggle={() =>
-                      toggleMut.mutate({
-                        name: t.name,
-                        enabled: !t.enabled,
-                      })
-                    }
-                  />
+                    </button>
+                    <EnabledToggle
+                      enabled={t.enabled}
+                      onToggle={() =>
+                        toggleMut.mutate({
+                          name: t.name,
+                          enabled: !t.enabled,
+                        })
+                      }
+                    />
+                  </div>
                 </li>
               )
             })}
@@ -357,10 +412,6 @@ export function TaskList({
     </div>
   )
 }
-
-// -----------------------------------------------------------------------------
-// Small enabled toggle (no shadcn switch component — inline pill).
-// -----------------------------------------------------------------------------
 
 function EnabledToggle({
   enabled,
@@ -380,14 +431,14 @@ function EnabledToggle({
       aria-checked={enabled}
       aria-label={enabled ? "Disable task" : "Enable task"}
       className={cn(
-        "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors",
-        enabled ? "bg-primary" : "bg-muted",
+        "relative inline-flex h-[18px] w-[30px] shrink-0 cursor-pointer items-center rounded-full transition-colors",
+        enabled ? "bg-primary" : "bg-muted-foreground/25",
       )}
     >
       <span
         className={cn(
-          "inline-block h-3 w-3 transform rounded-full bg-background shadow transition-transform",
-          enabled ? "translate-x-3.5" : "translate-x-0.5",
+          "inline-block h-[14px] w-[14px] rounded-full bg-background shadow-sm transition-transform",
+          enabled ? "translate-x-[14px]" : "translate-x-[2px]",
         )}
       />
     </button>

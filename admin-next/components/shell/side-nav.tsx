@@ -23,13 +23,24 @@ import { ThemeToggle } from "@/components/shell/theme-toggle"
 import { useUiStore } from "@/lib/store/ui"
 import { cn } from "@/lib/utils"
 
-const NAV_ITEMS = [
-  { href: "/overview", label: "Overview", icon: DashboardSquare01Icon },
-  { href: "/leads", label: "Leads", icon: UserGroupIcon },
-  { href: "/queue", label: "Queue", icon: Queue01Icon },
-  { href: "/tasks", label: "Tasks", icon: Task01Icon },
-  { href: "/discover", label: "Discover", icon: Compass01Icon },
-  { href: "/sites", label: "Sites", icon: Globe02Icon },
+const NAV_GROUPS = [
+  {
+    id: "ops",
+    items: [
+      { href: "/overview", label: "Overview", icon: DashboardSquare01Icon },
+      { href: "/leads", label: "Leads", icon: UserGroupIcon },
+      { href: "/queue", label: "Queue", icon: Queue01Icon },
+      { href: "/tasks", label: "Tasks", icon: Task01Icon },
+    ],
+  },
+  {
+    id: "in",
+    items: [{ href: "/discover", label: "Discover", icon: Compass01Icon }],
+  },
+  {
+    id: "out",
+    items: [{ href: "/sites", label: "Sites", icon: Globe02Icon }],
+  },
 ] as const
 
 const RAIL_ICON =
@@ -54,44 +65,72 @@ export function SideNav() {
       }}
       className="flex h-full shrink-0 flex-col border-r bg-background"
     >
-      <nav className="flex flex-1 flex-col gap-0.5 py-1">
-        {NAV_ITEMS.map(({ href, label, icon }) => {
-          const itemHref =
-            href === "/leads" && selectedLeadId && leadDetailFullScreen
-              ? `/leads/${selectedLeadId}`
-              : href
-          const active = isActive(pathname, href)
-          const link = (
-            <Link
-              href={itemHref}
-              className={cn(
-                "mx-1 flex h-9 items-center rounded-md text-[13px] transition-colors",
-                expanded
-                  ? "gap-2.5 px-2.5"
-                  : "w-[calc(100%-8px)] justify-center",
-                active
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              )}
-            >
-              <HugeiconsIcon icon={icon} size={16} strokeWidth={1.5} />
-              {expanded ? (
-                <span className="overflow-hidden whitespace-nowrap">{label}</span>
-              ) : null}
-            </Link>
-          )
+      <Link
+        href="/overview"
+        className={cn(
+          "flex items-center border-b border-border py-3 px-2",
+          expanded ? "gap-2" : "justify-center",
+        )}
+      >
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold">
+          A
+        </span>
+        {expanded ? (
+          <span className="text-foreground text-[13px] font-semibold tracking-tight">
+            AutoSites
+          </span>
+        ) : null}
+      </Link>
 
-          if (expanded) return <div key={href}>{link}</div>
+      <nav className="flex flex-1 flex-col py-1">
+        {NAV_GROUPS.map((group, groupIdx) => (
+          <div key={group.id}>
+            {groupIdx > 0 ? (
+              <div className="my-1 mx-2 h-px bg-border/60" />
+            ) : null}
+            <div className="flex flex-col gap-0.5">
+              {group.items.map(({ href, label, icon }) => {
+                const itemHref =
+                  href === "/leads" && selectedLeadId && leadDetailFullScreen
+                    ? `/leads/${selectedLeadId}`
+                    : href
+                const active = isActive(pathname, href)
+                const link = (
+                  <Link
+                    href={itemHref}
+                    className={cn(
+                      "mx-1 flex h-9 items-center rounded-md text-[13px] transition-colors duration-200",
+                      expanded
+                        ? "gap-2.5 px-2.5"
+                        : "w-[calc(100%-8px)] justify-center",
+                      active
+                        ? "relative bg-transparent text-foreground before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[2px] before:rounded-r before:bg-primary"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                    )}
+                  >
+                    <HugeiconsIcon icon={icon} size={16} strokeWidth={1.5} />
+                    {expanded ? (
+                      <span className="overflow-hidden whitespace-nowrap">
+                        {label}
+                      </span>
+                    ) : null}
+                  </Link>
+                )
 
-          return (
-            <Tooltip key={href}>
-              <TooltipTrigger asChild>{link}</TooltipTrigger>
-              <TooltipContent side="right" sideOffset={8}>
-                {label}
-              </TooltipContent>
-            </Tooltip>
-          )
-        })}
+                if (expanded) return <div key={href}>{link}</div>
+
+                return (
+                  <Tooltip key={href}>
+                    <TooltipTrigger asChild>{link}</TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={8}>
+                      {label}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="flex flex-col gap-0.5 border-t border-border py-1">

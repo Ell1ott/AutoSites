@@ -8,6 +8,7 @@ import { WorkflowSquare05Icon } from "@hugeicons/core-free-icons"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { JobProgressBar } from "@/components/queue/job-progress-bar"
 import { JobStatusBadge } from "@/components/queue/job-status-badge"
+import { AnimatedNumber } from "@/components/shell/animated-number"
 import { useJobs } from "@/hooks/use-jobs"
 import { cn } from "@/lib/utils"
 
@@ -22,6 +23,12 @@ export function QueueIndicator({ compact = false }: { compact?: boolean }) {
         <button
           type="button"
           aria-label={`Queue (${count} active)`}
+          style={{
+            background:
+              count > 0
+                ? "color-mix(in oklch, var(--info) 10%, transparent)"
+                : undefined,
+          }}
           className={cn(
             "relative inline-flex items-center rounded-md text-[13px] transition-colors hover:bg-accent/50 hover:text-foreground",
             compact
@@ -37,16 +44,21 @@ export function QueueIndicator({ compact = false }: { compact?: boolean }) {
               <span
                 className={cn(
                   "tabular-nums",
-                  count === 0 ? "text-muted-foreground" : "text-primary",
+                  count === 0
+                    ? "text-muted-foreground"
+                    : "text-[color:var(--info)]",
                 )}
               >
-                ({count})
+                (<AnimatedNumber value={count} />)
               </span>
             </>
           ) : count > 0 ? (
-            <span className="absolute top-1 right-1 min-w-4 rounded-full bg-primary px-1 text-center text-[10px] leading-4 text-primary-foreground tabular-nums">
-              {count}
-            </span>
+            <>
+              <span className="live-dot absolute top-1 left-1" />
+              <span className="absolute top-1 right-1 min-w-4 rounded-full bg-[color:var(--info)] px-1 text-center text-[10px] leading-4 text-white tabular-nums">
+                <AnimatedNumber value={count} />
+              </span>
+            </>
           ) : null}
         </button>
       </PopoverTrigger>

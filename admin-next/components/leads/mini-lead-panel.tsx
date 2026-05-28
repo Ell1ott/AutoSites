@@ -3,11 +3,17 @@
 import * as React from "react"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Search01Icon, StarIcon } from "@hugeicons/core-free-icons"
+import { AlertCircleIcon, Search01Icon, StarIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { FilterBuilder } from "@/components/filter/filter-builder"
 import { LeadScreenshot } from "@/components/leads/lead-screenshot"
 import { useFields } from "@/hooks/use-fields"
@@ -26,6 +32,13 @@ type Props = {
   initialFilters?: FilterClause[]
   /** Override the height container class. Default `h-64`. */
   className?: string
+  /**
+   * Per-lead missing-dependency labels. Return an empty array when the lead
+   * satisfies the current task's requirements; non-empty triggers a ⚠ in the
+   * right-most cell whose tooltip lists each entry. When omitted, the cell
+   * falls back to the legacy "no site" badge.
+   */
+  getMissing?: (lead: SlimLead) => string[]
 }
 
 /**
@@ -39,6 +52,7 @@ export function MiniLeadPanel({
   onSelectionChange,
   initialFilters,
   className,
+  getMissing,
 }: Props): React.JSX.Element {
   const [clauses, setClauses] = useState<FilterClause[]>(initialFilters ?? [])
   const [search, setSearch] = useState("")
@@ -263,11 +277,50 @@ export function MiniLeadPanel({
                       )}
                     </td>
                     <td className="px-1 text-right">
-                      {!lead.website ? (
-                        <span className="text-[10px] uppercase text-destructive">
-                          no site
-                        </span>
-                      ) : null}
+                      {(() => {
+                        const missing = getMissing ? getMissing(lead) : null
+                        if (missing && missing.length > 0) {
+                          return (
+                            <TooltipProvider delayDuration={150}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex h-4 w-4 cursor-help items-center justify-center text-amber-600 dark:text-amber-400"
+                                    aria-label={`Missing: ${missing.join(", ")}`}
+                                  >
+                                    <HugeiconsIcon
+                                      icon={AlertCircleIcon}
+                                      size={12}
+                                      strokeWidth={1.75}
+                                    />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="left">
+                                  <div className="flex flex-col gap-0.5 text-left">
+                                    <span className="font-medium">
+                                      Missing inputs
+                                    </span>
+                                    <ul className="list-disc pl-3.5">
+                                      {missing.map((m) => (
+                                        <li key={m}>{m}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )
+                        }
+                        if (!getMissing && !lead.website) {
+                          return (
+                            <span className="text-[10px] uppercase text-destructive">
+                              no site
+                            </span>
+                          )
+                        }
+                        return null
+                      })()}
                     </td>
                   </tr>
                 )

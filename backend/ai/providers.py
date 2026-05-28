@@ -11,6 +11,7 @@ import base64
 import json
 import os
 import threading
+from dataclasses import dataclass
 from typing import Any
 
 try:
@@ -37,6 +38,21 @@ class ProviderError(RuntimeError):
     """One typed exception so the runtime can format a clean log line."""
 
 
+@dataclass(frozen=True)
+class ProviderCallResult:
+    """Wraps every provider call so callers can both use the parsed value
+    *and* surface the raw prompt/response in the UI without re-doing the call.
+
+    - `value` is what the runtime returns to the handler (parsed dict for
+      structured output, plain string otherwise).
+    - `raw_response` is the exact unparsed text the model produced (best
+      effort — `str(parsed)` if a provider only hands back a parsed object).
+    """
+
+    value: str | dict[str, Any]
+    raw_response: str
+
+
 def call(
     *,
     provider: str,
@@ -44,10 +60,8 @@ def call(
     text: str,
     image_bytes: bytes | None = None,
     response_schema: dict[str, Any] | None = None,
-) -> str | dict[str, Any]:
-    """Dispatch to the right provider. Returns str for free-form, dict for
-    structured output.
-    """
+) -> ProviderCallResult:
+    """Dispatch to the right provider."""
     if provider == "openrouter":
         return _call_openrouter(
             model=model, text=text, image_bytes=image_bytes, response_schema=response_schema
@@ -85,7 +99,7 @@ def _call_gemini(
     text: str,
     image_bytes: bytes | None,
     response_schema: dict[str, Any] | None,
-) -> str | dict[str, Any]:
+) -> ProviderCallResult:
     client = _gemini_client()
     contents: list[Any] = []
     if image_bytes is not None:
@@ -106,29 +120,29 @@ def _call_gemini(
     except Exception as exc:  # noqa: BLE001 - provider SDK can raise anything
         raise ProviderError(f"Gemini call failed ({type(exc).__name__}): {exc}") from exc
 
+    raw_text = response.text if isinstance(response.text, str) else ""
+
     if response_schema:
         parsed = getattr(response, "parsed", None)
         if isinstance(parsed, dict):
-            return parsed
+            return ProviderCallResult(value=parsed, raw_response=raw_text or json.dumps(parsed))
         if parsed is not None and hasattr(parsed, "model_dump"):
             dumped = parsed.model_dump(mode="json")
             if isinstance(dumped, dict):
-                return dumped
-        raw = response.text
-        if isinstance(raw, str) and raw.strip():
+                return ProviderCallResult(value=dumped, raw_response=raw_text or json.dumps(dumped))
+        if raw_text.strip():
             try:
-                obj = json.loads(raw)
+                obj = json.loads(raw_text)
             except json.JSONDecodeError as exc:
                 raise ProviderError(f"Gemini returned non-JSON text: {exc}") from exc
             if isinstance(obj, dict):
-                return obj
+                return ProviderCallResult(value=obj, raw_response=raw_text)
             raise ProviderError("Gemini structured response must be a JSON object")
         raise ProviderError("Gemini returned empty structured response")
 
-    raw = response.text
-    if not isinstance(raw, str) or not raw.strip():
+    if not raw_text.strip():
         raise ProviderError("Gemini returned empty response")
-    return raw.strip()
+    return ProviderCallResult(value=raw_text.strip(), raw_response=raw_text)
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +171,7 @@ def _call_openrouter(
     text: str,
     image_bytes: bytes | None,
     response_schema: dict[str, Any] | None,
-) -> str | dict[str, Any]:
+) -> ProviderCallResult:
     client = _openrouter_client()
     content: list[dict[str, Any]] = []
     if image_bytes is not None:
@@ -194,5 +208,5 @@ def _call_openrouter(
             raise ProviderError(f"OpenRouter returned non-JSON text: {exc}") from exc
         if not isinstance(obj, dict):
             raise ProviderError("OpenRouter structured response must be a JSON object")
-        return obj
-    return raw.strip()
+        return ProviderCallResult(value=obj, raw_response=raw)
+    return ProviderCallResult(value=raw.strip(), raw_response=raw)

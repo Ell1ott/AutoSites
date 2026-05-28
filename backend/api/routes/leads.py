@@ -62,6 +62,11 @@ def list_leads(
         limit=limit,
         offset=offset,
     )
+    for r in rows:
+        pid = r.get("place_id")
+        if isinstance(pid, str):
+            r["has_screenshot"] = (SCREENSHOTS_DIR / f"{pid}.png").is_file()
+            r["has_markdown"] = (SCREENSHOTS_DIR / f"{pid}.md").is_file()
     total = places.count(db, where_sql=where_sql, params=params)
     return {
         "total": total,

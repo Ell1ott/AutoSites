@@ -40,6 +40,7 @@ import { useLeads } from "@/hooks/use-leads"
 import { api, ApiError } from "@/lib/api"
 import { jobKindForTask } from "@/lib/job-kind"
 import { evalFilters } from "@/lib/filter"
+import { missingInputsForLead } from "@/lib/missing-inputs"
 import { MOCK_LEADS } from "@/lib/mock-leads"
 import { newRuleId, useRulesStore } from "@/lib/store/rules"
 import { useEventStream } from "@/lib/sse"
@@ -313,6 +314,24 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
     setCustomChip("")
   }
 
+  // ----- missing-input warnings (mirrors backend hard deps) -----
+  const liveConfig = useMemo<AiTaskConfig>(
+    () => ({
+      ...task.config,
+      included_context: included,
+      prompt_template: prompt,
+      meta_prompt: prompt,
+    }),
+    [task.config, included, prompt],
+  )
+  const getMissing = useMemo(
+    () =>
+      isBrowserAgent || isVariant
+        ? undefined
+        : (lead: SlimLead) => missingInputsForLead(lead, liveConfig),
+    [isBrowserAgent, isVariant, liveConfig],
+  )
+
   // ----- test-run on MiniLeadPanel selection -----
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [jobId, setJobId] = useState<string | null>(null)
@@ -320,13 +339,42 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
   const [events, setEvents] = useState<JobEvent[]>([])
   const [running, setRunning] = useState(false)
 
+  // Mirror useLeads here so we can filter selectedIds → valid before submitting.
+  const allLeadsQuery = useLeads()
+  const leadsById = useMemo<Map<string, SlimLead>>(() => {
+    const m = new Map<string, SlimLead>()
+    for (const l of allLeadsQuery.data ?? []) m.set(l.place_id, l)
+    if ((allLeadsQuery.isError || !allLeadsQuery.data) && USING_MOCKS) {
+      for (const l of MOCK_LEADS) m.set(l.place_id, l)
+    }
+    return m
+  }, [allLeadsQuery.data, allLeadsQuery.isError])
+
+  const { validIds, skippedCount } = useMemo(() => {
+    if (!getMissing) {
+      return { validIds: Array.from(selectedIds), skippedCount: 0 }
+    }
+    const valid: string[] = []
+    let skipped = 0
+    for (const id of selectedIds) {
+      const lead = leadsById.get(id)
+      if (!lead) {
+        valid.push(id)
+        continue
+      }
+      if (getMissing(lead).length > 0) skipped += 1
+      else valid.push(id)
+    }
+    return { validIds: valid, skippedCount: skipped }
+  }, [selectedIds, leadsById, getMissing])
+
   useEventStream<JobEvent>(jobId !== null, {
     url: `/jobs/${jobId}/stream`,
     onEvent: (e) => setEvents((prev) => [...prev, e]),
   })
 
   async function runOnSelected() {
-    if (selectedIds.size === 0) return
+    if (validIds.length === 0) return
     setRunError(null)
     setEvents([])
     setJobId(null)
@@ -346,7 +394,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
       const jobKind = jobKindForTask(task)
       const baseArgs: Record<string, unknown> = {
         task: task.name,
-        place_ids: Array.from(selectedIds),
+        place_ids: validIds,
       }
       if (isVariant) {
         if (
@@ -386,14 +434,14 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
   return (
     <div className="flex h-full flex-col">
       {/* Header strip */}
-      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background px-4 py-2">
+      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-border/60 bg-background/80 px-5 py-3 backdrop-blur-xl">
         <Input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Task label"
-          className="h-8 max-w-[280px] text-[13px] font-medium"
+          className="h-9 max-w-[320px] border-transparent bg-transparent px-2 text-[15px] font-semibold tracking-tight shadow-none hover:border-border/60 focus-visible:border-border focus-visible:bg-background"
         />
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="rounded-md border border-border/50 bg-muted/40 px-1.5 py-0.5 font-mono text-[10.5px] text-muted-foreground">
           {task.name}
         </span>
         <EnabledToggle
@@ -402,7 +450,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
         />
         <span className="flex-1" />
         {savedFlash ? (
-          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500">
+          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
             <HugeiconsIcon
               icon={CheckmarkCircle02Icon}
               size={12}
@@ -644,6 +692,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
                 className="h-56"
+                getMissing={getMissing}
               />
             </div>
 
@@ -653,7 +702,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                 <Button
                   type="button"
                   onClick={() => void runOnSelected()}
-                  disabled={running || selectedIds.size === 0}
+                  disabled={running || validIds.length === 0}
                 >
                   {running ? (
                     <HugeiconsIcon
@@ -668,11 +717,15 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                       strokeWidth={1.75}
                     />
                   )}
-                  Run on selected ({selectedIds.size})
+                  Run on selected ({validIds.length})
                 </Button>
                 {selectedIds.size === 0 ? (
                   <span className="text-[12px] text-muted-foreground">
                     Select leads below to test this task.
+                  </span>
+                ) : skippedCount > 0 ? (
+                  <span className="text-[12px] text-amber-600 dark:text-amber-400">
+                    {skippedCount} skipped — missing required inputs
                   </span>
                 ) : null}
                 {running && jobId ? (

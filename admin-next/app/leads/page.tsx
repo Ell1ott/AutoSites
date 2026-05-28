@@ -4,6 +4,9 @@ import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import { UserGroupIcon } from "@hugeicons/core-free-icons"
+
+import { EmptyState } from "@/components/shell/empty-state"
 import { LeadGridBig } from "@/components/leads/lead-grid-big"
 import { LeadGridSmall } from "@/components/leads/lead-grid-small"
 import { LeadSidePanel } from "@/components/leads/lead-side-panel"
@@ -251,26 +254,30 @@ export default function LeadsPage() {
         )}
 
         {!isLoading && !hardError && filtered.length === 0 && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
-            <p className="text-[13px] text-foreground">
-              {rows.length === 0
-                ? "No leads yet."
-                : "No leads match these filters."}
-            </p>
-            {(clauses.length > 0 || searchQuery !== "") && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setClauses([])
-                  setSearchQuery("")
-                }}
-              >
-                Clear filters
-              </Button>
-            )}
-          </div>
+          <EmptyState
+            icon={UserGroupIcon}
+            title={rows.length === 0 ? "No leads yet" : "No leads match these filters"}
+            description={
+              rows.length === 0
+                ? "Leads you discover or import will show up here."
+                : "Try adjusting your filters or search to see more results."
+            }
+            action={
+              clauses.length > 0 || searchQuery !== "" ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setClauses([])
+                    setSearchQuery("")
+                  }}
+                >
+                  Clear filters
+                </Button>
+              ) : undefined
+            }
+          />
         )}
 
         {!isLoading &&

@@ -86,6 +86,7 @@ app.include_router(jobs_routes.router)
 app.include_router(ratings_routes.router)
 app.include_router(tasks_routes.router)
 app.include_router(runs_routes.router)
+app.include_router(runs_routes.log_router)
 app.include_router(screenshots_routes.router)
 
 

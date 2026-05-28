@@ -105,9 +105,21 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
     <div
       className={cn(
         "bg-card text-card-foreground border-border w-[380px] overflow-hidden rounded-lg border shadow-lg",
+        "animate-in slide-in-from-right-4 fade-in duration-300",
         isErrored && "border-destructive/40",
       )}
     >
+      {(isDone || isCancelled) ? (
+        <div className="h-0.5 w-full overflow-hidden bg-muted">
+          <div
+            className="h-full bg-success origin-left"
+            style={{
+              background: "var(--success)",
+              animation: "toast-countdown 5s linear forwards",
+            }}
+          />
+        </div>
+      ) : null}
       {/* Header */}
       <div className="flex items-center gap-2 px-3 py-2">
         <JobStatusBadge status={status} />
@@ -148,7 +160,13 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
       {/* Progress bar */}
       {progress && progress.total > 0 ? (
         <div className="px-3 pb-2">
-          <JobProgressBar done={progress.done} total={progress.total} />
+          {status === "running" ? (
+            <div className="relative progress-shimmer">
+              <JobProgressBar done={progress.done} total={progress.total} />
+            </div>
+          ) : (
+            <JobProgressBar done={progress.done} total={progress.total} />
+          )}
         </div>
       ) : null}
 
@@ -167,20 +185,9 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
       )}
 
       {/* Footer status hint */}
-      {isDone || isCancelled || isErrored ? (
-        <div
-          className={cn(
-            "px-3 py-1.5 text-[11px]",
-            isErrored
-              ? "bg-destructive/10 text-destructive"
-              : "bg-muted/40 text-muted-foreground",
-          )}
-        >
-          {isErrored
-            ? "Errored — click X to dismiss."
-            : isCancelled
-            ? "Cancelled. Dismissing…"
-            : "Done. Dismissing…"}
+      {isErrored ? (
+        <div className="bg-destructive/10 text-destructive px-3 py-1.5 text-[11px]">
+          Errored — click X to dismiss.
         </div>
       ) : null}
     </div>

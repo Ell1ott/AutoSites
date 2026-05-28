@@ -287,10 +287,30 @@ export const api = {
     return request<unknown>(path)
   },
 
+  // ----- /ai-outputs-log -----
+  async aiCall(logId: number): Promise<AiCallDetail> {
+    return request<AiCallDetail>(`/ai-outputs-log/${logId}`)
+  },
+
   // ----- /healthz -----
   async healthz(): Promise<{ ok: boolean }> {
     return request<{ ok: boolean }>("/healthz")
   },
+}
+
+export type AiCallDetail = {
+  id: number
+  place_id: string
+  task: string
+  value: unknown
+  model: string | null
+  run_id: string | null
+  created_at: string
+  prompt_text: string | null
+  raw_response: string | null
+  image_b64: string | null
+  provider: string | null
+  duration_ms: number | null
 }
 
 export type Api = typeof api

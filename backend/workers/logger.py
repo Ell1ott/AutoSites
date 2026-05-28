@@ -140,6 +140,39 @@ class JobLogger:
             },
         )
 
+    def ai_call_record(
+        self,
+        *,
+        log_id: int,
+        place_id: str | None,
+        task: str,
+        provider: str,
+        model: str,
+        duration_ms: int,
+        has_image: bool,
+        prompt_preview: str,
+        response_preview: str,
+        **data: Any,
+    ) -> None:
+        """One inline record per AI call. The UI renders this as a
+        collapsible block — title visible inline; click opens a modal that
+        fetches the full prompt + screenshot + raw response via `log_id`."""
+        self._emit(
+            "ai_call_record",
+            data={
+                "log_id": log_id,
+                "place_id": place_id,
+                "task": task,
+                "provider": provider,
+                "model": model,
+                "duration_ms": duration_ms,
+                "has_image": has_image,
+                "prompt_preview": prompt_preview,
+                "response_preview": response_preview,
+                **data,
+            },
+        )
+
     def ai_call_error(self, *, model: str, error_class: str, message: str, **data: Any) -> None:
         self._emit(
             "ai_call_error",

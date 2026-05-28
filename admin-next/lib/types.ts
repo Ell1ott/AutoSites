@@ -92,6 +92,10 @@ export type SlimLead = {
   dynamic: Record<string, unknown> // every observed dynamic.* key — sparse
   /** Raw Google / import JSON blob (`places.data`); optional on mocks. */
   data?: Record<string, unknown>
+  /** True when `screenshots/{place_id}.png` exists on the backend. */
+  has_screenshot?: boolean
+  /** True when `screenshots/{place_id}.md` (root markdown) exists. */
+  has_markdown?: boolean
   updated_at: string
 }
 
@@ -206,6 +210,22 @@ export type JobEvent =
         tokens_in: number
         tokens_out: number
         cost_usd?: number
+      }
+    })
+  | (JobEventBase & {
+      event: "ai_call_record"
+      data: {
+        log_id: number
+        place_id?: string | null
+        place_name?: string | null
+        task: string
+        output_field?: string
+        provider: string
+        model: string
+        duration_ms: number
+        has_image: boolean
+        prompt_preview: string
+        response_preview: string
       }
     })
   | (JobEventBase & {

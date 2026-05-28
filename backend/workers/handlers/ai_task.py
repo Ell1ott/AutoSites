@@ -19,11 +19,12 @@ Args:
 """
 from __future__ import annotations
 
+import base64
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
-from ai.runtime import MissingInputError, ProviderError, run_task_for_place
+from ai.runtime import MissingInputError, ProviderError, TaskRunResult, run_task_for_place
 from db.connection import session
 from db.repos import ai_outputs_log, ai_runs, ai_tasks, fields as fields_repo, places
 
@@ -84,7 +85,7 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
     is_cancelled = args["__cancel__"] if callable(args.get("__cancel__")) else (lambda: False)
     counts = {"processed": 0, "generated": 0, "skipped": 0, "failed": 0}
 
-    def _one(place: dict[str, Any]) -> tuple[dict[str, Any], float, str | dict[str, Any] | None, BaseException | None]:
+    def _one(place: dict[str, Any]) -> tuple[dict[str, Any], float, TaskRunResult | None, BaseException | None]:
         t0 = time.monotonic()
         try:
             result = run_task_for_place(task_config, place)
@@ -109,13 +110,36 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
             pid = place["place_id"]
             counts["processed"] += 1
 
-            if err is None:
-                _persist_success(pid, output_field, error_field, result, model=model, run_id=log.job_id)
+            if err is None and result is not None:
+                log_id = _persist_success(
+                    pid,
+                    output_field,
+                    error_field,
+                    result,
+                    run_id=log.job_id,
+                    duration_ms=int(dur_ms),
+                )
                 counts["generated"] += 1
+                # One inline record per call so the task log can render a
+                # collapsible "AI call" block (click → modal with full
+                # prompt + screenshot + raw response).
+                log.ai_call_record(
+                    log_id=log_id,
+                    place_id=pid,
+                    task=task_name,
+                    provider=result.provider,
+                    model=result.model,
+                    duration_ms=int(dur_ms),
+                    has_image=result.image_bytes is not None,
+                    prompt_preview=_truncate(result.prompt_text, 240),
+                    response_preview=_truncate(result.raw_response, 240),
+                    place_name=place.get("name"),
+                    output_field=output_field,
+                )
                 log.item_done(
                     place_id=pid,
                     duration_ms=dur_ms,
-                    outputs={output_field: result},
+                    outputs={output_field: result.value},
                 )
             elif isinstance(err, MissingInputError):
                 counts["skipped"] += 1
@@ -220,21 +244,37 @@ def _persist_success(
     place_id: str,
     output_field: str,
     error_field: str,
-    value: Any,
+    result: TaskRunResult,
     *,
-    model: str,
     run_id: str,
-) -> None:
+    duration_ms: int,
+) -> int:
+    image_b64 = (
+        base64.b64encode(result.image_bytes).decode("ascii")
+        if result.image_bytes is not None
+        else None
+    )
     with session() as c:
-        places.merge_dynamic(c, place_id, {output_field: value, error_field: None})
-        ai_outputs_log.append(
+        places.merge_dynamic(c, place_id, {output_field: result.value, error_field: None})
+        return ai_outputs_log.append(
             c,
             place_id=place_id,
             task=output_field,
-            value=value,
-            model=model or None,
+            value=result.value,
+            model=result.model or None,
             run_id=run_id,
+            prompt_text=result.prompt_text,
+            raw_response=result.raw_response,
+            image_b64=image_b64,
+            provider=result.provider,
+            duration_ms=duration_ms,
         )
+
+
+def _truncate(s: str, n: int) -> str:
+    if len(s) <= n:
+        return s
+    return s[:n] + "…"
 
 
 def _persist_failure(place_id: str, error_field: str, output_field: str, message: str) -> None:

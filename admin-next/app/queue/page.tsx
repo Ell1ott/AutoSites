@@ -1,11 +1,14 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import type { ReactNode } from "react"
+import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Cancel01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import { Alert02Icon, Cancel01Icon, Queue01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
 
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/shell/empty-state"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { JobProgressBar } from "@/components/queue/job-progress-bar"
@@ -70,7 +73,9 @@ export default function QueuePage() {
             error={active.error}
             jobs={active.data ?? []}
             onOpen={setOpenJobId}
-            emptyHint="No active jobs."
+            emptyIcon={Queue01Icon}
+            emptyTitle="No active jobs"
+            emptyDescription="Jobs will appear here when something starts running."
           />
         </TabsContent>
 
@@ -80,7 +85,8 @@ export default function QueuePage() {
             error={history.error}
             jobs={filterJobs(history.data ?? [], search)}
             onOpen={setOpenJobId}
-            emptyHint="No completed jobs yet."
+            emptyIcon={Queue01Icon}
+            emptyTitle="No completed jobs yet"
             showFinishedAt
           />
         </TabsContent>
@@ -104,11 +110,22 @@ type JobListProps = {
   error: unknown
   jobs: Job[]
   onOpen: (id: string) => void
-  emptyHint: string
+  emptyIcon: IconSvgElement
+  emptyTitle: string
+  emptyDescription?: ReactNode
   showFinishedAt?: boolean
 }
 
-function JobList({ isLoading, error, jobs, onOpen, emptyHint, showFinishedAt }: JobListProps) {
+function JobList({
+  isLoading,
+  error,
+  jobs,
+  onOpen,
+  emptyIcon,
+  emptyTitle,
+  emptyDescription,
+  showFinishedAt,
+}: JobListProps) {
   if (isLoading) {
     return (
       <ul className="divide-border divide-y">
@@ -124,14 +141,26 @@ function JobList({ isLoading, error, jobs, onOpen, emptyHint, showFinishedAt }: 
   if (error) {
     const msg = error instanceof Error ? error.message : String(error)
     return (
-      <div className="text-muted-foreground p-6 text-center text-[13px]">
-        Couldn&apos;t load jobs. {msg}.<br />
-        Backend at <code className="font-mono">NEXT_PUBLIC_PI_URL</code> reachable?
-      </div>
+      <EmptyState
+        icon={Alert02Icon}
+        title="Couldn't load jobs"
+        description={
+          <>
+            {msg}. Backend at{" "}
+            <code className="font-mono">NEXT_PUBLIC_PI_URL</code> reachable?
+          </>
+        }
+      />
     )
   }
   if (jobs.length === 0) {
-    return <div className="text-muted-foreground p-6 text-center text-[13px]">{emptyHint}</div>
+    return (
+      <EmptyState
+        icon={emptyIcon}
+        title={emptyTitle}
+        description={emptyDescription}
+      />
+    )
   }
   return (
     <ul className="divide-border divide-y">

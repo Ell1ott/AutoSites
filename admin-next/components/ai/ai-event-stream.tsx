@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatEventTime } from "@/lib/format/event-time"
 import type { JobEvent, JobLevel } from "@/lib/types"
+import { AiCallDetailModal } from "@/components/ai/ai-call-detail-modal"
 
 // -----------------------------------------------------------------------------
 // Props
@@ -63,6 +64,7 @@ export function AiEventStream({
 }: Props): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [stickyToBottom, setStickyToBottom] = useState(true)
+  const [openCallId, setOpenCallId] = useState<number | null>(null)
 
   const filtered = events.filter((e) => passesLevelFilter(e, levelFilter))
 
@@ -96,48 +98,62 @@ export function AiEventStream({
 
   if (mode === "list") {
     return (
-      <div className={cn("flex flex-col gap-2", className)}>
-        {filtered.map((event) => (
-          <div
-            key={event.id ?? `${event.seq}-${event.event}`}
-            className="rounded-md border bg-card px-3 py-2"
-          >
-            <div className="text-muted-foreground font-mono text-[11px]">
-              {formatEventTime(event.ts)} · {event.event}
+      <>
+        <div className={cn("flex flex-col gap-2", className)}>
+          {filtered.map((event) => (
+            <div
+              key={event.id ?? `${event.seq}-${event.event}`}
+              className="rounded-md border bg-card px-3 py-2"
+            >
+              <div className="text-muted-foreground font-mono text-[11px]">
+                {formatEventTime(event.ts)} · {event.event}
+              </div>
+              <div className="mt-1 text-[13px]">
+                <EventBody
+                  event={event}
+                  onExport={onExport}
+                  onOpenAiCall={setOpenCallId}
+                />
+              </div>
             </div>
-            <div className="mt-1 text-[13px]">
-              <EventBody event={event} onExport={onExport} />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+        <AiCallDetailModal logId={openCallId} onClose={() => setOpenCallId(null)} />
+      </>
     )
   }
 
   // stream mode
   return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className={cn(
-        "min-h-0 overflow-auto overscroll-contain font-mono text-[12px] leading-snug whitespace-pre-wrap",
-        className,
-      )}
-    >
-      {filtered.map((event) => (
-        <div
-          key={event.id ?? `${event.seq}-${event.event}`}
-          className="flex gap-2 py-1 px-2"
-        >
-          <span className="text-muted-foreground shrink-0">
-            {formatEventTime(event.ts)}
-          </span>
-          <span className="min-w-0 flex-1">
-            <EventBody event={event} onExport={onExport} />
-          </span>
-        </div>
-      ))}
-    </div>
+    <>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className={cn(
+          "min-h-0 overflow-auto overscroll-contain font-mono text-[12px] leading-snug whitespace-pre-wrap",
+          className,
+        )}
+      >
+        {filtered.map((event) => (
+          <div
+            key={event.id ?? `${event.seq}-${event.event}`}
+            className="flex gap-2 py-1 px-2"
+          >
+            <span className="text-muted-foreground shrink-0">
+              {formatEventTime(event.ts)}
+            </span>
+            <span className="min-w-0 flex-1">
+              <EventBody
+                event={event}
+                onExport={onExport}
+                onOpenAiCall={setOpenCallId}
+              />
+            </span>
+          </div>
+        ))}
+      </div>
+      <AiCallDetailModal logId={openCallId} onClose={() => setOpenCallId(null)} />
+    </>
   )
 }
 
@@ -148,9 +164,10 @@ export function AiEventStream({
 type EventBodyProps = {
   event: JobEvent
   onExport?: (event: JobEvent) => void
+  onOpenAiCall?: (logId: number) => void
 }
 
-function EventBody({ event, onExport }: EventBodyProps): React.JSX.Element {
+function EventBody({ event, onExport, onOpenAiCall }: EventBodyProps): React.JSX.Element {
   // Defensive: data could be missing at runtime.
   const data = (event.data ?? {}) as Record<string, unknown>
 
@@ -221,6 +238,31 @@ function EventBody({ event, onExport }: EventBodyProps): React.JSX.Element {
           {typeof cost === "number" ? (
             <span className="text-muted-foreground"> · ${cost.toFixed(4)}</span>
           ) : null}
+        </span>
+      )
+    }
+    case "ai_call_record": {
+      const logId = data.log_id as number | undefined
+      const model = (data.model as string | undefined) ?? ""
+      const place = (data.place_name as string | undefined) ?? (data.place_id as string | undefined) ?? ""
+      const ms = (data.duration_ms as number | undefined) ?? 0
+      const hasImage = Boolean(data.has_image)
+      return (
+        <span className="inline-flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => logId !== undefined && onOpenAiCall?.(logId)}
+            className="text-left underline-offset-2 hover:underline disabled:cursor-not-allowed"
+            disabled={logId === undefined || !onOpenAiCall}
+            title="View full prompt + response"
+          >
+            <span className="text-sky-500">▣ AI call</span>{" "}
+            <span>{place}</span>
+            <span className="text-muted-foreground">
+              {" "}
+              · {model} · {ms}ms{hasImage ? " · 📷" : ""}
+            </span>
+          </button>
         </span>
       )
     }
