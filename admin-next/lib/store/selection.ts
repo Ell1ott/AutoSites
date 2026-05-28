@@ -60,7 +60,11 @@ export const useSelectionStore = create<SelectionState>((set, get) => ({
       return { selected: next }
     }),
   clear: () =>
-    set((s) => (s.selected.size === 0 ? s : { selected: new Set<string>() })),
+    set((s) =>
+      s.selected.size === 0 && s.taskName === ""
+        ? s
+        : { selected: new Set<string>(), taskName: "" },
+    ),
   has: (id) => get().selected.has(id),
   size: () => get().selected.size,
 }))

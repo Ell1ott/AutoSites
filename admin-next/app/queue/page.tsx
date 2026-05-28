@@ -204,6 +204,15 @@ function JobRow({ job, onOpen, showFinishedAt }: JobRowProps) {
       <div className="flex items-center gap-3">
         <JobStatusBadge status={job.status} />
         <span className="text-foreground text-[13px] font-medium">{job.kind}</span>
+        {job.kind === "ai_task" &&
+        typeof (job.args as { workers?: unknown })?.workers === "number" ? (
+          <span
+            title={`${(job.args as { workers: number }).workers}-way parallel`}
+            className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10.5px] font-medium text-amber-300 ring-1 ring-amber-500/30"
+          >
+            ⚡ {(job.args as { workers: number }).workers}×
+          </span>
+        ) : null}
         <span className="text-muted-foreground font-mono text-[11px]">{job.id}</span>
         <span className="text-muted-foreground ml-auto text-[11px]">
           {formatRelativeTime(timestamp)}

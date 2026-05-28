@@ -38,6 +38,7 @@ export function SelectionPill() {
   const qc = useQueryClient()
 
   const [runError, setRunError] = useState<string | null>(null)
+  const [workersOverride, setWorkersOverride] = useState<number | null>(null)
 
   const tasksQuery = useQuery({
     queryKey: ["ai-tasks"],
@@ -57,12 +58,18 @@ export function SelectionPill() {
   }, [leadsQuery.data])
 
   const runMut = useMutation({
-    mutationFn: async (input: { task: AiTask; placeIds: string[] }) => {
+    mutationFn: async (input: {
+      task: AiTask
+      placeIds: string[]
+      workers?: number
+    }) => {
       const kind = jobKindForTask(input.task)
-      const res = await api.startJob(kind, {
+      const body: Record<string, unknown> = {
         task: input.task.name,
         place_ids: input.placeIds,
-      })
+      }
+      if (typeof input.workers === "number") body.workers = input.workers
+      const res = await api.startJob(kind, body)
       return {
         id: res.id,
         kind,
@@ -120,10 +127,18 @@ export function SelectionPill() {
 
   const canRun = !!currentTask && !runMut.isPending && validIds.length > 0
 
+  const isParallelizable =
+    !!currentTask &&
+    currentTask.task_type !== "browser_agent" &&
+    currentTask.task_type !== "variant"
+
   function handleRun() {
     if (!currentTask || validIds.length === 0) return
     setRunError(null)
-    runMut.mutate({ task: currentTask, placeIds: validIds })
+    const workers = isParallelizable
+      ? workersOverride ?? defaultWorkers(validIds.length)
+      : undefined
+    runMut.mutate({ task: currentTask, placeIds: validIds, workers })
   }
 
   return (
@@ -198,6 +213,16 @@ export function SelectionPill() {
             strokeWidth={1.75}
           />
         </button>
+
+        {isParallelizable ? (
+          <ParallelStepper
+            variant="dark"
+            value={workersOverride ?? defaultWorkers(validIds.length)}
+            onChange={setWorkersOverride}
+            disabled={runMut.isPending}
+            className="ml-1"
+          />
+        ) : null}
 
         {skippedCount > 0 ? (
           <span
