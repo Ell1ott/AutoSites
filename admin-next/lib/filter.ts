@@ -5,6 +5,8 @@
 // The backend FastAPI side enforces the same operators on its `/leads` route
 // using SQL. This module's job is to stay behavior-compatible with that.
 
+import { openNowFromLead } from "./lead-open-now"
+import { CRAWL_PAGES_KEY, QUICK_OPEN_NOW_KEY } from "./lead-quick-filters"
 import {
   FIELD_FORMAT_NUMERIC_STRING,
   type FieldDescriptor,
@@ -19,15 +21,16 @@ import {
 // -----------------------------------------------------------------------------
 
 const DYNAMIC_PREFIX = "dynamic."
+const DATA_PREFIX = "data."
 
 /**
  * Resolve a key path against a lead.
  *
- * Supports three forms:
- *   - "name"                  → lead.name
+ * Supports:
+ *   - "name" → lead.name
  *   - "dynamic.visual_rating" → lead.dynamic.visual_rating
- *   - "visual_rating"         → falls through to lead.dynamic.visual_rating
- *                               when the key is not a top-level lead field.
+ *   - "data.formattedAddress" → lead.data.formattedAddress (raw Google JSON)
+ *   - "visual_rating" → lead.dynamic.visual_rating when not a top-level field
  *
  * Returns undefined when the key is not found anywhere.
  */
@@ -40,6 +43,14 @@ export function readField(
     const dyn = lead.dynamic
     if (dyn && typeof dyn === "object") {
       return (dyn as Record<string, unknown>)[sub]
+    }
+    return undefined
+  }
+  if (key.startsWith(DATA_PREFIX)) {
+    const sub = key.slice(DATA_PREFIX.length)
+    const blob = lead.data
+    if (blob && typeof blob === "object") {
+      return (blob as Record<string, unknown>)[sub]
     }
     return undefined
   }
@@ -71,18 +82,17 @@ function fieldByKey(
   fields?: FieldDescriptor[],
 ): FieldDescriptor | undefined {
   if (!fields) return undefined
-  // Try the literal key first, then a `dynamic.`-stripped variant, then a
-  // `dynamic.`-prefixed variant, so callers can pass either form.
-  let f = fields.find((x) => x.key === key)
-  if (f) return f
-  if (key.startsWith(DYNAMIC_PREFIX)) {
-    f = fields.find((x) => x.key === key.slice(DYNAMIC_PREFIX.length))
-    if (f) return f
-  } else {
-    f = fields.find((x) => x.key === DYNAMIC_PREFIX + key)
-    if (f) return f
+  const direct = fields.find((x) => x.key === key)
+  if (direct) return direct
+  if (key.startsWith(DATA_PREFIX)) {
+    const sub = key.slice(DATA_PREFIX.length)
+    return fields.find((x) => x.source === "data" && x.key === sub)
   }
-  return undefined
+  if (key.startsWith(DYNAMIC_PREFIX)) {
+    const sub = key.slice(DYNAMIC_PREFIX.length)
+    return fields.find((x) => x.source === "dynamic" && x.key === sub)
+  }
+  return fields.find((x) => x.source === "dynamic" && x.key === key)
 }
 
 /**
@@ -194,6 +204,14 @@ export function evalClause(
   const value = readField(lead, clause.key)
   const op: FilterOp = clause.op
 
+  if (clause.key === QUICK_OPEN_NOW_KEY && op === "eq") {
+    const st = openNowFromLead(lead)
+    const raw = clause.value
+    if (raw === "open" || raw === true || raw === "true") return st === true
+    if (raw === "closed" || raw === false || raw === "false") return st === false
+    return false
+  }
+
   switch (op) {
     case "exists":
       return valueExists(value)
@@ -207,7 +225,16 @@ export function evalClause(
     case "gte":
     case "lt":
     case "lte": {
-      const cmp = numericCompare(value, clause.value)
+      let lhs: unknown = value
+      if (Array.isArray(lhs)) {
+        lhs = lhs.length
+      } else if (
+        (lhs === undefined || lhs === null) &&
+        clause.key === CRAWL_PAGES_KEY
+      ) {
+        lhs = 0
+      }
+      const cmp = numericCompare(lhs, clause.value)
       if (cmp === null) return false
       if (op === "gt") return cmp > 0
       if (op === "gte") return cmp >= 0

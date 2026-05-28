@@ -32,11 +32,13 @@ import {
 } from "@/components/ui/dialog"
 import { AiEventStream } from "@/components/ai/ai-event-stream"
 import { FilterBuilder } from "@/components/filter/filter-builder"
+import { JobResultView } from "@/components/jobs/job-result-view"
 import { MiniLeadPanel } from "@/components/leads/mini-lead-panel"
 import { useAiTasks, upsertLocalMockTask } from "@/hooks/use-ai-tasks"
 import { useFields } from "@/hooks/use-fields"
 import { useLeads } from "@/hooks/use-leads"
 import { api, ApiError } from "@/lib/api"
+import { jobKindForTask } from "@/lib/job-kind"
 import { evalFilters } from "@/lib/filter"
 import { MOCK_LEADS } from "@/lib/mock-leads"
 import { newRuleId, useRulesStore } from "@/lib/store/rules"
@@ -58,6 +60,7 @@ const MODEL_OPTIONS = [
   "claude-sonnet-4-6",
   "claude-haiku-4-5-20251001",
   "gemini-3-flash-preview",
+  "gemma-4-26b-a4b-it",
 ] as const
 
 const DEFAULT_CONTEXT_SUGGESTIONS = [
@@ -107,6 +110,8 @@ export function TaskEditor({ taskName }: Props): React.JSX.Element {
 
 function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
   const qc = useQueryClient()
+  const isBrowserAgent = task.task_type === "browser_agent"
+  const isVariant = task.task_type === "variant"
 
   // Mirror the source task into editable local state.
   const [label, setLabel] = useState<string>(task.label)
@@ -125,6 +130,14 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
     task.config.response_json_schema
       ? JSON.stringify(task.config.response_json_schema, null, 2)
       : "",
+  )
+  const [startUrl, setStartUrl] = useState<string>(
+    (task.config.start_url as string | undefined) ??
+      (task.config.start_url_template as string | undefined) ??
+      "",
+  )
+  const [maxPicks, setMaxPicks] = useState<number>(
+    Number(task.config.max_picks ?? 5),
   )
   const [schemaError, setSchemaError] = useState<string | null>(null)
   const [savedFlash, setSavedFlash] = useState(false)
@@ -146,6 +159,18 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
       ? JSON.stringify(cfg.response_json_schema, null, 2)
       : ""
     if (schemaText.trim() !== curSchema.trim()) return true
+    if (isBrowserAgent) {
+      if (startUrl !== ((cfg.start_url_template as string | undefined) ?? ""))
+        return true
+      if (maxPicks !== Number(cfg.max_picks ?? 5)) return true
+    }
+    if (isVariant) {
+      const cfgUrl =
+        (cfg.start_url as string | undefined) ??
+        (cfg.start_url_template as string | undefined) ??
+        ""
+      if (startUrl !== cfgUrl) return true
+    }
     return false
   }, [
     label,
@@ -155,6 +180,10 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
     included,
     prompt,
     schemaText,
+    startUrl,
+    maxPicks,
+    isBrowserAgent,
+    isVariant,
     task,
   ])
 
@@ -183,6 +212,12 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
         ? JSON.stringify(task.config.response_json_schema, null, 2)
         : "",
     )
+    setStartUrl(
+      (task.config.start_url as string | undefined) ??
+        (task.config.start_url_template as string | undefined) ??
+        "",
+    )
+    setMaxPicks(Number(task.config.max_picks ?? 5))
     setSchemaError(null)
   }
 
@@ -210,6 +245,22 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
       nextConfig.response_json_schema = parsedSchema
     } else {
       delete nextConfig.response_json_schema
+    }
+    if (isBrowserAgent) {
+      nextConfig.start_url_template = startUrl
+      nextConfig.max_picks = maxPicks
+      delete nextConfig.response_json_schema
+      delete nextConfig.included_context
+    } else if (isVariant) {
+      const { response_json_schema: _s, included_context: _c, prompt_template: _p, model: _m, ...rest } =
+        nextConfig
+      Object.assign(nextConfig, {
+        ...rest,
+        start_url: startUrl,
+        output_field: outputField,
+        generation_timeout_s:
+          (task.config.generation_timeout_s as number | undefined) ?? 900,
+      })
     }
     const patch: Partial<AiTask> = {
       label,
@@ -292,11 +343,38 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
       ) {
         overrides.included_context = included
       }
-      const { id } = await api.startJob("ai_task", {
+      const jobKind = jobKindForTask(task)
+      const baseArgs: Record<string, unknown> = {
         task: task.name,
         place_ids: Array.from(selectedIds),
-        ...(Object.keys(overrides).length ? { overrides } : {}),
-      })
+      }
+      if (isVariant) {
+        if (
+          startUrl !==
+          ((task.config.start_url as string | undefined) ??
+            (task.config.start_url_template as string | undefined) ??
+            "")
+        ) {
+          baseArgs.projects_url = startUrl
+        }
+      } else if (isBrowserAgent) {
+        if (prompt !== (task.config.prompt_template ?? "")) {
+          baseArgs.prompt_override = prompt
+        }
+        if (
+          startUrl !==
+          ((task.config.start_url_template as string | undefined) ?? "")
+        ) {
+          baseArgs.start_url_override = startUrl
+        }
+        if (model !== task.config.model) baseArgs.model = model
+        if (maxPicks !== Number(task.config.max_picks ?? 5)) {
+          baseArgs.max_picks = maxPicks
+        }
+      } else if (!isVariant && Object.keys(overrides).length) {
+        baseArgs.overrides = overrides
+      }
+      const { id } = await api.startJob(jobKind, baseArgs)
       setJobId(id)
     } catch (err) {
       setRunError(err instanceof Error ? err.message : String(err))
@@ -378,7 +456,12 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
         <TabsContent value="definition" className="mt-2">
           <div className="flex flex-col gap-4">
             {/* Top form */}
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div
+              className={cn(
+                "grid grid-cols-1 gap-3",
+                isVariant ? "md:grid-cols-1" : "md:grid-cols-2",
+              )}
+            >
               <div className="flex flex-col gap-1">
                 <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Output field
@@ -390,6 +473,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                   className="h-8 text-[12px]"
                 />
               </div>
+              {!isVariant ? (
               <div className="flex flex-col gap-1">
                 <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Model
@@ -412,9 +496,62 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                   </SelectContent>
                 </Select>
               </div>
+              ) : null}
             </div>
 
-            {/* Context chips */}
+            {isVariant ? (
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Variant projects URL
+                </label>
+                <Input
+                  value={startUrl}
+                  onChange={(e) => setStartUrl(e.target.value)}
+                  placeholder="https://variant.com/projects"
+                  className="h-8 font-mono text-[12px]"
+                />
+                <p className="text-muted-foreground text-[11px]">
+                  Uses each lead&apos;s <code className="font-mono">design_prompt</code>{" "}
+                  field. Run{" "}
+                  <code className="font-mono">setup_variant_session</code> once to log in.
+                </p>
+              </div>
+            ) : null}
+
+            {/* Browser-agent extras */}
+            {isBrowserAgent ? (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_120px]">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Start URL template
+                  </label>
+                  <Input
+                    value={startUrl}
+                    onChange={(e) => setStartUrl(e.target.value)}
+                    placeholder="https://dribbble.com/search/{{query}}?s=popular"
+                    className="h-8 font-mono text-[12px]"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Max picks
+                  </label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={maxPicks}
+                    onChange={(e) =>
+                      setMaxPicks(Math.max(1, Number(e.target.value) || 1))
+                    }
+                    className="h-8 text-[12px]"
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {/* Context chips — only meaningful for per-place LLM tasks */}
+            {!isBrowserAgent && !isVariant ? (
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Included context
@@ -459,21 +596,27 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                 </div>
               </div>
             </div>
+            ) : null}
 
-            {/* Prompt */}
+            {!isVariant ? (
             <div className="flex flex-col gap-1">
               <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                Prompt template
+                {isBrowserAgent ? "Agent instructions" : "Prompt template"}
               </label>
               <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 className="min-h-[160px] font-mono text-[12.5px]"
-                placeholder="Write your prompt. {{ context.* }} placeholders are interpolated server-side."
+                placeholder={
+                  isBrowserAgent
+                    ? "Tell the agent what to look for. Use {{design_prompt}}, {{label}}, {{category}}, {{query}} for per-place substitution."
+                    : "Write your prompt. {{ context.* }} placeholders are interpolated server-side."
+                }
               />
             </div>
+            ) : null}
 
-            {/* Optional JSON schema */}
+            {!isBrowserAgent && !isVariant ? (
             <details className="rounded-md border border-border bg-card">
               <summary className="cursor-pointer px-3 py-2 text-[12px] font-medium text-muted-foreground">
                 Response JSON schema (optional)
@@ -490,6 +633,7 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                 ) : null}
               </div>
             </details>
+            ) : null}
 
             {/* MiniLeadPanel for test-run */}
             <div className="flex flex-col gap-2">
@@ -563,6 +707,17 @@ function TaskEditorBody({ task }: { task: AiTask }): React.JSX.Element {
                   levelFilter="info"
                   className="h-48 rounded-md border bg-card"
                 />
+              ) : null}
+              {events.some(
+                (e) =>
+                  e.event === "finished" ||
+                  e.event === "cancelled" ||
+                  e.event === "error",
+              ) &&
+              events.some((e) => e.event === "item_done") ? (
+                <div className="rounded-md border bg-card">
+                  <JobResultView events={events} title="Result" />
+                </div>
               ) : null}
             </div>
           </div>

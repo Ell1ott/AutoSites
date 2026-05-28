@@ -16,25 +16,15 @@ def enqueue(conn: sqlite3.Connection, *, kind: str, args: dict[str, Any]) -> str
     return job_id
 
 
-def claim_next(conn: sqlite3.Connection) -> dict[str, Any] | None:
-    """Atomically pick the oldest queued job and mark it running. Returns the row
-    or None. Worker calls this in a loop."""
-    row = conn.execute(
-        "SELECT id, kind, args FROM jobs WHERE status='queued' "
-        "ORDER BY created_at LIMIT 1"
-    ).fetchone()
-    if row is None:
-        return None
-    cur = conn.execute(
+def mark_running(conn: sqlite3.Connection, job_id: str) -> None:
+    """Flip a queued job to running and stamp `started_at`. The dispatcher is
+    the sole consumer, so no compare-and-swap is needed."""
+    conn.execute(
         "UPDATE jobs SET status='running', "
         "started_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') "
-        "WHERE id=? AND status='queued'",
-        (row["id"],),
+        "WHERE id=?",
+        (job_id,),
     )
-    if cur.rowcount != 1:
-        # someone else beat us to it
-        return None
-    return {"id": row["id"], "kind": row["kind"], "args": json.loads(row["args"] or "{}")}
 
 
 def get(conn: sqlite3.Connection, job_id: str) -> dict[str, Any] | None:
@@ -55,7 +45,7 @@ def list_recent(
     conn: sqlite3.Connection,
     *,
     kind: str | None = None,
-    status: str | None = None,
+    status: str | list[str] | None = None,
     limit: int = 50,
 ) -> list[dict[str, Any]]:
     sql = "SELECT id, kind, status, created_at, started_at, finished_at FROM jobs"
@@ -65,8 +55,9 @@ def list_recent(
         where.append("kind = ?")
         params.append(kind)
     if status:
-        where.append("status = ?")
-        params.append(status)
+        statuses = [status] if isinstance(status, str) else list(status)
+        where.append("status IN (" + ",".join("?" * len(statuses)) + ")")
+        params.extend(statuses)
     if where:
         sql += " WHERE " + " AND ".join(where)
     sql += " ORDER BY created_at DESC LIMIT ?"
@@ -119,3 +110,21 @@ def is_cancel_requested(conn: sqlite3.Connection, job_id: str) -> bool:
         "SELECT cancel_requested FROM jobs WHERE id = ?", (job_id,)
     ).fetchone()
     return bool(row and row["cancel_requested"])
+
+
+def reap_active_on_startup(conn: sqlite3.Connection) -> int:
+    """Mark every still-active job (running OR queued) as terminated. Called
+    once at API startup: by definition no dispatcher is processing them, and
+    we promised the user we do not auto-resume across restarts. Honors a prior
+    cancel request; otherwise marks failed with an 'abandoned' note."""
+    cur = conn.execute(
+        """
+        UPDATE jobs
+        SET status = CASE WHEN cancel_requested = 1 THEN 'cancelled' ELSE 'failed' END,
+            error  = CASE WHEN cancel_requested = 1 THEN error
+                          ELSE COALESCE(error, 'abandoned: server restarted') END,
+            finished_at = strftime('%Y-%m-%dT%H:%M:%fZ','now')
+        WHERE status IN ('running', 'queued')
+        """,
+    )
+    return cur.rowcount

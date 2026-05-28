@@ -197,7 +197,7 @@ export function MiniLeadPanel({
             <colgroup>
               <col style={{ width: 26 }} />
               <col style={{ width: 36 }} />
-              <col />
+              <col style={{ width: 120 }} />
               <col style={{ width: 44 }} />
               <col style={{ width: 44 }} />
               <col style={{ width: 38 }} />

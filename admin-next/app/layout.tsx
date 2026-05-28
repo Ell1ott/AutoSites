@@ -5,8 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "@/components/providers"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { SideNav } from "@/components/shell/side-nav"
-import { TopBar } from "@/components/shell/top-bar"
 import { SelectionPill } from "@/components/shell/selection-pill"
+import { JobToaster } from "@/components/jobs/job-toaster"
 import { cn } from "@/lib/utils"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
@@ -35,11 +35,11 @@ export default function RootLayout({
             <TooltipProvider>
               <div className="flex h-screen w-screen overflow-hidden">
                 <SideNav />
-                <div className="flex flex-1 flex-col min-w-0">
-                  <TopBar />
-                  <main className="flex-1 overflow-auto">{children}</main>
-                </div>
+                <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto">
+                  {children}
+                </main>
                 <SelectionPill />
+                <JobToaster />
                 {modal}
               </div>
             </TooltipProvider>

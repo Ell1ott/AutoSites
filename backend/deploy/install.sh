@@ -32,16 +32,17 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-echo "==> installing systemd units"
+echo "==> installing systemd unit"
 sudo cp deploy/systemd/backend-api.service "/etc/systemd/system/backend-api@${USER_NAME}.service"
-sudo cp deploy/systemd/backend-worker.service "/etc/systemd/system/backend-worker@${USER_NAME}.service"
+# Stop the obsolete worker unit if it's lingering from a previous install.
+sudo systemctl disable --now "backend-worker@${USER_NAME}.service" 2>/dev/null || true
+sudo rm -f "/etc/systemd/system/backend-worker@${USER_NAME}.service"
 sudo systemctl daemon-reload
-sudo systemctl enable "backend-api@${USER_NAME}.service" "backend-worker@${USER_NAME}.service"
-sudo systemctl restart "backend-api@${USER_NAME}.service" "backend-worker@${USER_NAME}.service"
+sudo systemctl enable "backend-api@${USER_NAME}.service"
+sudo systemctl restart "backend-api@${USER_NAME}.service"
 
 echo "==> done. Status:"
-sudo systemctl --no-pager status "backend-api@${USER_NAME}.service" "backend-worker@${USER_NAME}.service" | head -30 || true
+sudo systemctl --no-pager status "backend-api@${USER_NAME}.service" | head -30 || true
 echo
 echo "Tail logs with:"
 echo "  journalctl -u backend-api@${USER_NAME} -f"
-echo "  journalctl -u backend-worker@${USER_NAME} -f"

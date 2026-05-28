@@ -14,10 +14,11 @@ import {
   operatorsForField,
   valueWidgetForField,
 } from "@/lib/filter"
-import type {
-  FieldDescriptor,
-  FilterClause,
-  FilterOp,
+import {
+  fieldClauseKey,
+  type FieldDescriptor,
+  type FilterClause,
+  type FilterOp,
 } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -487,7 +488,7 @@ function AddChip({
     setPicked(f)
     const initialOps = operatorsForField(f)
     const op = initialOps[0] ?? "eq"
-    const key = f.source === "dynamic" ? `dynamic.${f.key}` : f.key
+    const key = fieldClauseKey(f)
     setDraft({ key, op, value: undefined })
   }
 

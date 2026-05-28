@@ -1,0 +1,90 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dev: all",
+			"dependsOn": ["backend: api", "admin-next: dev"],
+			"dependsOrder": "parallel",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "backend: api",
+			"type": "shell",
+			"command": "bash -c 'set -a; [ -f ../mapsLeadsFetcher/.env.local ] && . ../mapsLeadsFetcher/.env.local; set +a; exec uv run python -m api'",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"owner": "uvicorn",
+					"pattern": { "regexp": "^$" },
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": ".",
+						"endsPattern": "Application startup complete|Uvicorn running on"
+					}
+				}
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": false
+			}
+		},
+		{
+			"label": "admin-next: dev",
+			"type": "shell",
+			"command": "bun run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/admin-next"
+			},
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"owner": "next",
+					"pattern": { "regexp": "^$" },
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": ".",
+						"endsPattern": "Ready in|Local:.*http"
+					}
+				}
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": false
+			}
+		},
+		{
+			"label": "admin: dev",
+			"type": "shell",
+			"command": "bun run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/admin"
+			},
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"owner": "vite",
+					"pattern": { "regexp": "^$" },
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": ".",
+						"endsPattern": "(Local:|ready in).*"
+					}
+				}
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated",
+				"focus": false
+			}
+		}
+	]
+}

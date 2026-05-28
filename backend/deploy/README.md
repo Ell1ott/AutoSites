@@ -26,21 +26,20 @@ bash ~/AutoSites/backend/deploy/install.sh
 - `GEMINI_API_KEY` — for AI task handlers.
 
 After editing `.env`, re-run `install.sh`. The script enables/starts:
-- `backend-api@<user>.service` — FastAPI on :8080
-- `backend-worker@<user>.service` — job poller
+- `backend-api@<user>.service` — FastAPI on :8888 (also hosts the in-process
+  job dispatcher; there's no separate worker unit anymore).
 
 ## 3. Verify
 
 From the laptop (on the same tailnet):
 ```bash
-curl -H "Authorization: Bearer <token>" https://<pi-hostname>:8080/healthz
-curl -H "Authorization: Bearer <token>" https://<pi-hostname>:8080/fields | jq .total
+curl -H "Authorization: Bearer <token>" https://<pi-hostname>:8888/healthz
+curl -H "Authorization: Bearer <token>" https://<pi-hostname>:8888/fields | jq .total
 ```
 
 From the Pi:
 ```bash
 journalctl -u backend-api@<user> -f
-journalctl -u backend-worker@<user> -f
 ```
 
 ## 4. First job
@@ -48,9 +47,9 @@ journalctl -u backend-worker@<user> -f
 ```bash
 curl -X POST -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
      -d '{"kind":"fetch_leads","args":{"query":"cafe","lat":55.4318,"lng":11.5555,"count":3}}' \
-     https://<pi-hostname>:8080/jobs
+     https://<pi-hostname>:8888/jobs
 # Then tail it:
-curl -N -H "Authorization: Bearer <token>" "https://<pi-hostname>:8080/jobs/<id>/stream?since=0"
+curl -N -H "Authorization: Bearer <token>" "https://<pi-hostname>:8888/jobs/<id>/stream?since=0"
 ```
 
 ## Updating

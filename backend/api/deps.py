@@ -32,7 +32,10 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
 
 
 def get_db(readonly: bool = False) -> Generator:
-    conn = connect(readonly=readonly)
+    # FastAPI may run a sync yield-dependency's setup/teardown and the endpoint
+    # on different threadpool workers, so the per-request connection has to be
+    # usable across threads. Each request still owns its own conn — no sharing.
+    conn = connect(readonly=readonly, check_same_thread=False)
     try:
         yield conn
     finally:

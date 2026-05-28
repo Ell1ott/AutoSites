@@ -1,0 +1,40 @@
+{
+  "capturedAt": "2026-05-27T20:43:55.123Z",
+  "url": "https://urbanrestaurant.webflow.io/",
+  "requestedUrl": "https://urbanrestaurant.webflow.io/",
+  "title": "UrbanRestaurant - Webflow HTML website template",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "fonts": [
+    "\"Bebas Neue\", sans-serif",
+    "\"Open Sans\", sans-serif"
+  ],
+  "cssVariables": {
+    "--body-text": "\"Open Sans\",sans-serif",
+    "--heading": "\"Bebas Neue\",sans-serif",
+    "--urban-black": "#2e2e2e",
+    "--urban-green": "#33483e",
+    "--urban-white": "#fafafa"
+  },
+  "meta": {
+    "description": "Discover the Urban Restaurant Webflow Template: a sleek, responsive design perfect for showcasing your restaurant. Fully customizable and mobile-friendly.",
+    "og:title": "UrbanRestaurant - Webflow HTML website template",
+    "og:description": "Discover the Urban Restaurant Webflow Template: a sleek, responsive design perfect for showcasing your restaurant. Fully customizable and mobile-friendly.",
+    "og:image": "https://cdn.prod.website-files.com/6777ca72cf24680980ebd1e0/6785cceb32848207f218be77_UR%20-%20.avif",
+    "twitter:title": "UrbanRestaurant - Webflow HTML website template",
+    "twitter:description": "Discover the Urban Restaurant Webflow Template: a sleek, responsive design perfect for showcasing your restaurant. Fully customizable and mobile-friendly.",
+    "twitter:image": "https://cdn.prod.website-files.com/6777ca72cf24680980ebd1e0/6785cceb32848207f218be77_UR%20-%20.avif",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "viewport": "width=device-width, initial-scale=1",
+    "generator": "Webflow"
+  },
+  "files": [
+    "page.html",
+    "styles.css",
+    "screenshot.png",
+    "manifest.json"
+  ]
+}

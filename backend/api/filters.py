@@ -3,20 +3,24 @@
 Supported keys:
   - Indexed columns (place_id, name, rating, review_count, website,
     business_status, lead_score, created_at, updated_at)
-  - Any `dynamic.<key>` — translated to `json_extract(dynamic, '$.<key>')`
+  - `dynamic.<key>` — json_extract(dynamic, '$.<key>')
+  - `data.<key>` — json_extract(data, '$.<key>')  (raw Google JSON blob)
+  - Bare `<key>` — legacy synonym for dynamic.<key>
 
 Supported operators:
   eq, ne, gt, gte, lt, lte, like, in, exists, notexists
 
 Values are passed as parameters (no string interpolation) so this is safe against
-SQL injection. Keys must match an allowlist regex.
+SQL injection. Keys must match an allowlist.
 """
 from __future__ import annotations
 
 import re
 from typing import Any
 
-_KEY_RE = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+_JSON_KEY = re.compile(
+    r"^[a-zA-Z][a-zA-Z0-9_]*$"
+)  # Google / dynamic keys: letters, digits, underscore (camelCase ok)
 
 _TYPED_COLUMNS = {
     "place_id",
@@ -46,6 +50,25 @@ _OP_SQL = {
 }
 
 
+def _json_subkey(field: str, prefix: str) -> str | None:
+    if not field.startswith(prefix):
+        return None
+    sub = field[len(prefix) :]
+    if _JSON_KEY.fullmatch(sub):
+        return sub
+    return None
+
+
+def _valid_field(field: str) -> bool:
+    if field in _TYPED_COLUMNS:
+        return True
+    if _json_subkey(field, "data.") is not None:
+        return True
+    if _json_subkey(field, "dynamic.") is not None:
+        return True
+    return bool(_JSON_KEY.fullmatch(field))
+
+
 def parse_query(qs: dict[str, list[str]]) -> tuple[str, list[Any]]:
     """`qs` is the parsed query string with one or more values per key.
     Returns `(where_sql, params)` joined with `AND`. Empty filters -> `('', [])`.
@@ -68,7 +91,7 @@ def parse_query(qs: dict[str, list[str]]) -> tuple[str, list[Any]]:
         if not m:
             continue
         field, op = m.group(1), m.group(2)
-        if not _KEY_RE.fullmatch(field):
+        if not _valid_field(field):
             raise ValueError(f"invalid filter field: {field!r}")
         if op not in {*_OP_SQL.keys(), "in", "exists", "notexists"}:
             raise ValueError(f"unsupported operator: {op!r}")
@@ -85,12 +108,24 @@ def parse_query(qs: dict[str, list[str]]) -> tuple[str, list[Any]]:
 def _col_expr(field: str, *, numeric: bool = False) -> str:
     if field in _TYPED_COLUMNS:
         return field
-    # dynamic JSON path
-    expr = f"json_extract(dynamic, '$.{field}')"
-    if numeric:
-        # CAST to REAL so 7 vs 10 comparisons are numeric, not text-lex.
-        expr = f"CAST({expr} AS REAL)"
-    return expr
+    sk = _json_subkey(field, "data.")
+    if sk is not None:
+        expr = f"json_extract(data, '$.{sk}')"
+        if numeric:
+            expr = f"CAST({expr} AS REAL)"
+        return expr
+    sk = _json_subkey(field, "dynamic.")
+    if sk is not None:
+        expr = f"json_extract(dynamic, '$.{sk}')"
+        if numeric:
+            expr = f"CAST({expr} AS REAL)"
+        return expr
+    if _JSON_KEY.fullmatch(field):
+        expr = f"json_extract(dynamic, '$.{field}')"
+        if numeric:
+            expr = f"CAST({expr} AS REAL)"
+        return expr
+    raise ValueError(f"unsupported filter field: {field!r}")
 
 
 def _build_one(field: str, op: str, value: str) -> tuple[str, list[Any]]:

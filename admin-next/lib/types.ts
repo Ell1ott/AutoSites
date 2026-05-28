@@ -14,7 +14,7 @@ export type FieldType =
   | `array<${"string" | "integer" | "number" | "boolean"}>`
   | "object"
 
-export type FieldSource = "column" | "dynamic"
+export type FieldSource = "column" | "dynamic" | "data"
 
 export type FieldDescriptor = {
   key: string
@@ -35,6 +35,15 @@ export type FieldDescriptor = {
 export type FieldsResponse = {
   columns: FieldDescriptor[]
   dynamic: FieldDescriptor[]
+  /** Top-level keys on `places.data` (raw Google JSON); absent on older APIs. */
+  data_fields?: FieldDescriptor[]
+}
+
+/** Filter / sort key for API + `readField` (e.g. `dynamic.foo`, `data.formattedAddress`). */
+export function fieldClauseKey(f: FieldDescriptor): string {
+  if (f.source === "dynamic") return `dynamic.${f.key}`
+  if (f.source === "data") return `data.${f.key}`
+  return f.key
 }
 
 // Known field_meta.format constants. Other formats may exist; UI falls back to
@@ -81,6 +90,8 @@ export type SlimLead = {
   business_status: string | null
   lead_score: number | null // user's manual 1..10
   dynamic: Record<string, unknown> // every observed dynamic.* key — sparse
+  /** Raw Google / import JSON blob (`places.data`); optional on mocks. */
+  data?: Record<string, unknown>
   updated_at: string
 }
 
@@ -91,7 +102,9 @@ export type Lead = SlimLead & {
 
 export type LeadsListResponse = {
   items: SlimLead[]
-  next_cursor?: string
+  total?: number
+  limit?: number
+  offset?: number
 }
 
 // A single job log entry surfaced on a lead detail. Backend returns this as the
@@ -107,6 +120,8 @@ export type JobStatus = "queued" | "running" | "done" | "failed" | "cancelled"
 export type JobKind =
   | "fetch_leads"
   | "ai_task"
+  | "find_inspiration"
+  | "variant_design"
   | "crawl"
   | "html_to_md"
   | (string & {})
@@ -244,12 +259,22 @@ export type JobEvent =
 // AI tasks & runs
 // -----------------------------------------------------------------------------
 
+export type AiTaskType = "place" | "browser_agent" | "variant"
+
 export type AiTaskConfig = {
   meta_prompt?: string
   prompt_template?: string
-  model: string
+  model?: string
   included_context?: string[]
   response_json_schema?: unknown
+  // Browser-agent-specific (only meaningful when task_type === "browser_agent").
+  start_url_template?: string
+  max_picks?: number
+  max_steps?: number
+  output_field?: string
+  // Variant automation (task_type === "variant").
+  start_url?: string
+  generation_timeout_s?: number
   [k: string]: unknown
 }
 
@@ -260,6 +285,30 @@ export type AiTask = {
   enabled: boolean
   sort_order: number
   updated_at: string
+  task_type: AiTaskType
+}
+
+export type InspirationPick = {
+  url: string
+  title: string
+  why?: string
+  screenshot?: string | null
+}
+
+export type VariantDesignPreview = {
+  index: number
+  html_path: string
+  title?: string
+  /** User bookmark — persisted on the lead's variant_design output. */
+  flagged?: boolean
+}
+
+export type VariantDesignResult = {
+  url: string | null
+  status: "complete" | "timed_out" | "failed" | "running"
+  designs: VariantDesignPreview[]
+  captured_at?: string
+  error?: string
 }
 
 export type AiRunStatus = "running" | "done" | "failed" | "cancelled"

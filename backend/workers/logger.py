@@ -11,11 +11,16 @@ level, event, message, data}`. Same shape lands in SQLite and on the wire.
 from __future__ import annotations
 
 import sqlite3
+import threading
 import traceback
 from datetime import datetime, timezone
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from db.repos import job_logs
+from workers.browser_snapshot import SNAPSHOT_ATTR
+
+if TYPE_CHECKING:
+    from workers.event_bus import EventBus
 
 
 def _now_iso() -> str:
@@ -24,19 +29,22 @@ def _now_iso() -> str:
 
 
 class JobLogger:
-    """One per running job. Not thread-safe; handlers are single-threaded."""
+    """One per running job. Thread-safe: `_emit` is serialized by a lock so the
+    main worker thread and helper threads (e.g. stderr pumps) can log freely.
+    The underlying connection must be opened with `check_same_thread=False`."""
 
     def __init__(
         self,
         conn: sqlite3.Connection,
         job_id: str,
         *,
-        notify: Callable[[dict[str, Any]], None] | None = None,
+        bus: "EventBus | None" = None,
     ) -> None:
         self._conn = conn
         self._job_id = job_id
         self._seq = job_logs.next_seq(conn, job_id) - 1
-        self._notify = notify
+        self._bus = bus
+        self._lock = threading.Lock()
 
     @property
     def job_id(self) -> str:
@@ -50,35 +58,36 @@ class JobLogger:
         message: str = "",
         data: dict[str, Any] | None = None,
     ) -> int:
-        self._seq += 1
-        ts = _now_iso()
-        log_id = job_logs.append(
-            self._conn,
-            job_id=self._job_id,
-            seq=self._seq,
-            ts=ts,
-            level=level,
-            event=event,
-            message=message,
-            data=data or {},
-        )
-        if self._notify is not None:
-            payload = {
-                "id": log_id,
-                "job_id": self._job_id,
-                "seq": self._seq,
-                "ts": ts,
-                "level": level,
-                "event": event,
-                "message": message,
-                "data": data or {},
-            }
-            try:
-                self._notify(payload)
-            except Exception:
-                # Notify path must never break the job.
-                pass
-        return log_id
+        with self._lock:
+            self._seq += 1
+            ts = _now_iso()
+            log_id = job_logs.append(
+                self._conn,
+                job_id=self._job_id,
+                seq=self._seq,
+                ts=ts,
+                level=level,
+                event=event,
+                message=message,
+                data=data or {},
+            )
+            if self._bus is not None:
+                payload = {
+                    "id": log_id,
+                    "job_id": self._job_id,
+                    "seq": self._seq,
+                    "ts": ts,
+                    "level": level,
+                    "event": event,
+                    "message": message,
+                    "data": data or {},
+                }
+                try:
+                    self._bus.publish(self._job_id, payload)
+                except Exception:
+                    # Publish path must never break the job.
+                    pass
+            return log_id
 
     # ----- typed conveniences (the public surface handlers should call) -----
 
@@ -159,7 +168,23 @@ class JobLogger:
     def debug(self, message: str, **data: Any) -> None:
         self._emit("log", level="debug", message=message, data=data)
 
+    def browser_snapshot(self, snapshot: dict[str, Any], **data: Any) -> None:
+        """Compressed page HTML from a failed browser automation step."""
+        self._emit(
+            "browser_snapshot",
+            level="warn",
+            message="browser page snapshot",
+            data={**snapshot, **data},
+        )
+
     def error(self, exc: BaseException, *, context: dict[str, Any] | None = None) -> None:
+        ctx = dict(context or {})
+        snap = getattr(exc, SNAPSHOT_ATTR, None)
+        if isinstance(snap, dict) and snap.get("payload"):
+            # Keep the heavy payload in its own event; error row stays small.
+            self.browser_snapshot(snap, **{k: v for k, v in ctx.items() if k != SNAPSHOT_ATTR})
+            ctx = {**ctx, "has_browser_snapshot": True}
+
         tb = traceback.format_exc()
         # Pull file/line from the deepest frame if possible.
         file_, line = _exc_location(exc)
@@ -173,7 +198,7 @@ class JobLogger:
                 "traceback": tb,
                 "file": file_,
                 "line": line,
-                "context": context or {},
+                "context": ctx,
             },
         )
 

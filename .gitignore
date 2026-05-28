@@ -2,8 +2,9 @@
 .DS_Store
 Thumbs.db
 
-# Editors
-.vscode/
+# Editors — track shared tasks only
+.vscode/*
+!.vscode/tasks.json
 .idea/
 *.swp
 *.swo
@@ -15,6 +16,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+!**/.env.example
+.cursor/mcp.json
 
 # Logs
 *.log
@@ -57,6 +60,9 @@ env/
 
 # uv
 .uv-cache/
+
+# Variant.com Playwright login profile (cookies)
+backend/data/variant-browser-profile/
 
 # --- Local project data (mapsLeadsFetcher: API fetch, crawls, AI runs; keep on disk, not in git) ---
 mapsLeadsFetcher/maps_businesses.csv

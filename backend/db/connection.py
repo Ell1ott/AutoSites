@@ -24,18 +24,26 @@ def data_dir() -> Path:
     return _BACKEND_ROOT / "data"
 
 
-def connect(*, readonly: bool = False) -> sqlite3.Connection:
+def connect(*, readonly: bool = False, check_same_thread: bool = True) -> sqlite3.Connection:
     """Open a connection with the project's standard pragmas applied.
 
     Caller owns lifetime; prefer the `session()` context manager for short ops.
+
+    Pass `check_same_thread=False` when the connection will be shared across
+    threads (e.g. the worker's per-job conn, which the stderr pump thread also
+    writes through). The caller is responsible for serializing access.
     """
     path = db_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     if readonly:
         uri = f"file:{path}?mode=ro"
-        conn = sqlite3.connect(uri, uri=True, isolation_level=None, timeout=30.0)
+        conn = sqlite3.connect(
+            uri, uri=True, isolation_level=None, timeout=30.0, check_same_thread=check_same_thread
+        )
     else:
-        conn = sqlite3.connect(path, isolation_level=None, timeout=30.0)
+        conn = sqlite3.connect(
+            path, isolation_level=None, timeout=30.0, check_same_thread=check_same_thread
+        )
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode = WAL;")
     conn.execute("PRAGMA synchronous = NORMAL;")

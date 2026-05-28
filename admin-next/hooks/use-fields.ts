@@ -28,7 +28,11 @@ export function useFields() {
   const q = useFieldsQuery()
   const fields = useMemo<FieldDescriptor[]>(() => {
     if (!q.data) return []
-    return [...(q.data.columns ?? []), ...(q.data.dynamic ?? [])]
+    return [
+      ...(q.data.columns ?? []),
+      ...(q.data.dynamic ?? []),
+      ...(q.data.data_fields ?? []),
+    ]
   }, [q.data])
   return {
     fields,

@@ -13,6 +13,7 @@ export const MOCK_TASKS: AiTask[] = [
     enabled: true,
     sort_order: 10,
     updated_at: NOW,
+    task_type: "place",
     config: {
       model: "claude-sonnet-4-6",
       prompt_template:
@@ -27,6 +28,7 @@ export const MOCK_TASKS: AiTask[] = [
     enabled: true,
     sort_order: 20,
     updated_at: NOW,
+    task_type: "place",
     config: {
       model: "claude-haiku-4-5-20251001",
       prompt_template:
@@ -49,6 +51,7 @@ export const MOCK_TASKS: AiTask[] = [
     enabled: false,
     sort_order: 30,
     updated_at: NOW,
+    task_type: "place",
     config: {
       model: "claude-sonnet-4-6",
       prompt_template:
@@ -63,12 +66,43 @@ export const MOCK_TASKS: AiTask[] = [
     enabled: true,
     sort_order: 40,
     updated_at: NOW,
+    task_type: "place",
     config: {
       model: "claude-haiku-4-5-20251001",
       prompt_template:
         "Suggest 3 punchier headlines for this business's homepage hero. Match the tone of their existing brand. Return one per line, no numbering.",
       included_context: ["screenshot", "reviews", "categories"],
       output_field: "headline_rewrite",
+    },
+  },
+  {
+    name: "find_inspiration",
+    label: "Design inspiration (browser agent)",
+    enabled: true,
+    sort_order: 90,
+    updated_at: NOW,
+    task_type: "browser_agent",
+    config: {
+      model: "gemma-4-26b-a4b-it",
+      output_field: "design_inspirations",
+      start_url_template: "https://dribbble.com/search/{{query}}?s=popular",
+      prompt_template:
+        "You are scouting visual inspiration for a website I'm designing.\nBrief: {{design_prompt}}\n\nBrowse the page. Open shots that look promising. For each genuinely good match, call the `add_inspiration` tool with the shot's URL, a short title, and one sentence on why it fits the brief. Stop after {{max_picks}} picks.",
+      max_picks: 5,
+      max_steps: 40,
+    },
+  },
+  {
+    name: "variant_design",
+    label: "Variant designs",
+    enabled: true,
+    sort_order: 85,
+    updated_at: NOW,
+    task_type: "variant",
+    config: {
+      output_field: "variant_design",
+      start_url: "https://variant.com/projects",
+      generation_timeout_s: 900,
     },
   },
 ]

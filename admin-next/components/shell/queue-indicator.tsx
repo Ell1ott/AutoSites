@@ -11,7 +11,7 @@ import { JobStatusBadge } from "@/components/queue/job-status-badge"
 import { useJobs } from "@/hooks/use-jobs"
 import { cn } from "@/lib/utils"
 
-export function QueueIndicator() {
+export function QueueIndicator({ compact = false }: { compact?: boolean }) {
   const { data: jobs = [] } = useJobs(["running", "queued"])
   const count = jobs.length
   const top = jobs.slice(0, 5)
@@ -23,20 +23,31 @@ export function QueueIndicator() {
           type="button"
           aria-label={`Queue (${count} active)`}
           className={cn(
-            "inline-flex h-8 items-center gap-1.5 rounded px-2 text-[13px] transition-colors hover:text-foreground",
+            "relative inline-flex items-center rounded-md text-[13px] transition-colors hover:bg-accent/50 hover:text-foreground",
+            compact
+              ? "mx-1 h-9 w-[calc(100%-8px)] justify-center"
+              : "h-8 gap-1.5 px-2",
             count === 0 ? "text-muted-foreground" : "text-foreground",
           )}
         >
-          <HugeiconsIcon icon={WorkflowSquare05Icon} size={14} strokeWidth={1.5} />
-          <span>Queue</span>
-          <span
-            className={cn(
-              "tabular-nums",
-              count === 0 ? "text-muted-foreground" : "text-primary",
-            )}
-          >
-            ({count})
-          </span>
+          <HugeiconsIcon icon={WorkflowSquare05Icon} size={16} strokeWidth={1.5} />
+          {!compact ? (
+            <>
+              <span>Queue</span>
+              <span
+                className={cn(
+                  "tabular-nums",
+                  count === 0 ? "text-muted-foreground" : "text-primary",
+                )}
+              >
+                ({count})
+              </span>
+            </>
+          ) : count > 0 ? (
+            <span className="absolute top-1 right-1 min-w-4 rounded-full bg-primary px-1 text-center text-[10px] leading-4 text-primary-foreground tabular-nums">
+              {count}
+            </span>
+          ) : null}
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 gap-2">

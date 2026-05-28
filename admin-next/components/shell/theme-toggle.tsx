@@ -5,7 +5,13 @@ import { useTheme } from "next-themes"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Sun01Icon, Moon01Icon } from "@hugeicons/core-free-icons"
 
-export function ThemeToggle() {
+import { cn } from "@/lib/utils"
+
+type Props = {
+  className?: string
+}
+
+export function ThemeToggle({ className }: Props) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -20,7 +26,10 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors"
+      className={cn(
+        "inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground",
+        className,
+      )}
       aria-label="Toggle theme"
     >
       {mounted ? (

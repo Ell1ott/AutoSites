@@ -1,5 +1,6 @@
-"""Schema discovery: scan `places.dynamic` keys + indexed columns + override
-metadata, return a unified field list for the client to render filters."""
+"""Schema discovery: scan `places.dynamic` + `places.data` (raw Google JSON)
+keys + indexed columns + override metadata, return a unified field list for
+the client to render filters and table columns."""
 from __future__ import annotations
 
 import json
@@ -93,6 +94,49 @@ def discover(conn: sqlite3.Connection, *, force: bool = False) -> dict[str, Any]
 
     dynamic.sort(key=lambda d: -d["coverage"])
 
+    # --- Raw `data` column (Google Places payload): top-level keys only -------
+    by_data_key: dict[str, dict[str, Any]] = {}
+    samples_data: dict[str, Any] = {}
+    for row in conn.execute("SELECT data FROM places"):
+        raw = row["data"]
+        if not raw:
+            continue
+        try:
+            obj = json.loads(raw)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(obj, dict):
+            continue
+        for key, value in obj.items():
+            type_ = _infer_python_type(value)
+            slot = by_data_key.setdefault(
+                key, {"key": key, "source": "data", "types": {}, "n": 0}
+            )
+            slot["types"][type_] = slot["types"].get(type_, 0) + 1
+            slot["n"] += 1
+            samples_data.setdefault(key, value)
+
+    data_fields: list[dict[str, Any]] = []
+    for slot in by_data_key.values():
+        types = slot["types"]
+        primary = max(types.items(), key=lambda x: x[1])[0]
+        sample = samples_data.get(slot["key"])
+        if isinstance(sample, str) and len(sample) > 200:
+            sample = sample[:200] + "…"
+        coverage = (slot["n"] / total) if total else 0.0
+        entry: dict[str, Any] = {
+            "key": slot["key"],
+            "type": primary,
+            "source": "data",
+            "coverage": coverage,
+            "sample": sample,
+        }
+        if len(types) > 1:
+            entry["types_seen"] = types
+        data_fields.append(entry)
+
+    data_fields.sort(key=lambda d: -d["coverage"])
+
     # Apply field_meta overrides (display name, format, filterable/editable flags).
     meta_rows = conn.execute(
         "SELECT key, display, format, filterable, editable, enum_values FROM field_meta"
@@ -115,8 +159,12 @@ def discover(conn: sqlite3.Connection, *, force: bool = False) -> dict[str, Any]
         ov = overrides.get(f"dynamic.{entry['key']}") or overrides.get(entry["key"])
         if ov:
             _apply_override(entry, ov)
+    for entry in data_fields:
+        ov = overrides.get(f"data.{entry['key']}") or overrides.get(entry["key"])
+        if ov:
+            _apply_override(entry, ov)
 
-    out = {"total": total, "columns": columns, "dynamic": dynamic}
+    out = {"total": total, "columns": columns, "dynamic": dynamic, "data_fields": data_fields}
     _CACHE["at"] = now
     _CACHE["value"] = out
     return out

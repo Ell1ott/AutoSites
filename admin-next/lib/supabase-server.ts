@@ -25,10 +25,10 @@ export function authCallbackOrigin(): string {
     process.env.CMS_AUTH_CALLBACK_ORIGIN?.trim() ||
     process.env.AUTH_SITE_URL?.trim() ||
     process.env.CMS_LOGIN_REDIRECT_URL?.trim() ||
-    "http://localhost:3000"
+    "http://localhost:4242"
   try {
     return new URL(raw.includes("://") ? raw : `https://${raw}`).origin
   } catch {
-    return "http://localhost:3000"
+    return "http://localhost:4242"
   }
 }

@@ -130,3 +130,99 @@
     @apply font-sans;
     }
 }
+
+/* Leaflet maps — contain panes so tiles don't paint over app overlays */
+.leaflet-map,
+.discover-map {
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+}
+
+.leaflet-map .leaflet-container,
+.discover-map .leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+.discover-map-center-pin {
+  background: var(--primary);
+  border: 2px solid var(--background);
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary) 35%, transparent);
+}
+
+.discover-map-lead-pin {
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+}
+
+.discover-map-lead-pin-new {
+  background: oklch(0.62 0.17 145);
+}
+
+.discover-map-lead-pin-existing {
+  background: oklch(0.55 0.02 260);
+}
+
+.discover-map-lead-pin-selected {
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 55%, transparent);
+}
+
+.discover-map .leaflet-popup-content-wrapper,
+.discover-map .leaflet-popup-tip,
+.leaflet-map .leaflet-popup-content-wrapper,
+.leaflet-map .leaflet-popup-tip {
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+
+.discover-map .leaflet-popup-content,
+.leaflet-map .leaflet-popup-content {
+  margin: 8px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.discover-map-popup-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.discover-map-popup-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.discover-map .leaflet-control-attribution,
+.leaflet-map .leaflet-control-attribution {
+  font-size: 10px;
+}
+
+.leads-map-pin {
+  background: transparent;
+  border: none;
+}
+
+.leads-map-pin > span {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+}
+
+.leads-map-pin-selected > span {
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 55%, transparent);
+}
+
+.leads-map-popup-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}

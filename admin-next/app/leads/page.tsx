@@ -1,25 +1,52 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { LeadGridBig } from "@/components/leads/lead-grid-big"
 import { LeadGridSmall } from "@/components/leads/lead-grid-small"
+import { LeadSidePanel } from "@/components/leads/lead-side-panel"
 import { LeadTable } from "@/components/leads/lead-table"
 import { LeadsHeader } from "@/components/leads/leads-header"
 import { Button } from "@/components/ui/button"
 import { useFields } from "@/hooks/use-fields"
 import { useLeads } from "@/hooks/use-leads"
 import { applyFiltersAndSort } from "@/lib/filter"
+import { DEFAULT_MAP_COLOR_FIELD } from "@/lib/lead-map-color"
+import { buildLeadsMapPoints } from "@/lib/lead-map-leads"
 import { MOCK_LEADS } from "@/lib/mock-leads"
 import { useUiStore, type LeadsViewMode } from "@/lib/store/ui"
 import type { FilterClause, SlimLead, SortClause } from "@/lib/types"
 import { clausesToParams, paramsToClauses } from "@/lib/url"
+import { cn } from "@/lib/utils"
+
+const LeadsMap = dynamic(
+  () =>
+    import("@/components/leads/leads-map").then((m) => ({
+      default: m.LeadsMap,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-muted/30 flex min-h-0 flex-1 items-center justify-center">
+        <span className="text-muted-foreground text-[12px]">Loading map…</span>
+      </div>
+    ),
+  },
+)
 
 const USING_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "1"
 
 function parseViewMode(s: string | null | undefined): LeadsViewMode | null {
-  if (s === "smallGrid" || s === "bigGrid" || s === "table") return s
+  if (
+    s === "smallGrid" ||
+    s === "bigGrid" ||
+    s === "table" ||
+    s === "map"
+  ) {
+    return s
+  }
   return null
 }
 
@@ -27,25 +54,24 @@ export default function LeadsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Persisted view mode (from localStorage) is the default; URL ?view= wins
-  // when present.
   const storedView = useUiStore((s) => s.viewMode)
   const setStoredView = useUiStore((s) => s.setViewMode)
+  const storedMapColorField = useUiStore((s) => s.mapColorField)
+  const setStoredMapColorField = useUiStore((s) => s.setMapColorField)
 
-  // Derive initial state from the URL once on mount.
   const initial = useMemo(() => {
     const sp = new URLSearchParams(searchParams?.toString() ?? "")
     const decoded = paramsToClauses(sp)
     const view = parseViewMode(sp.get("view")) ?? storedView
     const q = sp.get("q") ?? ""
+    const mapColor = sp.get("mapColor") ?? storedMapColorField
     return {
       filters: decoded.filters,
       sort: decoded.sort,
       view,
       q,
+      mapColor,
     }
-    // We intentionally do NOT depend on storedView so we don't reset state on
-    // every store-update tick after mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -53,6 +79,36 @@ export default function LeadsPage() {
   const [sort, setSort] = useState<SortClause | undefined>(initial.sort)
   const [view, setView] = useState<LeadsViewMode>(initial.view)
   const [searchQuery, setSearchQuery] = useState<string>(initial.q)
+  const [mapColorField, setMapColorField] = useState<string>(
+    initial.mapColor || DEFAULT_MAP_COLOR_FIELD,
+  )
+  const selectedLeadId = useUiStore((s) => s.selectedLeadId)
+  const setSelectedLeadId = useUiStore((s) => s.setSelectedLeadId)
+  const leadDetailFullScreen = useUiStore((s) => s.leadDetailFullScreen)
+  const setLeadDetailFullScreen = useUiStore((s) => s.setLeadDetailFullScreen)
+
+  useEffect(() => {
+    if (selectedLeadId && leadDetailFullScreen) {
+      router.replace(`/leads/${selectedLeadId}`)
+    }
+  }, [selectedLeadId, leadDetailFullScreen, router])
+
+  useEffect(() => {
+    if (!selectedLeadId || leadDetailFullScreen) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setSelectedLeadId(null)
+        setLeadDetailFullScreen(false)
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [
+    selectedLeadId,
+    leadDetailFullScreen,
+    setSelectedLeadId,
+    setLeadDetailFullScreen,
+  ])
 
   const onViewChange = useCallback(
     (v: LeadsViewMode) => {
@@ -62,18 +118,27 @@ export default function LeadsPage() {
     [setStoredView],
   )
 
-  // Reflect state back into the URL whenever anything changes.
+  const onMapColorFieldChange = useCallback(
+    (key: string) => {
+      setMapColorField(key)
+      setStoredMapColorField(key)
+    },
+    [setStoredMapColorField],
+  )
+
   useEffect(() => {
     if (typeof window === "undefined") return
     const next = clausesToParams(clauses, sort)
     next.set("view", view)
     if (searchQuery) next.set("q", searchQuery)
+    if (view === "map" && mapColorField !== DEFAULT_MAP_COLOR_FIELD) {
+      next.set("mapColor", mapColorField)
+    }
     const url = new URL(window.location.href)
     url.search = next.toString()
     router.replace(url.pathname + url.search, { scroll: false })
-  }, [clauses, sort, view, searchQuery, router])
+  }, [clauses, sort, view, searchQuery, mapColorField, router])
 
-  // ----- data -----
   const leadsQuery = useLeads()
   const { fields } = useFields()
 
@@ -101,90 +166,182 @@ export default function LeadsPage() {
     [rows, combinedClauses, sort, fields],
   )
 
-  // ----- render -----
+  const { points: mapPoints, missingCount: mapMissingCount } = useMemo(
+    () => buildLeadsMapPoints(filtered),
+    [filtered],
+  )
+
   const isLoading = leadsQuery.isPending && !usingMockFallback
   const hardError = leadsQuery.isError && !usingMockFallback
 
+  const selectLead = useCallback(
+    (placeId: string) => {
+      setLeadDetailFullScreen(false)
+      setSelectedLeadId(placeId)
+    },
+    [setSelectedLeadId, setLeadDetailFullScreen],
+  )
+  const closePanel = useCallback(() => {
+    setSelectedLeadId(null)
+    setLeadDetailFullScreen(false)
+  }, [setSelectedLeadId, setLeadDetailFullScreen])
+
+  const isMapView = view === "map"
+  const showSidePanel = selectedLeadId && !leadDetailFullScreen
+
   return (
-    <div className="flex flex-col">
-      {usingMockFallback && (
-        <div className="border-b border-yellow-500/20 bg-yellow-500/10 px-4 py-1.5 text-[12px] text-yellow-500">
-          Showing mock data — backend unreachable (NEXT_PUBLIC_USE_MOCKS=1).
-        </div>
+    <div
+      className={cn(
+        "grid h-full min-h-0",
+        showSidePanel
+          ? "grid-cols-[minmax(0,1fr)_minmax(420px,33vw)]"
+          : "grid-cols-1",
       )}
+    >
+      <div
+        className={cn(
+          "flex min-w-0 flex-col",
+          isMapView ? "h-full min-h-0 overflow-hidden" : "overflow-y-auto",
+        )}
+      >
+        {usingMockFallback && (
+          <div className="border-b border-yellow-500/20 bg-yellow-500/10 px-4 py-1.5 text-[12px] text-yellow-500">
+            Showing mock data — backend unreachable (NEXT_PUBLIC_USE_MOCKS=1).
+          </div>
+        )}
 
-      <LeadsHeader
-        filteredCount={filtered.length}
-        totalCount={rows.length}
-        clauses={clauses}
-        onClausesChange={setClauses}
-        sort={sort}
-        onSortChange={setSort}
-        view={view}
-        onViewChange={onViewChange}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+        <LeadsHeader
+          filteredCount={filtered.length}
+          totalCount={rows.length}
+          clauses={clauses}
+          onClausesChange={setClauses}
+          sort={sort}
+          onSortChange={setSort}
+          view={view}
+          onViewChange={onViewChange}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          showTableColumnsMenu={view === "table"}
+          mapColorField={mapColorField}
+          onMapColorFieldChange={onMapColorFieldChange}
+          mapPointsCount={isMapView ? mapPoints.length : undefined}
+          mapMissingCount={isMapView ? mapMissingCount : undefined}
+        />
 
-      {isLoading && <LoadingState view={view} />}
+        {isLoading && <LoadingState view={view} />}
 
-      {hardError && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
-          <p className="text-[13px] text-foreground">
-            Couldn&apos;t load leads. {leadsQuery.error.message}
-          </p>
-          <p className="text-[12px] text-muted-foreground">
-            Backend at NEXT_PUBLIC_PI_URL reachable?
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => leadsQuery.refetch()}
-            className="mt-2"
-          >
-            Retry
-          </Button>
-        </div>
-      )}
-
-      {!isLoading && !hardError && filtered.length === 0 && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
-          <p className="text-[13px] text-foreground">
-            {rows.length === 0
-              ? "No leads yet."
-              : "No leads match these filters."}
-          </p>
-          {(clauses.length > 0 || searchQuery !== "") && (
+        {hardError && (
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
+            <p className="text-[13px] text-foreground">
+              Couldn&apos;t load leads. {leadsQuery.error.message}
+            </p>
+            <p className="text-[12px] text-muted-foreground">
+              Backend at NEXT_PUBLIC_PI_URL reachable?
+            </p>
             <Button
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => {
-                setClauses([])
-                setSearchQuery("")
-              }}
+              onClick={() => leadsQuery.refetch()}
+              className="mt-2"
             >
-              Clear filters
+              Retry
             </Button>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {!isLoading && !hardError && filtered.length > 0 && (
-        <>
-          {view === "smallGrid" && <LeadGridSmall rows={filtered} />}
-          {view === "bigGrid" && <LeadGridBig rows={filtered} />}
-          {view === "table" && (
-            <LeadTable rows={filtered} sort={sort} onSortChange={setSort} />
+        {!isLoading && !hardError && filtered.length === 0 && (
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
+            <p className="text-[13px] text-foreground">
+              {rows.length === 0
+                ? "No leads yet."
+                : "No leads match these filters."}
+            </p>
+            {(clauses.length > 0 || searchQuery !== "") && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setClauses([])
+                  setSearchQuery("")
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+        )}
+
+        {!isLoading &&
+          !hardError &&
+          filtered.length > 0 &&
+          isMapView &&
+          mapPoints.length === 0 && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 p-12 text-center">
+              <p className="text-[13px] text-foreground">
+                No leads with location data match these filters.
+              </p>
+              <p className="text-[12px] text-muted-foreground">
+                {filtered.length}{" "}
+                {filtered.length === 1 ? "lead matches" : "leads match"}, but
+                none have map coordinates.
+              </p>
+            </div>
           )}
-        </>
+
+        {!isLoading && !hardError && filtered.length > 0 && (
+          <>
+            {view === "smallGrid" && (
+              <LeadGridSmall
+                rows={filtered}
+                onSelect={selectLead}
+                selectedId={selectedLeadId}
+              />
+            )}
+            {view === "bigGrid" && (
+              <LeadGridBig
+                rows={filtered}
+                onSelect={selectLead}
+                selectedId={selectedLeadId}
+              />
+            )}
+            {view === "table" && (
+              <LeadTable
+                rows={filtered}
+                sort={sort}
+                onSortChange={setSort}
+                onSelect={selectLead}
+                selectedId={selectedLeadId}
+              />
+            )}
+            {view === "map" && mapPoints.length > 0 && (
+              <LeadsMap
+                points={mapPoints}
+                colorField={mapColorField}
+                selectedLeadId={selectedLeadId}
+                onLeadSelect={selectLead}
+              />
+            )}
+          </>
+        )}
+      </div>
+
+      {showSidePanel && (
+        <LeadSidePanel placeId={selectedLeadId} onClose={closePanel} />
       )}
     </div>
   )
 }
 
 function LoadingState({ view }: { view: LeadsViewMode }) {
+  if (view === "map") {
+    return (
+      <div className="bg-muted/30 flex min-h-0 flex-1 items-center justify-center">
+        <span className="text-muted-foreground text-[12px]">Loading map…</span>
+      </div>
+    )
+  }
   if (view === "table") {
     return (
       <div className="p-4">

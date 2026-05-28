@@ -7,11 +7,14 @@ import {
   ArrowUp01Icon,
   GridViewIcon,
   Layout01Icon,
+  MapsLocation01Icon,
   Search01Icon,
   Table01Icon,
 } from "@hugeicons/core-free-icons"
 
 import { FilterBuilder } from "@/components/filter/filter-builder"
+import { LeadQuickFilters } from "@/components/leads/lead-quick-filters"
+import { LeadTableColumnsMenu } from "@/components/leads/lead-table-columns-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -22,8 +25,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useFields } from "@/hooks/use-fields"
+import { getMapColorOptions } from "@/lib/lead-map-color"
 import type { LeadsViewMode } from "@/lib/store/ui"
-import type { FilterClause, SortClause } from "@/lib/types"
+import {
+  fieldClauseKey,
+  type FilterClause,
+  type SortClause,
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -37,6 +45,12 @@ type Props = {
   onViewChange: (v: LeadsViewMode) => void
   searchQuery: string
   onSearchChange: (q: string) => void
+  /** When table view: show column visibility next to sort controls. */
+  showTableColumnsMenu?: boolean
+  mapColorField?: string
+  onMapColorFieldChange?: (key: string) => void
+  mapPointsCount?: number
+  mapMissingCount?: number
 }
 
 const VIEW_BUTTONS: Array<{
@@ -47,6 +61,7 @@ const VIEW_BUTTONS: Array<{
   { value: "smallGrid", label: "Small grid", icon: GridViewIcon },
   { value: "bigGrid", label: "Big grid", icon: Layout01Icon },
   { value: "table", label: "Table", icon: Table01Icon },
+  { value: "map", label: "Map", icon: MapsLocation01Icon },
 ]
 
 export function LeadsHeader({
@@ -60,14 +75,20 @@ export function LeadsHeader({
   onViewChange,
   searchQuery,
   onSearchChange,
+  showTableColumnsMenu = false,
+  mapColorField,
+  onMapColorFieldChange,
+  mapPointsCount,
+  mapMissingCount,
 }: Props) {
   const { fields } = useFields()
+  const mapColorOptions = useMemo(() => getMapColorOptions(fields), [fields])
   const sortableFields = useMemo(() => {
     // Only stable columns + scalar dynamic fields. Filter out object/array.
     return fields
       .filter((f) => !f.type.startsWith("array") && f.type !== "object")
       .map((f) => ({
-        key: f.source === "dynamic" ? `dynamic.${f.key}` : f.key,
+        key: fieldClauseKey(f),
         label:
           f.display && f.display.trim() !== "" ? f.display : f.key,
       }))
@@ -82,12 +103,21 @@ export function LeadsHeader({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
           <h1 className="text-[15px] font-semibold text-foreground">
-            Lead overview
+            Leads
           </h1>
           <span className="text-[12px] text-muted-foreground">
             {filteredCount === totalCount
               ? `${totalCount} ${totalCount === 1 ? "lead" : "leads"}`
               : `${filteredCount} of ${totalCount} leads`}
+            {view === "map" &&
+              mapPointsCount != null &&
+              mapMissingCount != null &&
+              mapMissingCount > 0 && (
+                <>
+                  {" "}
+                  · {mapPointsCount} on map · {mapMissingCount} without location
+                </>
+              )}
           </span>
         </div>
 
@@ -141,13 +171,44 @@ export function LeadsHeader({
         </div>
       </div>
 
-      {/* Row 2: filters + sort */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <FilterBuilder clauses={clauses} onChange={onClausesChange} />
+      {/* Row 2: quick filters + filter builder + sort (one line when space allows) */}
+      <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-end gap-x-3 gap-y-2">
+          <div className="shrink-0">
+            <LeadQuickFilters
+              clauses={clauses}
+              onClausesChange={onClausesChange}
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <FilterBuilder clauses={clauses} onChange={onClausesChange} />
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+          {view === "map" && mapColorField && onMapColorFieldChange && (
+            <>
+              <span className="text-[11px] text-muted-foreground">Color by</span>
+              <Select
+                value={mapColorField}
+                onValueChange={onMapColorFieldChange}
+              >
+                <SelectTrigger
+                  size="sm"
+                  className="h-8 w-44 rounded-md text-[12px]"
+                >
+                  <SelectValue placeholder="Lead score" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mapColorOptions.map((opt) => (
+                    <SelectItem key={opt.key} value={opt.key}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
           <span className="text-[11px] text-muted-foreground">Sort by</span>
           <Select
             value={sortKey || "__none__"}
@@ -194,6 +255,7 @@ export function LeadsHeader({
               />
             </Button>
           )}
+          {showTableColumnsMenu ? <LeadTableColumnsMenu /> : null}
         </div>
       </div>
     </div>

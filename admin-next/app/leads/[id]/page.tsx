@@ -1,4 +1,4 @@
-import { LeadDetail } from "@/components/leads/lead-detail"
+import { LeadDetailPageClient } from "./lead-detail-page-client"
 
 type Params = { id: string }
 
@@ -9,8 +9,8 @@ export default async function LeadDetailPage({
 }) {
   const { id } = await params
   return (
-    <div className="px-6 py-4">
-      <LeadDetail placeId={id} />
+    <div className="flex h-full min-h-0 flex-col">
+      <LeadDetailPageClient id={id} />
     </div>
   )
 }

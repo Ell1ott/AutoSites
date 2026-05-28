@@ -100,6 +100,67 @@ test("array field — `in` is membership", () => {
   expect(evalClause(lead, { key: "tags", op: "in", value: "coffee,tea" }, [arrayField])).toBe(true)
 })
 
+test("array field — length works with numeric compares (crawl pages)", () => {
+  const crawlField: FieldDescriptor = {
+    key: "crawl_pages",
+    type: "array<string>",
+    source: "dynamic",
+    coverage: 1,
+  }
+  const multi = { dynamic: { crawl_pages: [{ u: "a" }, { u: "b" }] } }
+  const one = { dynamic: { crawl_pages: [{ u: "a" }] } }
+  const none = { dynamic: {} }
+  expect(
+    evalClause(
+      multi,
+      { key: "dynamic.crawl_pages", op: "gte", value: 2 },
+      [crawlField],
+    ),
+  ).toBe(true)
+  expect(
+    evalClause(
+      one,
+      { key: "dynamic.crawl_pages", op: "gte", value: 2 },
+      [crawlField],
+    ),
+  ).toBe(false)
+  expect(
+    evalClause(
+      none,
+      { key: "dynamic.crawl_pages", op: "lt", value: 2 },
+      [crawlField],
+    ),
+  ).toBe(true)
+})
+
+test("__quick_open_now — open / closed / unknown", () => {
+  const openLead = {
+    data: { currentOpeningHours: { openNow: true } },
+    dynamic: {},
+  }
+  const closedLead = {
+    data: { currentOpeningHours: { openNow: false } },
+    dynamic: {},
+  }
+  const unknown = { data: {}, dynamic: {} }
+  const cOpen = {
+    key: "__quick_open_now",
+    op: "eq" as const,
+    value: "open",
+  }
+  const cClosed = {
+    key: "__quick_open_now",
+    op: "eq" as const,
+    value: "closed",
+  }
+  expect(evalClause(openLead, cOpen)).toBe(true)
+  expect(evalClause(openLead, cClosed)).toBe(false)
+  expect(evalClause(closedLead, cClosed)).toBe(true)
+  expect(evalClause(closedLead, cOpen)).toBe(false)
+  expect(evalClause(unknown, cOpen)).toBe(false)
+  expect(evalClause(unknown, cClosed)).toBe(false)
+})
+
 // -----------------------------------------------------------------------------
 // exists / notexists on sparse dynamic field
 // -----------------------------------------------------------------------------

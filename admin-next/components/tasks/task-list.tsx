@@ -19,7 +19,7 @@ import {
 } from "@/hooks/use-ai-tasks"
 import { api, ApiError } from "@/lib/api"
 import { cn } from "@/lib/utils"
-import type { AiTask } from "@/lib/types"
+import type { AiTask, AiTaskType } from "@/lib/types"
 
 const USING_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "1"
 
@@ -83,12 +83,14 @@ export function TaskList({
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [draftName, setDraftName] = useState("")
   const [draftLabel, setDraftLabel] = useState("")
+  const [draftType, setDraftType] = useState<AiTaskType>("place")
   const [draftError, setDraftError] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
 
   function resetDraft() {
     setDraftName("")
     setDraftLabel("")
+    setDraftType("place")
     setDraftError(null)
   }
 
@@ -104,12 +106,29 @@ export function TaskList({
       setDraftError("That name is already taken.")
       return
     }
+    const baseConfig =
+      draftType === "browser_agent"
+        ? {
+            model: "gemma-4-26b-a4b-it",
+            prompt_template: "",
+            start_url_template: "https://dribbble.com/search/{{query}}?s=popular",
+            max_picks: 5,
+            output_field: name,
+          }
+        : draftType === "variant"
+          ? {
+              output_field: "variant_design",
+              start_url: "https://variant.com/projects",
+              generation_timeout_s: 900,
+            }
+          : { model: "claude-sonnet-4-6", prompt_template: "" }
     const minimal: Omit<AiTask, "updated_at"> = {
       name,
       label,
       enabled: true,
       sort_order: (sorted.at(-1)?.sort_order ?? 0) + 10,
-      config: { model: "claude-sonnet-4-6", prompt_template: "" },
+      task_type: draftType,
+      config: baseConfig,
     }
     setCreating(true)
     try {
@@ -195,6 +214,39 @@ export function TaskList({
                   className="h-8 text-[12px]"
                 />
               </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Type
+                </label>
+                <div className="flex gap-1">
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant={draftType === "place" ? "secondary" : "outline"}
+                    onClick={() => setDraftType("place")}
+                  >
+                    Per-place
+                  </Button>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant={
+                      draftType === "browser_agent" ? "secondary" : "outline"
+                    }
+                    onClick={() => setDraftType("browser_agent")}
+                  >
+                    Browser agent
+                  </Button>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant={draftType === "variant" ? "secondary" : "outline"}
+                    onClick={() => setDraftType("variant")}
+                  >
+                    Variant
+                  </Button>
+                </div>
+              </div>
               {draftError ? (
                 <p className="text-[11px] text-destructive">{draftError}</p>
               ) : null}
@@ -254,33 +306,48 @@ export function TaskList({
             {sorted.map((t) => {
               const active = t.name === selectedTaskName
               return (
-                <li key={t.name}>
+                <li
+                  key={t.name}
+                  className={cn(
+                    "flex items-center gap-2 border-b border-border/60 px-3 py-2 transition-colors",
+                    active ? "bg-accent" : "hover:bg-muted/40",
+                  )}
+                >
                   <button
                     type="button"
                     onClick={() => onSelect(t.name)}
-                    className={cn(
-                      "group/row flex w-full items-center justify-between gap-2 border-b border-border/60 px-3 py-2 text-left transition-colors",
-                      active ? "bg-accent" : "hover:bg-muted/40",
-                    )}
+                    className="group/row min-w-0 flex-1 text-left"
                   >
                     <div className="min-w-0">
-                      <div className="truncate text-[13px] font-medium">
-                        {t.label || t.name}
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate text-[13px] font-medium">
+                          {t.label || t.name}
+                        </span>
+                        {t.task_type === "browser_agent" ? (
+                          <span className="inline-flex h-4 items-center rounded-sm border border-border bg-muted/50 px-1 text-[9px] uppercase tracking-wide text-muted-foreground">
+                            agent
+                          </span>
+                        ) : null}
+                        {t.task_type === "variant" ? (
+                          <span className="inline-flex h-4 items-center rounded-sm border border-border bg-muted/50 px-1 text-[9px] uppercase tracking-wide text-muted-foreground">
+                            variant
+                          </span>
+                        ) : null}
                       </div>
                       <div className="truncate font-mono text-[10px] text-muted-foreground">
                         {t.name}
                       </div>
                     </div>
-                    <EnabledToggle
-                      enabled={t.enabled}
-                      onToggle={() =>
-                        toggleMut.mutate({
-                          name: t.name,
-                          enabled: !t.enabled,
-                        })
-                      }
-                    />
                   </button>
+                  <EnabledToggle
+                    enabled={t.enabled}
+                    onToggle={() =>
+                      toggleMut.mutate({
+                        name: t.name,
+                        enabled: !t.enabled,
+                      })
+                    }
+                  />
                 </li>
               )
             })}

@@ -15,6 +15,8 @@
 
 import { useEffect, useRef } from "react"
 
+import { getPiBackendBase } from "./pi-url"
+
 export type EventStreamOptions<T> = {
   /** Path relative to NEXT_PUBLIC_PI_URL, e.g. "/jobs/abc/stream". */
   url: string
@@ -34,8 +36,7 @@ const MAX_BACKOFF_MS = 5_000
 const INITIAL_BACKOFF_MS = 250
 
 function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_PI_URL ?? ""
-  return base.replace(/\/+$/, "")
+  return getPiBackendBase() ?? ""
 }
 
 function readPersistedSeq(storageKey?: string): number {

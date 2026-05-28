@@ -6,6 +6,7 @@ Public entry: `run(args, log)`. Used by `workers/handlers/fetch_leads.py`.
 """
 from __future__ import annotations
 
+import math
 import os
 import time
 from typing import Any, Callable
@@ -44,6 +45,40 @@ class FetchArgs:
         self.is_cancelled: Callable[[], bool] = cancel if callable(cancel) else (lambda: False)
 
 
+def _circle_bounding_rectangle(lat: float, lng: float, radius_m: float) -> dict[str, Any]:
+    """Text Search `locationRestriction` only supports rectangle, not circle."""
+    delta_lat = radius_m / 111_320.0
+    cos_lat = max(math.cos(math.radians(lat)), 1e-6)
+    delta_lng = radius_m / (111_320.0 * cos_lat)
+    return {
+        "rectangle": {
+            "low": {"latitude": lat - delta_lat, "longitude": lng - delta_lng},
+            "high": {"latitude": lat + delta_lat, "longitude": lng + delta_lng},
+        }
+    }
+
+
+def _haversine_m(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    r = 6_371_000.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lng2 - lng1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(min(1.0, a)))
+
+
+def _place_within_circle(place: dict[str, Any], lat: float, lng: float, radius_m: float) -> bool:
+    loc = place.get("location") or {}
+    plat = loc.get("latitude")
+    plng = loc.get("longitude")
+    if plat is None or plng is None:
+        return False
+    try:
+        return _haversine_m(lat, lng, float(plat), float(plng)) <= radius_m
+    except (TypeError, ValueError):
+        return False
+
+
 def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001 - JobLogger
     a = FetchArgs(args)
     if not a.query:
@@ -61,14 +96,17 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001 - JobLogge
         "X-Goog-FieldMask": a.field_mask,
     }
     common: dict[str, Any] = {"textQuery": a.query}
+    circle = {
+        "center": {"latitude": a.lat, "longitude": a.lng},
+        "radius": a.radius_m,
+    }
     if a.rank_by_distance:
         common["rankPreference"] = "DISTANCE"
-        common["locationBias"] = {
-            "circle": {
-                "center": {"latitude": a.lat, "longitude": a.lng},
-                "radius": a.radius_m,
-            }
-        }
+        # Text Search supports rectangle restriction only (not circle). Use the
+        # circle's bounding box, then post-filter to the exact radius below.
+        common["locationRestriction"] = _circle_bounding_rectangle(a.lat, a.lng, a.radius_m)
+    else:
+        common["locationBias"] = {"circle": circle}
     if a.region_code:
         common["regionCode"] = a.region_code
     if a.language_code:
@@ -76,13 +114,16 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001 - JobLogge
 
     page_token: str | None = None
     fetched: list[dict[str, Any]] = []
-    while len(fetched) < want:
+    seen_ids: set[str] = set()
+    pages = 0
+    max_pages = 10
+    while len(fetched) < want and pages < max_pages:
         if a.is_cancelled():
             log.warn("cancellation requested; stopping pagination")
             break
-        need = want - len(fetched)
+        pages += 1
         body = dict(common)
-        body["pageSize"] = min(TEXT_SEARCH_PAGE_SIZE_CAP, need)
+        body["pageSize"] = TEXT_SEARCH_PAGE_SIZE_CAP
         if page_token:
             body["pageToken"] = page_token
 
@@ -96,14 +137,29 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001 - JobLogge
         batch = payload.get("places") or []
         log.progress(done=len(fetched), total=want, page_size=len(batch))
         for p in batch:
-            if isinstance(p, dict):
-                fetched.append(p)
+            if not isinstance(p, dict):
+                continue
+            place_id = p.get("id")
+            if not place_id or place_id in seen_ids:
+                continue
+            if a.rank_by_distance and not _place_within_circle(p, a.lat, a.lng, a.radius_m):
+                continue
+            seen_ids.add(str(place_id))
+            fetched.append(p)
+            if len(fetched) >= want:
+                break
         next_tok = payload.get("nextPageToken")
         if not next_tok or not batch:
             break
         page_token = str(next_tok)
 
     fetched = fetched[:want]
+    if a.rank_by_distance and len(fetched) < want:
+        log.info(
+            f"strict radius filter kept {len(fetched)} of {want} requested place(s)",
+            in_radius=len(fetched),
+            requested=want,
+        )
     log.info(f"fetched {len(fetched)} place(s); writing to DB")
 
     # Build the AI-task name set so we partition incoming fields the same way
@@ -158,10 +214,16 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001 - JobLogge
                 dynamic=dynamic_part,
             )
             dur = (time.monotonic() - t_item) * 1000.0
+            loc = place.get("location") or {}
             log.item_done(
                 place_id=place_id,
                 duration_ms=dur,
-                outputs={"new": not existed, "name": name},
+                outputs={
+                    "new": not existed,
+                    "name": name,
+                    "lat": loc.get("latitude"),
+                    "lng": loc.get("longitude"),
+                },
             )
             if existed:
                 updated += 1

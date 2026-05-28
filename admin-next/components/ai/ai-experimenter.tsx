@@ -226,12 +226,11 @@ export function AiExperimenter({
     }
   }
 
-  const gap = compact ? "space-y-2" : "space-y-3"
+  const fieldGap = compact ? "space-y-2" : "flex flex-col gap-3"
   const taLines = compact ? "min-h-[80px]" : "min-h-[140px]"
-  const streamH = compact ? "h-40" : "h-72"
 
   return (
-    <div className={cn(gap, className)}>
+    <div className={cn(fieldGap, className)}>
       {/* Task picker */}
       <div className="flex flex-col gap-1">
         <label className="text-muted-foreground text-[11px] uppercase tracking-wide">
@@ -378,7 +377,11 @@ export function AiExperimenter({
 
       {/* Output panel */}
       {events.length > 0 ? (
-        <div className={gap}>
+        <div
+          className={cn(
+            compact ? fieldGap : "flex min-h-48 flex-1 flex-col gap-3",
+          )}
+        >
           {mode === "single" && task && latestOutput !== undefined ? (
             <AiOutputCard task={task} output={latestOutput} />
           ) : null}
@@ -396,7 +399,10 @@ export function AiExperimenter({
             mode="stream"
             autoScroll
             levelFilter="info"
-            className={cn("rounded-md border bg-card", streamH)}
+            className={cn(
+              "rounded-md border bg-card",
+              compact ? "h-40" : "min-h-48 flex-1",
+            )}
           />
         </div>
       ) : null}

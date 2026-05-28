@@ -1,8 +1,14 @@
 {
   "mcpServers": {
-    "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=nkuxxhuyeiwopzcdwsaq"
+    "autosites": {
+      "command": "uv",
+      "args": ["run", "--directory", "mcp/autosites", "autosites-mcp"],
+      "env": {
+        "AUTOSITES_BACKEND_URL": "http://localhost:8888",
+        "AUTOSITES_BACKEND_TOKEN": "",
+        "NEXT_PUBLIC_SUPABASE_URL": "https://nkuxxhuyeiwopzcdwsaq.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": ""
+      }
     }
   }
 }

@@ -55,6 +55,8 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
 
     # Record the run row too (the script also appends to its own runs.json; we
     # mirror into ai_runs so /ai-runs queries see it).
+    # Strip runner-injected private keys (e.g. __cancel__ callable) before persisting.
+    persist_args = {k: v for k, v in args.items() if not k.startswith("__")}
     with session() as c:
         ai_runs.upsert(
             c,
@@ -63,7 +65,7 @@ def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
             started_at=None,  # subprocess events carry these; not required here
             finished_at=None,
             status="ok" if summary.get("exit_code") == 0 else "failed",
-            args=args,
+            args=persist_args,
             counts={"events_seen": summary.get("events_seen")},
         )
     fields_repo.invalidate()

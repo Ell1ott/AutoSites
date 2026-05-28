@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { GlobeXIcon, StarIcon } from "@hugeicons/core-free-icons"
 
@@ -14,10 +13,11 @@ import { useRowSelection } from "./use-row-selection"
 
 type Props = {
   rows: SlimLead[]
+  onSelect: (placeId: string) => void
+  selectedId: string | null
 }
 
-export function LeadGridSmall({ rows }: Props) {
-  const router = useRouter()
+export function LeadGridSmall({ rows, onSelect, selectedId }: Props) {
   const selected = useSelectionStore((s) => s.selected)
   const { onCheckboxClick } = useRowSelection(rows)
 
@@ -25,6 +25,7 @@ export function LeadGridSmall({ rows }: Props) {
     <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 p-4">
       {rows.map((lead) => {
         const isSelected = selected.has(lead.place_id)
+        const isActive = selectedId === lead.place_id
         const score = lead.lead_score
         const noWebsite = !lead.website
         return (
@@ -32,14 +33,15 @@ export function LeadGridSmall({ rows }: Props) {
             key={lead.place_id}
             role="button"
             tabIndex={0}
-            onClick={() => router.push(`/leads/${lead.place_id}`)}
+            onClick={() => onSelect(lead.place_id)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") router.push(`/leads/${lead.place_id}`)
+              if (e.key === "Enter") onSelect(lead.place_id)
             }}
             className={cn(
               "group/card relative flex flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground transition-all",
               "hover:ring-1 hover:ring-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               isSelected && "ring-2 ring-primary",
+              isActive && "ring-2 ring-primary",
             )}
           >
             <LeadScreenshot

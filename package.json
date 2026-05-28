@@ -9,6 +9,7 @@
     "cms:push": "bun packages/cms/scripts/cms-sync.ts push"
   },
   "devDependencies": {
-    "@supabase/supabase-js": "^2.103.2"
+    "@supabase/supabase-js": "^2.103.2",
+    "playwright": "^1.60.0"
   }
 }

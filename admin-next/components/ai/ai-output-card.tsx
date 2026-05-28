@@ -3,10 +3,16 @@
 import * as React from "react"
 import { useState } from "react"
 
-import { Button } from "@/components/ui/button"
+import { AiMarkdown } from "@/components/ai/ai-markdown"
 import { CopyButton } from "@/components/ai/copy-button"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { AiTask } from "@/lib/types"
+import {
+  isVariantDesignResult,
+  VariantDesignGrid,
+} from "@/components/leads/variant-design-grid"
+import { getPiBackendBase } from "@/lib/pi-url"
+import type { AiTask, InspirationPick } from "@/lib/types"
 
 // -----------------------------------------------------------------------------
 // Props
@@ -44,6 +50,16 @@ function stringify(v: unknown): string {
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v)
+}
+
+function isInspirationList(v: unknown): v is InspirationPick[] {
+  if (!Array.isArray(v) || v.length === 0) return false
+  return v.every(
+    (item) =>
+      isPlainObject(item) &&
+      typeof item.url === "string" &&
+      typeof item.title === "string",
+  )
 }
 
 // -----------------------------------------------------------------------------
@@ -84,7 +100,11 @@ export function AiOutputCard({
         {error ? (
           <ErrorBody error={error} />
         ) : typeof output === "string" ? (
-          <pre className="font-mono text-[12.5px] whitespace-pre-wrap">{output}</pre>
+          <AiMarkdown>{output}</AiMarkdown>
+        ) : isInspirationList(output) ? (
+          <InspirationGrid picks={output} />
+        ) : isVariantDesignResult(output) ? (
+          <VariantDesignGrid result={output} />
         ) : isPlainObject(output) ? (
           <StructuredObject output={output} />
         ) : output == null ? (
@@ -150,6 +170,61 @@ function ErrorBody({ error }: { error: string }): React.JSX.Element {
   )
 }
 
+function InspirationGrid({
+  picks,
+}: {
+  picks: InspirationPick[]
+}): React.JSX.Element {
+  const base = getPiBackendBase()
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {picks.map((pick, i) => {
+        const shotUrl =
+          pick.screenshot && base
+            ? `${base}/screenshots/${pick.screenshot
+                .split("/")
+                .map(encodeURIComponent)
+                .join("/")}`
+            : null
+        return (
+          <a
+            key={`${pick.url}-${i}`}
+            href={pick.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col gap-1 rounded-md border bg-muted/20 p-1.5 transition-colors hover:bg-muted/40"
+            title={pick.why ?? pick.title}
+          >
+            <div className="aspect-[16/10] w-full overflow-hidden rounded-sm bg-muted/40">
+              {shotUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={shotUrl}
+                  alt={pick.title}
+                  className="h-full w-full object-cover object-top transition-transform group-hover:scale-[1.02]"
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).style.display = "none"
+                  }}
+                />
+              ) : null}
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-[12px] font-medium">
+                {pick.title}
+              </div>
+              {pick.why ? (
+                <div className="line-clamp-2 text-[11px] text-muted-foreground">
+                  {pick.why}
+                </div>
+              ) : null}
+            </div>
+          </a>
+        )
+      })}
+    </div>
+  )
+}
+
 function StructuredObject({
   output,
 }: {
@@ -164,7 +239,9 @@ function StructuredObject({
   return (
     <div className="flex flex-col gap-3">
       {tagline ? (
-        <div className="font-semibold text-[14px]">{tagline}</div>
+        <AiMarkdown className="font-semibold text-[14px] [&_p]:my-1 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0">
+          {tagline}
+        </AiMarkdown>
       ) : null}
 
       {summary ? (
@@ -172,7 +249,7 @@ function StructuredObject({
           <div className="text-muted-foreground mb-1 text-[11px] uppercase tracking-wide">
             Summary
           </div>
-          <p className="text-[13px] whitespace-pre-wrap">{summary}</p>
+          <AiMarkdown>{summary}</AiMarkdown>
         </div>
       ) : null}
 
@@ -201,9 +278,11 @@ function StructuredObject({
                     <CopyButton text={text} label="Copy" />
                   </div>
                   {sub ? (
-                    <p className="mt-1 text-[12.5px] whitespace-pre-wrap">
-                      {sub}
-                    </p>
+                    <div className="mt-1">
+                      <AiMarkdown className="text-[12.5px] [&_*]:leading-relaxed [&_pre]:my-2">
+                        {sub}
+                      </AiMarkdown>
+                    </div>
                   ) : (
                     <pre className="mt-1 max-h-40 overflow-auto font-mono text-[11.5px] whitespace-pre-wrap">
                       {stringify(sp)}

@@ -85,7 +85,7 @@ export function AiEventStream({
     return (
       <div
         className={cn(
-          "text-muted-foreground text-sm italic px-2 py-3",
+          "text-muted-foreground flex min-h-0 items-center justify-center px-2 py-3 text-sm italic",
           className,
         )}
       >
@@ -120,7 +120,7 @@ export function AiEventStream({
       ref={containerRef}
       onScroll={handleScroll}
       className={cn(
-        "overflow-auto font-mono text-[12px] leading-snug whitespace-pre-wrap",
+        "min-h-0 overflow-auto overscroll-contain font-mono text-[12px] leading-snug whitespace-pre-wrap",
         className,
       )}
     >

@@ -1,8 +1,12 @@
 """Jobs API: enqueue, rich snapshot, live SSE stream, cancel.
 
+Jobs run inside this same process via the in-process Dispatcher (see
+`workers/dispatcher.py`). POST /jobs inserts the row and hands the id to the
+dispatcher, which picks it up within microseconds.
+
 The SSE stream is the centerpiece of the dashboard's real-time view. On connect
 it replays past events from `job_logs` (with `?since=<seq>` for resume), then
-subscribes to a live in-memory queue that the worker's UDS push fills.
+subscribes to the in-process EventBus the JobLogger publishes to.
 """
 from __future__ import annotations
 
@@ -23,11 +27,19 @@ logger = logging.getLogger("backend.routes.jobs")
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
-_VALID_KINDS = {"fetch_leads", "ai_task", "crawl", "html_to_md"}
+_VALID_KINDS = {
+    "fetch_leads",
+    "ai_task",
+    "crawl",
+    "html_to_md",
+    "find_inspiration",
+    "generate_inspiration_queries",
+    "variant_design",
+}
 
 
 @router.post("", dependencies=[Auth])
-def enqueue(body: dict[str, Any], db=Depends(get_db)) -> dict[str, Any]:
+def enqueue(body: dict[str, Any], request: Request, db=Depends(get_db)) -> dict[str, Any]:
     kind = body.get("kind")
     if not isinstance(kind, str) or kind not in _VALID_KINDS:
         raise HTTPException(status_code=400, detail=f"kind must be one of {sorted(_VALID_KINDS)}")
@@ -35,13 +47,19 @@ def enqueue(body: dict[str, Any], db=Depends(get_db)) -> dict[str, Any]:
     if not isinstance(args, dict):
         raise HTTPException(status_code=400, detail="args must be an object")
     job_id = jobs_repo.enqueue(db, kind=kind, args=args)
+    # Hand the job straight to the in-process dispatcher. If we're under the
+    # concurrency cap it starts immediately; otherwise it waits in the FIFO
+    # queue. The row is durable either way.
+    dispatcher = getattr(request.app.state, "dispatcher", None)
+    if dispatcher is not None:
+        dispatcher.submit(job_id)
     return {"id": job_id, "kind": kind, "status": "queued"}
 
 
 @router.get("", dependencies=[Auth])
 def list_jobs(
     kind: str | None = None,
-    status: str | None = None,
+    status: list[str] | None = Query(None),
     limit: int = Query(50, ge=1, le=500),
     db=Depends(get_db_ro),
 ) -> dict[str, Any]:
@@ -122,12 +140,12 @@ async def stream_job(
         if provided != expected:
             raise HTTPException(status_code=401, detail="invalid token")
 
-    bus = getattr(request.app.state, "event_bus", None)
+    bus = request.app.state.event_bus
     levels_tuple = tuple(level.split(",")) if level else None
 
     async def gen():
         # 1. Subscribe FIRST so we don't miss events that fire between replay and tail.
-        queue = bus.subscribe(job_id) if bus is not None else None
+        queue = bus.subscribe(job_id)
         try:
             yield ": connected\n\n"
 
@@ -148,41 +166,26 @@ async def stream_job(
             finally:
                 conn.close()
 
-            # 3. Live tail. If we have a live event bus, drain its queue. Otherwise
-            # fall back to short DB polls — slightly higher latency but no events
-            # are ever lost because every event is persisted in job_logs.
-            poll_seen = last_seen
+            # 3. Live tail from the in-process event bus.
             while True:
                 if await request.is_disconnected():
                     break
-                if queue is not None:
-                    try:
-                        ev = await asyncio.wait_for(queue.get(), timeout=15.0)
-                    except asyncio.TimeoutError:
-                        yield ": heartbeat\n\n"
-                        continue
-                    if levels_tuple and ev.get("level") not in levels_tuple:
-                        continue
-                    yield _sse_format(ev)
-                else:
-                    await asyncio.sleep(0.5)
-                    conn = connect(readonly=True)
-                    try:
-                        batch = job_logs.tail(
-                            conn, job_id, since_id=poll_seen, levels=levels_tuple, limit=200
-                        )
-                    finally:
-                        conn.close()
-                    if not batch:
-                        # Periodic heartbeat in fallback mode too.
-                        yield ": heartbeat\n\n"
-                        continue
-                    for ev in batch:
-                        yield _sse_format(ev)
-                        poll_seen = ev["id"]
+                try:
+                    ev = await asyncio.wait_for(queue.get(), timeout=15.0)
+                except asyncio.TimeoutError:
+                    yield ": heartbeat\n\n"
+                    continue
+                if levels_tuple and ev.get("level") not in levels_tuple:
+                    continue
+                # Skip anything the replay already covered (we subscribed before
+                # the replay scan, so the first few live events may overlap).
+                if isinstance(ev.get("id"), int) and ev["id"] <= last_seen:
+                    continue
+                yield _sse_format(ev)
+                if isinstance(ev.get("id"), int):
+                    last_seen = ev["id"]
         finally:
-            if queue is not None and bus is not None:
-                bus.unsubscribe(job_id, queue)
+            bus.unsubscribe(job_id, queue)
 
     return StreamingResponse(
         gen(),
@@ -223,6 +226,8 @@ def cancel_job(job_id: str, db=Depends(get_db)) -> dict[str, Any]:
 
 
 def _sse_format(ev: dict[str, Any]) -> str:
-    event = ev.get("event") or "message"
+    # Emit as default-typed messages so they dispatch to EventSource.onmessage
+    # on the client. The event name lives inside the JSON payload's `event`
+    # field, which is what all our consumers read.
     data = json.dumps(ev, default=str, ensure_ascii=False)
-    return f"event: {event}\ndata: {data}\n\n"
+    return f"data: {data}\n\n"

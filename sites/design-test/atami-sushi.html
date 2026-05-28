@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Atami — Sushi & Warm Plates · København / Aarhus / Odense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --moss:#1f3a2f;
+    --moss-deep:#14241c;
+    --moss-soft:#2d4a3b;
+    --coral:#e86c4f;
+    --coral-soft:#f08a6f;
+    --paper:#f3ecdd;
+    --paper-warm:#e8dec9;
+    --ink:#0e1612;
+    --ink-soft:#3a4640;
+    --line:rgba(20,36,28,.18);
+    --serif:"Fraunces",ui-serif,Georgia,serif;
+    --jp:"Shippori Mincho",serif;
+    --sans:"Inter Tight",ui-sans-serif,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    line-height:1.45;
+  }
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:200;
+    opacity:.32;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .utility{
+    background:var(--moss-deep);
+    color:var(--paper);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(243,236,221,.08);
+  }
+  .utility-row{
+    max-width:1440px;margin:0 auto;
+    padding:10px 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .loc-pills{display:flex;gap:4px;align-items:center}
+  .loc-pills span.dot{width:6px;height:6px;border-radius:50%;background:var(--coral);display:inline-block;margin-right:10px;animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .loc-pills button{
+    padding:6px 12px;border-radius:999px;
+    color:var(--paper);opacity:.6;
+    transition:.25s;
+    letter-spacing:.18em;font-size:11px;
+  }
+  .loc-pills button.active{background:rgba(243,236,221,.1);opacity:1;color:var(--paper)}
+  .loc-pills button:hover{opacity:1}
+  .util-right{display:flex;gap:24px;opacity:.7}
+  .util-right a:hover{opacity:1;color:var(--coral-soft)}
+
+  nav.main{
+    position:sticky;top:0;z-index:100;
+    background:rgba(243,236,221,.92);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    max-width:1440px;margin:0 auto;
+    padding:18px 32px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  }
+  .brand{
+    font-family:var(--serif);
+    font-size:30px;font-weight:400;
+    letter-spacing:-.02em;
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .brand .jp{font-family:var(--jp);font-size:18px;color:var(--coral)}
+  .nav-links{display:flex;gap:38px;justify-content:center;font-size:13px;letter-spacing:.04em}
+  .nav-links a{position:relative;padding:6px 0}
+  .nav-links a::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;
+    height:1px;background:var(--moss);
+    transform:scaleX(0);transform-origin:right;transition:.4s cubic-bezier(.7,0,.2,1)
+  }
+  .nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+  .nav-cta{display:flex;gap:10px;justify-content:flex-end;align-items:center}
+  .btn{
+    padding:12px 22px;border-radius:999px;
+    font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    transition:.25s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-ghost{border:1px solid var(--moss);color:var(--moss)}
+  .btn-ghost:hover{background:var(--moss);color:var(--paper)}
+  .btn-solid{background:var(--moss);color:var(--paper)}
+  .btn-solid:hover{background:var(--coral);color:var(--paper)}
+  .btn-coral{background:var(--coral);color:var(--paper)}
+  .btn-coral:hover{background:var(--moss-deep)}
+  .btn .arr{display:inline-block;transition:transform .3s}
+  .btn:hover .arr{transform:translateX(3px)}
+
+  .hero{
+    position:relative;
+    padding:60px 32px 0;
+    max-width:1440px;margin:0 auto;
+    min-height:90vh;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:48px;
+    align-items:end;
+    min-height:78vh;
+  }
+  .hero h1{
+    font-family:var(--serif);
+    font-weight:300;
+    font-size:clamp(64px,9.5vw,168px);
+    line-height:.88;
+    letter-spacing:-.035em;
+    color:var(--moss-deep);
+  }
+  .hero h1 em{
+    font-style:italic;
+    font-weight:300;
+    color:var(--coral);
+  }
+  .hero h1 .jp{
+    font-family:var(--jp);
+    font-size:.42em;
+    font-weight:400;
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:.2em;
+    color:var(--moss-soft);
+    transform:translateY(-.15em);
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:14px;
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:36px;
+  }
+  .eyebrow::before{content:"";width:36px;height:1px;background:var(--moss)}
+  .hero-meta{
+    margin-top:42px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;
+    padding-top:28px;border-top:1px solid var(--line);
+    max-width:640px;
+  }
+  .hero-meta div p:first-child{
+    font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:6px;
+  }
+  .hero-meta div p:last-child{font-family:var(--serif);font-size:18px;color:var(--moss-deep)}
+
+  .hero-visual{
+    position:relative;
+    align-self:stretch;
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  .hero-img{
+    position:relative;
+    aspect-ratio:4/5;
+    background:var(--moss-deep);
+    overflow:hidden;
+    border-radius:2px;
+  }
+  .hero-img img{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92) contrast(1.02);
+    animation:slowzoom 12s ease-in-out infinite alternate;
+  }
+  @keyframes slowzoom{0%{transform:scale(1)}100%{transform:scale(1.07)}}
+  .hero-tag{
+    position:absolute;left:-32px;top:48px;
+    background:var(--coral);color:var(--paper);
+    padding:14px 22px;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    border-radius:2px;
+    transform:rotate(-3deg);
+    box-shadow:0 12px 36px rgba(232,108,79,.35);
+    z-index:3;
+  }
+  .hero-tag::after{
+    content:"";position:absolute;left:18px;bottom:-6px;
+    width:0;height:0;border:6px solid transparent;border-top-color:var(--coral);
+  }
+  .hero-mini{
+    position:absolute;right:-24px;bottom:-32px;
+    width:200px;aspect-ratio:1;
+    background:var(--paper);
+    padding:14px;
+    border-radius:2px;
+    box-shadow:0 24px 60px rgba(20,36,28,.18);
+    z-index:4;
+  }
+  .hero-mini img{width:100%;height:100%;object-fit:cover}
+  .hero-mini-tag{
+    position:absolute;top:-12px;left:-12px;
+    background:var(--moss-deep);color:var(--paper);
+    width:54px;height:54px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--jp);font-size:18px;
+    transform:rotate(-12deg);
+  }
+
+  .marquee{
+    margin-top:90px;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    padding:18px 0;
+    background:var(--paper);
+  }
+  .marquee-track{
+    display:flex;gap:60px;
+    white-space:nowrap;
+    animation:scroll 38s linear infinite;
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:22px;
+    color:var(--moss-deep);
+  }
+  .marquee-track span{display:inline-flex;align-items:center;gap:60px}
+  .marquee-track .star{color:var(--coral);font-style:normal;font-size:14px}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  .philosophy{
+    max-width:1440px;margin:0 auto;
+    padding:160px 32px;
+    display:grid;grid-template-columns:1fr 1.25fr;gap:80px;
+    align-items:start;
+  }
+  .philosophy .side{position:sticky;top:120px}
+  .philosophy h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(40px,4.5vw,72px);
+    line-height:1;letter-spacing:-.025em;
+    color:var(--moss-deep);
+  }
+  .philosophy h2 em{font-style:italic;color:var(--coral)}
+  .philosophy .body p{
+    font-family:var(--serif);
+    font-size:24px;line-height:1.45;font-weight:300;
+    color:var(--ink);max-width:540px;
+    margin-bottom:28px;
+  }
+  .philosophy .body p:first-child::first-letter{
+    font-size:96px;
+    float:left;
+    line-height:.85;
+    padding:8px 12px 0 0;
+    color:var(--coral);
+    font-style:italic;
+  }
+  .pillars{
+    margin-top:48px;
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    max-width:540px;
+  }
+  .pillar{background:var(--paper);padding:28px 24px}
+  .pillar .num{font-family:var(--jp);font-size:14px;color:var(--coral);margin-bottom:12px}
+  .pillar h4{font-family:var(--serif);font-size:18px;font-weight:400;margin-bottom:8px;color:var(--moss-deep)}
+  .pillar p{font-size:13px;color:var(--ink-soft);line-height:1.55}
+
+  .menu{
+    background:var(--moss-deep);
+    color:var(--paper);
+    padding:140px 32px;
+    position:relative;
+    overflow:hidden;
+  }
+  .menu::before{
+    content:"鮨"; position:absolute;
+    font-family:var(--jp);font-size:780px;
+    color:rgba(243,236,221,.025);
+    top:-100px;right:-80px;line-height:.7;
+    pointer-events:none;
+  }
+  .menu-inner{max-width:1440px;margin:0 auto;position:relative}
+  .menu-head{
+    display:flex;justify-content:space-between;align-items:end;
+    margin-bottom:80px;gap:48px;flex-wrap:wrap;
+  }
+  .menu-head h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(48px,6vw,112px);
+    line-height:.95;letter-spacing:-.03em;
+  }
+  .menu-head h2 em{font-style:italic;color:var(--coral-soft)}
+  .menu-head .lead{
+    max-width:380px;
+    font-size:15px;line-height:1.6;
+    color:rgba(243,236,221,.75);
+  }
+  .menu-tabs{
+    display:flex;gap:0;margin-bottom:40px;
+    border-bottom:1px solid rgba(243,236,221,.15);
+    flex-wrap:wrap;
+  }
+  .menu-tabs button{
+    padding:18px 32px;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(243,236,221,.55);
+    border-bottom:2px solid transparent;
+    transition:.3s;
+    margin-bottom:-1px;
+  }
+  .menu-tabs button.active{color:var(--coral);border-color:var(--coral)}
+  .menu-tabs button:hover{color:var(--paper)}
+
+  .menu-grid{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:1px;
+    background:rgba(243,236,221,.12);
+    border:1px solid rgba(243,236,221,.12);
+  }
+  .dish{
+    background:var(--moss-deep);
+    padding:32px 28px;
+    display:flex;flex-direction:column;
+    gap:14px;
+    position:relative;
+    transition:.4s;
+  }
+  .dish:hover{background:var(--moss-soft)}
+  .dish.span-4{grid-column:span 4}
+  .dish.span-3{grid-column:span 3}
+  .dish.span-5{grid-column:span 5}
+  .dish.span-6{grid-column:span 6}
+  .dish.span-7{grid-column:span 7}
+  .dish.tall{grid-row:span 2}
+  .dish .img{
+    aspect-ratio:4/3;
+    overflow:hidden;background:#000;border-radius:2px;
+  }
+  .dish.tall .img{aspect-ratio:4/5.4}
+  .dish .img img{width:100%;height:100%;object-fit:cover;transition:1s}
+  .dish:hover .img img{transform:scale(1.08)}
+  .dish .head{
+    display:flex;justify-content:space-between;align-items:baseline;gap:18px;
+  }
+  .dish h3{
+    font-family:var(--serif);font-weight:400;
+    font-size:22px;letter-spacing:-.01em;
+    color:var(--paper);
+  }
+  .dish h3 .jp{font-family:var(--jp);font-size:12px;color:rgba(243,236,221,.5);margin-left:8px}
+  .dish .price{
+    font-family:var(--serif);font-size:18px;color:var(--coral);
+    font-feature-settings:"tnum";
+  }
+  .dish .desc{font-size:13px;line-height:1.55;color:rgba(243,236,221,.6);max-width:360px}
+  .dish .tag{
+    position:absolute;top:18px;right:18px;
+    background:var(--coral);color:var(--paper);
+    padding:4px 10px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+    border-radius:2px;
+  }
+  .dish .tag.veg{background:rgba(243,236,221,.15);color:var(--paper)}
+
+  .dining{
+    max-width:1440px;margin:0 auto;
+    padding:160px 32px;
+  }
+  .dining-head{text-align:center;margin-bottom:80px}
+  .dining-head .eyebrow{justify-content:center}
+  .dining-head .eyebrow::before{display:none}
+  .dining-head h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(48px,6vw,104px);
+    line-height:.95;letter-spacing:-.03em;
+    color:var(--moss-deep);
+  }
+  .dining-head h2 em{font-style:italic;color:var(--coral)}
+  .dining-cards{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  }
+  .d-card{
+    background:var(--paper-warm);
+    padding:48px 40px;
+    border-radius:2px;
+    position:relative;
+    overflow:hidden;
+    min-height:560px;
+    display:flex;flex-direction:column;
+    transition:.4s;
+  }
+  .d-card:hover{transform:translateY(-4px)}
+  .d-card.coral{background:var(--coral);color:var(--paper)}
+  .d-card.coral .price-tag{color:var(--paper)}
+  .d-card.coral .features li{border-color:rgba(243,236,221,.2)}
+  .d-card .label{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .d-card h3{
+    font-family:var(--serif);font-weight:300;
+    font-size:64px;line-height:.95;letter-spacing:-.02em;
+    margin-bottom:18px;
+  }
+  .d-card h3 em{font-style:italic}
+  .d-card h3 .jp{font-family:var(--jp);font-size:24px;display:block;margin-top:6px;opacity:.7}
+  .d-card .lead{font-size:15px;line-height:1.6;margin-bottom:32px;max-width:380px;opacity:.85}
+  .price-tag{
+    font-family:var(--serif);font-size:48px;
+    color:var(--moss-deep);
+    margin-bottom:32px;
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .price-tag small{font-size:14px;font-family:var(--sans);letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+  .features{list-style:none;margin-bottom:32px;flex:1}
+  .features li{
+    padding:14px 0;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:14px;
+  }
+  .features li::before{content:"+ ";color:var(--coral);font-family:var(--serif);font-size:18px;margin-right:10px}
+  .d-card.coral .features li::before{color:var(--moss-deep)}
+  .d-card .cta{align-self:flex-start;margin-top:auto}
+
+  .locations{
+    background:var(--paper-warm);
+    padding:140px 32px;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .loc-inner{max-width:1440px;margin:0 auto}
+  .loc-head{
+    display:flex;justify-content:space-between;align-items:end;
+    margin-bottom:72px;gap:32px;flex-wrap:wrap;
+  }
+  .loc-head h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(48px,6vw,104px);
+    line-height:.95;letter-spacing:-.03em;
+    color:var(--moss-deep);
+  }
+  .loc-head h2 em{font-style:italic;color:var(--coral)}
+  .loc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .loc-card{
+    background:var(--paper);
+    padding:32px 28px;
+    display:flex;flex-direction:column;gap:18px;
+    transition:.35s;
+    cursor:pointer;
+    position:relative;
+  }
+  .loc-card:hover{background:var(--moss-deep);color:var(--paper)}
+  .loc-card:hover .loc-num,.loc-card:hover h3,.loc-card:hover .loc-meta li,.loc-card:hover .loc-meta li b{color:var(--paper)}
+  .loc-card:hover .loc-img{border-color:rgba(243,236,221,.2)}
+  .loc-card:hover .open-dot{background:var(--coral)}
+  .loc-num{
+    font-family:var(--jp);font-size:14px;color:var(--coral);
+    letter-spacing:.2em;
+  }
+  .loc-card h3{
+    font-family:var(--serif);font-weight:400;
+    font-size:32px;letter-spacing:-.02em;
+    color:var(--moss-deep);line-height:1;
+  }
+  .loc-img{
+    aspect-ratio:3/2;overflow:hidden;background:#000;
+    border:1px solid var(--line);border-radius:2px;
+  }
+  .loc-img img{width:100%;height:100%;object-fit:cover;transition:1s}
+  .loc-card:hover .loc-img img{transform:scale(1.06)}
+  .loc-meta{list-style:none;font-size:12px;line-height:1.7;letter-spacing:.02em}
+  .loc-meta li{display:flex;gap:10px;color:var(--ink-soft)}
+  .loc-meta li b{
+    font-weight:500;color:var(--moss-deep);
+    flex:0 0 64px;text-transform:uppercase;font-size:10px;letter-spacing:.14em;
+    padding-top:3px;
+  }
+  .loc-status{
+    display:flex;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line);
+  }
+  .open-dot{width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(232,108,79,.15)}
+
+  .booking{
+    max-width:1440px;margin:0 auto;
+    padding:140px 32px;
+    display:grid;grid-template-columns:1fr 1fr;gap:80px;
+    align-items:center;
+  }
+  .book-visual{
+    aspect-ratio:5/6;
+    background:var(--moss-deep);
+    overflow:hidden;
+    position:relative;
+    border-radius:2px;
+  }
+  .book-visual img{width:100%;height:100%;object-fit:cover}
+  .book-stamp{
+    position:absolute;
+    top:32px;right:32px;
+    width:120px;height:120px;
+    border-radius:50%;
+    border:1px solid rgba(243,236,221,.4);
+    color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    animation:rotate 28s linear infinite;
+  }
+  @keyframes rotate{to{transform:rotate(360deg)}}
+  .book-stamp svg{width:100%;height:100%}
+  .book-stamp .center{
+    position:absolute;
+    font-family:var(--jp);font-size:32px;
+    color:var(--coral-soft);
+  }
+  .book-form h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(40px,4.5vw,72px);
+    line-height:1;letter-spacing:-.025em;
+    color:var(--moss-deep);
+    margin-bottom:18px;
+  }
+  .book-form h2 em{font-style:italic;color:var(--coral)}
+  .book-form .lead{
+    font-size:15px;line-height:1.6;color:var(--ink-soft);
+    margin-bottom:40px;max-width:440px;
+  }
+  .form-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    margin-bottom:24px;
+  }
+  .field{background:var(--paper);padding:18px 20px}
+  .field label{
+    display:block;font-size:10px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;
+  }
+  .field input,.field select{
+    width:100%;border:none;background:transparent;outline:none;
+    font-family:var(--serif);font-size:18px;color:var(--moss-deep);
+    appearance:none;
+    cursor:pointer;
+  }
+  .field.full{grid-column:span 2}
+  .book-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .book-actions small{font-size:11px;color:var(--ink-soft);letter-spacing:.04em;line-height:1.5;flex:1;min-width:220px}
+
+  .testi{
+    background:var(--moss);
+    color:var(--paper);
+    padding:120px 0;
+    overflow:hidden;
+  }
+  .testi-head{
+    max-width:1440px;margin:0 auto;padding:0 32px;
+    display:flex;justify-content:space-between;align-items:end;
+    margin-bottom:72px;gap:32px;flex-wrap:wrap;
+  }
+  .testi-head h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(48px,6vw,104px);
+    line-height:.95;letter-spacing:-.03em;
+  }
+  .testi-head h2 em{font-style:italic;color:var(--coral-soft)}
+  .stars-row{display:flex;align-items:baseline;gap:14px}
+  .stars-row .num{font-family:var(--serif);font-size:64px;color:var(--coral-soft);line-height:1}
+  .stars-row .sub{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;max-width:180px}
+
+  .testi-scroller{
+    display:flex;gap:24px;
+    padding:0 32px;
+    animation:scroll-t 60s linear infinite;
+    width:max-content;
+  }
+  .testi-scroller:hover{animation-play-state:paused}
+  @keyframes scroll-t{to{transform:translateX(-50%)}}
+  .quote{
+    width:420px;flex:0 0 420px;
+    background:rgba(243,236,221,.06);
+    border:1px solid rgba(243,236,221,.12);
+    padding:36px 32px;
+    border-radius:2px;
+    display:flex;flex-direction:column;gap:18px;
+    backdrop-filter:blur(4px);
+  }
+  .quote .stars{color:var(--coral-soft);letter-spacing:.2em;font-size:14px}
+  .quote blockquote{
+    font-family:var(--serif);font-weight:300;
+    font-size:22px;line-height:1.4;
+    letter-spacing:-.01em;
+    flex:1;
+  }
+  .quote blockquote::before{content:"“";color:var(--coral-soft);font-size:48px;line-height:0;vertical-align:-.2em;margin-right:4px;font-family:var(--serif);font-style:italic}
+  .quote .by{
+    display:flex;align-items:center;gap:12px;
+    padding-top:18px;border-top:1px solid rgba(243,236,221,.12);
+  }
+  .quote .by .av{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--coral);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-size:17px;
+  }
+  .quote .by .name{font-size:14px}
+  .quote .by .loc{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:2px}
+
+  .press{
+    max-width:1440px;margin:0 auto;
+    padding:100px 32px;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:48px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);
+  }
+  .press p{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+  .press-logos{display:flex;gap:48px;flex-wrap:wrap;align-items:center;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--moss-deep);opacity:.7}
+  .press-logos span{padding:0 8px;border-left:1px solid var(--line)}
+  .press-logos span:first-child{border-left:0}
+
+  .takeaway{
+    max-width:1440px;margin:0 auto;
+    padding:140px 32px;
+    display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:end;
+  }
+  .takeaway-card{
+    background:var(--coral);color:var(--paper);
+    padding:64px 56px;border-radius:2px;
+    position:relative;overflow:hidden;
+  }
+  .takeaway-card::after{
+    content:"丼";position:absolute;
+    font-family:var(--jp);font-size:480px;
+    color:rgba(243,236,221,.08);
+    bottom:-160px;right:-60px;line-height:.7;
+  }
+  .takeaway-card h2{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(48px,6vw,96px);
+    line-height:.9;letter-spacing:-.03em;
+    margin-bottom:24px;position:relative;z-index:2;
+  }
+  .takeaway-card h2 em{font-style:italic}
+  .takeaway-card p{font-size:16px;line-height:1.6;max-width:440px;margin-bottom:36px;position:relative;z-index:2}
+  .takeaway-card .btn{background:var(--moss-deep);color:var(--paper);position:relative;z-index:2}
+  .takeaway-card .btn:hover{background:var(--paper);color:var(--moss-deep)}
+  .takeaway-side h3{
+    font-family:var(--serif);font-weight:300;font-style:italic;
+    font-size:32px;line-height:1.15;color:var(--moss-deep);
+    margin-bottom:32px;
+  }
+  .delivery-list{list-style:none}
+  .delivery-list li{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 0;border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .delivery-list li:last-child{border-bottom:0}
+  .delivery-list b{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--moss-deep)}
+  .delivery-list small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+
+  footer{
+    background:var(--moss-deep);color:var(--paper);
+    padding:100px 32px 40px;
+    position:relative;overflow:hidden;
+  }
+  footer::before{
+    content:"あ た み";
+    position:absolute;left:32px;bottom:-60px;
+    font-family:var(--jp);font-size:280px;
+    color:rgba(243,236,221,.04);
+    letter-spacing:.2em;line-height:.7;
+    pointer-events:none;
+  }
+  .footer-inner{max-width:1440px;margin:0 auto;position:relative}
+  .footer-top{
+    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:48px;padding-bottom:64px;
+    border-bottom:1px solid rgba(243,236,221,.12);
+  }
+  .footer-brand .brand{color:var(--paper);font-size:48px}
+  .footer-brand .brand .jp{color:var(--coral-soft);font-size:24px}
+  .footer-brand p{
+    margin-top:18px;font-size:14px;line-height:1.6;
+    color:rgba(243,236,221,.65);max-width:340px;
+  }
+  .footer-col h5{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--coral-soft);margin-bottom:18px;
+  }
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .footer-col a{font-size:14px;color:rgba(243,236,221,.8);transition:.2s}
+  .footer-col a:hover{color:var(--coral-soft)}
+  .footer-bottom{
+    padding-top:32px;
+    display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(243,236,221,.55);
+  }
+  .footer-bottom a:hover{color:var(--coral-soft)}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (max-width:1024px){
+    .nav-links{display:none}
+    .hero-grid{grid-template-columns:1fr;gap:64px}
+    .hero-visual{max-width:560px;margin-left:auto}
+    .philosophy{grid-template-columns:1fr;gap:48px}
+    .philosophy .side{position:static}
+    .menu-grid{grid-template-columns:repeat(6,1fr)}
+    .dish.span-4,.dish.span-3,.dish.span-5,.dish.span-6,.dish.span-7{grid-column:span 6}
+    .dining-cards{grid-template-columns:1fr}
+    .loc-grid{grid-template-columns:1fr 1fr}
+    .booking{grid-template-columns:1fr;gap:48px}
+    .takeaway{grid-template-columns:1fr}
+    .footer-top{grid-template-columns:1fr 1fr;gap:40px}
+  }
+  @media (max-width:640px){
+    .utility-row{padding:10px 18px;flex-direction:column;gap:10px}
+    .nav-row{padding:14px 18px}
+    .nav-cta .btn-ghost{display:none}
+    .hero{padding:40px 18px 0}
+    .hero h1{font-size:60px}
+    .hero-meta{grid-template-columns:1fr;gap:16px}
+    .menu,.dining,.locations,.booking,.testi,.takeaway,footer{padding-left:18px;padding-right:18px}
+    .menu{padding-top:80px;padding-bottom:80px}
+    .menu-grid{grid-template-columns:1fr}
+    .dish.span-4,.dish.span-3,.dish.span-5,.dish.span-6,.dish.span-7{grid-column:span 1}
+    .loc-grid{grid-template-columns:1fr}
+    .form-grid{grid-template-columns:1fr}
+    .field.full{grid-column:span 1}
+    .quote{width:300px;flex-basis:300px;padding:24px 22px}
+    .quote blockquote{font-size:18px}
+    .footer-top{grid-template-columns:1fr;gap:32px}
+    .hero-tag{left:-12px}
+    .hero-mini{right:-8px;width:140px}
+    .takeaway-card{padding:44px 32px}
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <div class="utility-row">
+    <div class="loc-pills">
+      <span class="dot"></span>
+      <span>Now serving · </span>
+      <button class="active">København</button>
+      <button>Aarhus</button>
+      <button>Odense</button>
+      <button>Aalborg</button>
+    </div>
+    <div class="util-right">
+      <a href="#book">+45 33 14 22 88</a>
+      <a href="#">EN / DK</a>
+    </div>
+  </div>
+</div>
+
+<nav class="main">
+  <div class="nav-row">
+    <div class="brand">Atami<span class="jp">あたみ</span></div>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="#dining">Dining</a>
+      <a href="#locations">Locations</a>
+      <a href="#story">Story</a>
+      <a href="#takeaway">Takeaway</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="#takeaway">Order online</a>
+      <a class="btn btn-solid" href="#book">Book a table <span class="arr">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Est. 2014 · Nordic-Japanese kitchen</div>
+      <h1>
+        Where <em>moss</em><br>
+        meets <em>maki</em>
+        <span class="jp">苔と巻</span>
+      </h1>
+      <div class="hero-meta">
+        <div>
+          <p>Tonight</p>
+          <p>17:00 – 23:00</p>
+        </div>
+        <div>
+          <p>This week</p>
+          <p>Hokkaido scallop</p>
+        </div>
+        <div>
+          <p>All-you-can-eat</p>
+          <p>From 329 DKK</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="hero-visual">
+      <div class="hero-img">
+        <span class="hero-tag">Omakase tuesdays</span>
+        <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&q=80" alt="Sushi platter on dark plate" />
+      </div>
+      <div class="hero-mini">
+        <span class="hero-mini-tag">新</span>
+        <img src="https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=600&q=80" alt="Nigiri close up" />
+      </div>
+    </aside>
+  </div>
+
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>Fresh from the harbour <em class="star">✦</em> Hand-rolled · 鮨 <em class="star">✦</em> Charcoal grill <em class="star">✦</em> Cold sake list <em class="star">✦</em> Open kitchen <em class="star">✦</em> Four cities, one obsession <em class="star">✦</em></span>
+      <span>Fresh from the harbour <em class="star">✦</em> Hand-rolled · 鮨 <em class="star">✦</em> Charcoal grill <em class="star">✦</em> Cold sake list <em class="star">✦</em> Open kitchen <em class="star">✦</em> Four cities, one obsession <em class="star">✦</em></span>
+    </div>
+  </div>
+</header>
+
+<section class="philosophy" id="story">
+  <div class="side reveal">
+    <div class="eyebrow">Our story</div>
+    <h2>A kitchen<br>between two<br><em>oceans</em>.</h2>
+  </div>
+  <div class="body reveal">
+    <p>Atami opened on a rainy November evening in 2014, a single eight-seat counter on Vesterbrogade. The idea was simple: treat Nordic ingredients with the precision of an Edomae sushi-ya, and treat Japanese rituals with the warmth of a Danish kro.</p>
+    <p>Today, four restaurants later, the rice is still rinsed by hand. The fish still arrives whole from the boat. The pickles are still made on Tuesday mornings by Hiro and Mette. Nothing about that is changing.</p>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="num">01 · 素材</div>
+        <h4>Ingredients first</h4>
+        <p>North Atlantic fish, Bornholm rice vinegar, hand-pressed wasabi from Vejle.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">02 · 仕事</div>
+        <h4>Quiet craft</h4>
+        <p>Twelve itamae trained between Tokyo, Stockholm and our Copenhagen counter.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">03 · 場所</div>
+        <h4>Sense of place</h4>
+        <p>Interiors by Norm Architects — pale oak, deep moss, washi light.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">04 · 親切</div>
+        <h4>Generous service</h4>
+        <p>No tipping. No rush. Tea refilled, sake poured, conversations kept low.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-inner">
+    <div class="menu-head reveal">
+      <h2>Tonight's<br><em>menu</em></h2>
+      <p class="lead">Twenty-two dishes from the cold counter and twelve from the binchotan grill. Changes with the catch — what you see is what landed this week.</p>
+    </div>
+
+    <div class="menu-tabs reveal">
+      <button class="active">Sushi · 寿司</button>
+      <button>Warm dishes · 温物</button>
+      <button>Donburi · 丼</button>
+      <button>Drinks · 酒</button>
+      <button>Dessert · 甘味</button>
+    </div>
+
+    <div class="menu-grid">
+      <article class="dish span-4 tall reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1607301405390-d831c242f59b?w=900&q=80" alt="" /></div>
+        <span class="tag">Signature</span>
+        <div class="head">
+          <h3>Atami Plate <span class="jp">熱海盛り</span></h3>
+          <div class="price">298</div>
+        </div>
+        <p class="desc">Twelve pieces of chef's choice nigiri, two hand rolls and a cup of clear dashi. Finished with charred yuzu peel from Tsushima.</p>
+      </article>
+
+      <article class="dish span-4 reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80" alt="" /></div>
+        <div class="head">
+          <h3>Hokkaido Scallop <span class="jp">帆立</span></h3>
+          <div class="price">96</div>
+        </div>
+        <p class="desc">Lightly seared, dill oil, pickled ramson. Three pieces.</p>
+      </article>
+
+      <article class="dish span-4 reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=900&q=80" alt="" /></div>
+        <span class="tag veg">Vegan</span>
+        <div class="head">
+          <h3>Forest Maki <span class="jp">森巻き</span></h3>
+          <div class="price">82</div>
+        </div>
+        <p class="desc">Smoked shiitake, kohlrabi, sea-buckthorn, black sesame. Six pieces.</p>
+      </article>
+
+      <article class="dish span-4 reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1583623025817-d180a2221d0a?w=900&q=80" alt="" /></div>
+        <div class="head">
+          <h3>Toro Tartare <span class="jp">トロ</span></h3>
+          <div class="price">142</div>
+        </div>
+        <p class="desc">Bluefin belly, smoked egg yolk, nori cracker.</p>
+      </article>
+
+      <article class="dish span-4 tall reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1562158147-d536adbfe5ff?w=900&q=80" alt="" /></div>
+        <span class="tag">New</span>
+        <div class="head">
+          <h3>Binchotan Eel <span class="jp">鰻</span></h3>
+          <div class="price">168</div>
+        </div>
+        <p class="desc">Glazed over white charcoal, sansho pepper, lemon thyme from our Aarhus rooftop. Served on warm rice.</p>
+      </article>
+
+      <article class="dish span-4 reveal">
+        <div class="img"><img src="https://images.unsplash.com/photo-1535007813616-79dc02ba4021?w=900&q=80" alt="" /></div>
+        <div class="head">
+          <h3>Coral Aguachile <span class="jp">サーモン</span></h3>
+          <div class="price">118</div>
+        </div>
+        <p class="desc">Faroese salmon, ponzu-coral oil, fennel, finger lime.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="dining" id="dining">
+  <div class="dining-head reveal">
+    <div class="eyebrow">Two ways to dine</div>
+    <h2>Stay for one course,<br>or stay <em>all evening</em>.</h2>
+  </div>
+  <div class="dining-cards">
+    <article class="d-card reveal">
+      <div class="label">À la carte</div>
+      <h3><em>By the<br>piece</em>.<span class="jp">一品料理</span></h3>
+      <p class="lead">Order exactly what you want, when you want it. The full menu is yours — from a single tuna nigiri to a fourteen-course omakase.</p>
+      <div class="price-tag">96<small>DKK avg / dish</small></div>
+      <ul class="features">
+        <li>Open menu, no minimums <span>·</span></li>
+        <li>Counter or table seating <span>·</span></li>
+        <li>Sake & wine pairings available <span>·</span></li>
+        <li>Available all opening hours <span>·</span></li>
+      </ul>
+      <a class="btn btn-ghost cta" href="#book">Reserve a table <span class="arr">→</span></a>
+    </article>
+
+    <article class="d-card coral reveal">
+      <div class="label">All-you-can-eat</div>
+      <h3><em>Two hours,<br>one price</em>.<span class="jp">食べ放題</span></h3>
+      <p class="lead">More than 60 dishes from the cold counter and the grill. We bring you three rounds at a time, you tell us when to stop. Children half price.</p>
+      <div class="price-tag" style="color:var(--paper)">329<small style="opacity:.7">DKK / person</small></div>
+      <ul class="features">
+        <li>60+ dishes, refreshed weekly <span>·</span></li>
+        <li>Sun – Thu evenings <span>·</span></li>
+        <li>Drink flat-rate from 198 DKK <span>·</span></li>
+        <li>Up to 8 in a single party <span>·</span></li>
+      </ul>
+      <a class="btn btn-coral cta" href="#book" style="background:var(--moss-deep)">Book a seat <span class="arr">→</span></a>
+    </article>
+  </div>
+</section>
+
+<section class="locations" id="locations">
+  <div class="loc-inner">
+    <div class="loc-head reveal">
+      <h2>Four cities,<br>one <em>counter</em>.</h2>
+      <a class="btn btn-ghost" href="#">All locations & hours <span class="arr">→</span></a>
+    </div>
+    <div class="loc-grid">
+
+      <article class="loc-card reveal">
+        <div class="loc-num">店 01 · København</div>
+        <h3>Vesterbro</h3>
+        <div class="loc-img"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80" alt="" /></div>
+        <ul class="loc-meta">
+          <li><b>Address</b><span>Vesterbrogade 88, 1620 Kbh V</span></li>
+          <li><b>Tonight</b><span>17:00 – 23:00</span></li>
+          <li><b>Seats</b><span>48 + 12 counter</span></li>
+        </ul>
+        <div class="loc-status"><span class="open-dot"></span> Open · Bookings tonight</div>
+      </article>
+
+      <article class="loc-card reveal">
+        <div class="loc-num">店 02 · København</div>
+        <h3>Nordhavn</h3>
+        <div class="loc-img"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&q=80" alt="" /></div>
+        <ul class="loc-meta">
+          <li><b>Address</b><span>Sandkaj 13, 2150 Nordhavn</span></li>
+          <li><b>Tonight</b><span>16:00 – 00:00</span></li>
+          <li><b>Seats</b><span>72 + harbour terrace</span></li>
+        </ul>
+        <div class="loc-status"><span class="open-dot"></span> Open · 3 tables left</div>
+      </article>
+
+      <article class="loc-card reveal">
+        <div class="loc-num">店 03 · Aarhus</div>
+        <h3>Latinerkvarteret</h3>
+        <div class="loc-img"><img src="https://images.unsplash.com/photo-1559339352-9d6f0b9adcde?w=900&q=80" alt="" /></div>
+        <ul class="loc-meta">
+          <li><b>Address</b><span>Mejlgade 35, 8000 Aarhus C</span></li>
+          <li><b>Tonight</b><span>17:30 – 23:00</span></li>
+          <li><b>Seats</b><span>56 + omakase room</span></li>
+        </ul>
+        <div class="loc-status"><span class="open-dot"></span> Open · Walk-ins welcome</div>
+      </article>
+
+      <article class="loc-card reveal">
+        <div class="loc-num">店 04 · Odense</div>
+        <h3>Brandts Passage</h3>
+        <div class="loc-img"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=80" alt="" /></div>
+        <ul class="loc-meta">
+          <li><b>Address</b><span>Brandts Passage 6, 5000 Odense</span></li>
+          <li><b>Tonight</b><span>17:00 – 22:30</span></li>
+          <li><b>Seats</b><span>40 seats</span></li>
+        </ul>
+        <div class="loc-status"><span class="open-dot"></span> Open · Quiet evening</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="booking" id="book">
+  <div class="book-visual reveal">
+    <div class="book-stamp">
+      <svg viewBox="0 0 120 120">
+        <defs>
+          <path id="circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/>
+        </defs>
+        <text fill="currentColor" font-family="Inter Tight" font-size="9" letter-spacing="3.6">
+          <textPath href="#circle">RESERVE · SINCE 2014 · ATAMI · KØBENHAVN · </textPath>
+        </text>
+      </svg>
+      <div class="center">予</div>
+    </div>
+    <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?w=1200&q=80" alt="Restaurant interior" />
+  </div>
+
+  <div class="book-form reveal">
+    <div class="eyebrow">Reservations</div>
+    <h2>Book your <em>seat</em><br>at the counter.</h2>
+    <p class="lead">Tables go live 30 days ahead. We hold the eight-seat omakase counter for two seatings a night — 18:00 and 20:30.</p>
+
+    <form class="form-grid" onsubmit="return false">
+      <div class="field">
+        <label>Location</label>
+        <select>
+          <option>Vesterbro · København</option>
+          <option>Nordhavn · København</option>
+          <option>Latinerkvarteret · Aarhus</option>
+          <option>Brandts Passage · Odense</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Guests</label>
+        <select>
+          <option>2 guests</option>
+          <option>3 guests</option>
+          <option>4 guests</option>
+          <option>6 guests</option>
+          <option>8 guests</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" value="2026-05-29" />
+      </div>
+      <div class="field">
+        <label>Time</label>
+        <select>
+          <option>17:30</option><option>18:00</option><option selected>19:00</option><option>20:00</option><option>20:30</option><option>21:00</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>Dining style</label>
+        <select>
+          <option>À la carte</option>
+          <option>All-you-can-eat (Sun–Thu)</option>
+          <option>Omakase counter (8 seats)</option>
+        </select>
+      </div>
+    </form>
+
+    <div class="book-actions">
+      <a class="btn btn-coral" href="#">Confirm booking <span class="arr">→</span></a>
+      <small>You'll receive a confirmation by SMS. Cancel free of charge up to 4 hours before your seating.</small>
+    </div>
+  </div>
+</section>
+
+<section class="testi">
+  <div class="testi-head">
+    <h2>Said about<br>the <em>house</em>.</h2>
+    <div class="stars-row">
+      <div class="num">4.8</div>
+      <div class="sub">Average across 2 642 reviews on Google, TripAdvisor & TheFork</div>
+    </div>
+  </div>
+
+  <div class="testi-scroller">
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>The toro tartare is the single best bite I've had in Copenhagen this year. Restrained, almost shy plating, and then it knocks you flat.</blockquote>
+      <div class="by"><div class="av">SA</div><div><div class="name">Sofie Andersen</div><div class="loc">Vesterbro · April</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>We did the all-you-can-eat with three kids — staff barely blinked, kept the warm dishes coming, and the tempura was as good as anything à la carte.</blockquote>
+      <div class="by"><div class="av">JH</div><div><div class="name">Jonas Holm</div><div class="loc">Aarhus · March</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>Booked the eight-seat counter for our anniversary. Yuki guided us through fourteen courses in near-silence. We didn't want it to end.</blockquote>
+      <div class="by"><div class="av">MN</div><div><div class="name">Marie & Niels</div><div class="loc">Nordhavn · February</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>The takeaway is genuinely the same fish as the dining room. I order the Atami plate twice a week and have stopped pretending I cook on Tuesdays.</blockquote>
+      <div class="by"><div class="av">RP</div><div><div class="name">Rasmus Pedersen</div><div class="loc">Odense · May</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>A Nordic restaurant with Japanese discipline, or the other way round — I've stopped trying to decide. Either way it's now my default.</blockquote>
+      <div class="by"><div class="av">AL</div><div><div class="name">Amalie Lund</div><div class="loc">Vesterbro · April</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>Even the dashi at the start of the meal felt deliberate. Coral lighting, deep green walls, warm staff. Almost a spa with very, very good fish.</blockquote>
+      <div class="by"><div class="av">EM</div><div><div class="name">Esben Munk</div><div class="loc">Aarhus · January</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>The toro tartare is the single best bite I've had in Copenhagen this year. Restrained, almost shy plating, and then it knocks you flat.</blockquote>
+      <div class="by"><div class="av">SA</div><div><div class="name">Sofie Andersen</div><div class="loc">Vesterbro · April</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>We did the all-you-can-eat with three kids — staff barely blinked, kept the warm dishes coming, and the tempura was as good as anything à la carte.</blockquote>
+      <div class="by"><div class="av">JH</div><div><div class="name">Jonas Holm</div><div class="loc">Aarhus · March</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>Booked the eight-seat counter for our anniversary. Yuki guided us through fourteen courses in near-silence. We didn't want it to end.</blockquote>
+      <div class="by"><div class="av">MN</div><div><div class="name">Marie & Niels</div><div class="loc">Nordhavn · February</div></div></div>
+    </article>
+
+    <article class="quote">
+      <div class="stars">★★★★★</div>
+      <blockquote>The takeaway is genuinely the same fish as the dining room. I order the Atami plate twice a week and have stopped pretending I cook on Tuesdays.</blockquote>
+      <div class="by"><div class="av">RP</div><div><div class="name">Rasmus Pedersen</div><div class="loc">Odense · May</div></div></div>
+    </article>
+
+  </div>
+</section>
+
+<section class="press">
+  <p>As seen in</p>
+  <div class="press-logos">
+    <span>Politiken</span>
+    <span>Børsen</span>
+    <span>White Guide</span>
+    <span>Monocle</span>
+    <span>Kinfolk</span>
+    <span>Berlingske</span>
+  </div>
+</section>
+
+<section class="takeaway" id="takeaway">
+  <div class="takeaway-card reveal">
+    <h2>Atami,<br>at <em>home</em>.</h2>
+    <p>Order from any of our four kitchens, ready in 18 minutes. Or schedule ahead — the rice is still pressed the moment you arrive at the counter.</p>
+    <a class="btn" href="#">Start your order <span class="arr">→</span></a>
+  </div>
+  <div class="takeaway-side reveal">
+    <h3>Pickup tonight,<br>from each city.</h3>
+    <ul class="delivery-list">
+      <li><div><b>Vesterbro</b><br><small>Ready in 18 min</small></div><span>→</span></li>
+      <li><div><b>Nordhavn</b><br><small>Ready in 22 min</small></div><span>→</span></li>
+      <li><div><b>Aarhus · Mejlgade</b><br><small>Ready in 15 min</small></div><span>→</span></li>
+      <li><div><b>Odense · Brandts</b><br><small>Ready in 12 min</small></div><span>→</span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand">Atami<span class="jp">あたみ</span></div>
+        <p>A Nordic-Japanese kitchen, four counters across Denmark. Quiet rooms, very good fish, no tipping.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Visit</h5>
+        <ul>
+          <li><a href="#">København · Vesterbro</a></li>
+          <li><a href="#">København · Nordhavn</a></li>
+          <li><a href="#">Aarhus · Latin Quarter</a></li>
+          <li><a href="#">Odense · Brandts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Atami</h5>
+        <ul>
+          <li><a href="#">Our story</a></li>
+          <li><a href="#">Suppliers & sourcing</a></li>
+          <li><a href="#">Gift cards</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Newsletter</h5>
+        <ul>
+          <li><a href="#">Seasonal menus · 12×/year</a></li>
+          <li><a href="#">Instagram @atami.dk</a></li>
+          <li><a href="#">Press kit</a></li>
+          <li><a href="#">Allergens</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Atami Sushi ApS · CVR 35 41 88 21</span>
+      <span><a href="#">Privacy</a> · <a href="#">Cookies</a> · <a href="#">Terms</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  },{threshold:.14, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  document.querySelectorAll('.menu-tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.menu-tabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.loc-pills button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.loc-pills button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

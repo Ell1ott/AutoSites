@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "autosites": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcp/autosites",
+        "autosites-mcp"
+      ],
+      "env": {
+        "AUTOSITES_BACKEND_URL": "http://localhost:8888",
+        "AUTOSITES_BACKEND_TOKEN": "",
+        "NEXT_PUBLIC_SUPABASE_URL": "https://YOUR_PROJECT.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "YOUR_SERVICE_ROLE_KEY"
+      }
+    }
+  }
+}

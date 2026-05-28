@@ -27,8 +27,7 @@ const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 /**
  * Inline rating chip + popover with 1-10 buttons. Optimistically updates
  * both the lead-detail cache and the leads-list cache so the leads grid
- * reflects the rating immediately. Clears via `patchLead({ lead_score: null })`
- * because `api.rateLead` only accepts a numeric value.
+ * reflects the rating immediately. Clears via `api.rateLead(placeId, null)`.
  */
 export function RatingEditor({
   placeId,
@@ -40,12 +39,7 @@ export function RatingEditor({
   const [savedFlash, setSavedFlash] = useState(false)
 
   const mut = useMutation({
-    mutationFn: async (v: number | null) => {
-      if (v === null) {
-        return api.patchLead(placeId, { lead_score: null })
-      }
-      return api.rateLead(placeId, v)
-    },
+    mutationFn: async (v: number | null) => api.rateLead(placeId, v),
     onMutate: async (v) => {
       await qc.cancelQueries({ queryKey: ["lead", placeId] })
       const prevLead = qc.getQueryData<Lead>(["lead", placeId])

@@ -1,0 +1,11 @@
+{
+  "name": "design-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "bun capture-inspiration.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}

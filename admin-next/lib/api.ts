@@ -1,9 +1,11 @@
 // Typed fetch wrapper for the AutoSites Pi backend.
 //
-// Reads `NEXT_PUBLIC_PI_URL` for the base URL and `NEXT_PUBLIC_BACKEND_TOKEN`
-// for bearer auth. The token header is omitted entirely when the env var is
-// absent so local dev without a token doesn't 401-itself.
+// Reads `NEXT_PUBLIC_PI_URL` for the base URL (defaults to :8888 in `next dev`
+// via `lib/pi-url`) and `NEXT_PUBLIC_BACKEND_TOKEN` for bearer auth. The token
+// header is omitted entirely when the env var is absent so local dev without a
+// token doesn't 401-itself.
 
+import { getPiBackendBase } from "./pi-url"
 import { clausesToParams } from "./url"
 import type {
   AiRun,
@@ -46,14 +48,14 @@ type RequestInitJSON = Omit<RequestInit, "body"> & {
 }
 
 function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_PI_URL
+  const base = getPiBackendBase()
   if (!base) {
     throw new ApiError(
       0,
       "NEXT_PUBLIC_PI_URL is not set — cannot reach the backend.",
     )
   }
-  return base.replace(/\/+$/, "")
+  return base
 }
 
 function buildHeaders(init?: RequestInitJSON): Headers {
@@ -149,11 +151,11 @@ export const api = {
     slim?: boolean
     filters?: FilterClause[]
     sort?: SortClause
-    cursor?: string
+    limit?: number
   }): Promise<LeadsListResponse> {
     const params = clausesToParams(opts?.filters ?? [], opts?.sort)
     if (opts?.slim ?? true) params.set("slim", "1")
-    if (opts?.cursor) params.set("cursor", opts.cursor)
+    params.set("limit", String(opts?.limit ?? 500))
     return request<LeadsListResponse>(appendQuery("/leads", params))
   },
 
@@ -168,16 +170,24 @@ export const api = {
     })
   },
 
-  async rateLead(id: string, value: number): Promise<{ ok: true }> {
-    return request<{ ok: true }>(`/leads/${encodeURIComponent(id)}/rating`, {
-      method: "PUT",
-      json: { value },
-    })
+  /** Persist lead score (1–10) or clear with `null`. Uses `/rating` (typed column). */
+  async rateLead(
+    id: string,
+    score: number | null,
+  ): Promise<{ place_id: string; lead_score: number | null }> {
+    return request<{ place_id: string; lead_score: number | null }>(
+      `/leads/${encodeURIComponent(id)}/rating`,
+      {
+        method: "PUT",
+        json: { score },
+      },
+    )
   },
 
   // ----- /ai-tasks -----
   async aiTasks(): Promise<AiTask[]> {
-    return request<AiTask[]>("/ai-tasks")
+    const res = await request<{ items: AiTask[] }>("/ai-tasks")
+    return res.items
   },
 
   async createAiTask(task: Omit<AiTask, "updated_at">): Promise<AiTask> {
@@ -198,7 +208,8 @@ export const api = {
   async aiRuns(opts?: { task?: string }): Promise<AiRun[]> {
     const params = new URLSearchParams()
     if (opts?.task) params.set("task", opts.task)
-    return request<AiRun[]>(appendQuery("/ai-runs", params))
+    const res = await request<{ items: AiRun[] }>(appendQuery("/ai-runs", params))
+    return res.items
   },
 
   async aiRun(id: string): Promise<AiRun> {
@@ -216,7 +227,8 @@ export const api = {
       for (const s of statuses) params.append("status", s)
     }
     if (opts?.kind) params.set("kind", opts.kind)
-    return request<Job[]>(appendQuery("/jobs", params))
+    const res = await request<{ items: Job[] }>(appendQuery("/jobs", params))
+    return res.items
   },
 
   async job(id: string): Promise<JobSnapshot> {

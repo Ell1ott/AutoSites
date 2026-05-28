@@ -38,6 +38,7 @@ Requires GEMINI_API_KEY in the environment (loaded from .env.local / .env).
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import logging
 import os
@@ -54,6 +55,7 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -77,8 +79,12 @@ DEFAULT_WEBSITE_OVERVIEW_META = (
 DEFAULT_MODEL = "gemini-3-flash-preview"
 DEFAULT_RECOMMENDED_SUBPAGES_FIELD = "ai_subpages"
 SUBPAGE_MARKDOWN_MODES = frozenset({"none", "all", "recommended"})
+DEFAULT_PROVIDER = "gemini"
+SUPPORTED_PROVIDERS = frozenset({"gemini", "openrouter"})
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_SETTINGS: dict[str, Any] = {
     "meta_prompt": DEFAULT_META_PROMPT,
+    "provider": DEFAULT_PROVIDER,
     "model": DEFAULT_MODEL,
     "send_screenshot": True,
     "send_markdown": True,
@@ -92,6 +98,7 @@ MIN_WORKERS = 1
 MAX_WORKERS = 32
 
 _thread_genai_client = threading.local()
+_thread_openrouter_client = threading.local()
 
 
 def _get_thread_genai_client() -> genai.Client:
@@ -99,6 +106,19 @@ def _get_thread_genai_client() -> genai.Client:
     if c is None:
         c = genai.Client()
         _thread_genai_client.client = c
+    return c
+
+
+def _get_thread_openrouter_client() -> OpenAI:
+    c = getattr(_thread_openrouter_client, "client", None)
+    if c is None:
+        api_key = os.environ.get("OPENROUTER_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "OPENROUTER_API_KEY is not set. Add it to .env.local or export it."
+            )
+        c = OpenAI(base_url=OPENROUTER_BASE_URL, api_key=api_key)
+        _thread_openrouter_client.client = c
     return c
 
 
@@ -137,6 +157,7 @@ def _merge_task(task_id: str, partial: Optional[dict[str, Any]]) -> dict[str, An
         return out
     for k in (
         "meta_prompt",
+        "provider",
         "model",
         "send_screenshot",
         "send_markdown",
@@ -159,6 +180,10 @@ def _merge_task(task_id: str, partial: Optional[dict[str, Any]]) -> dict[str, An
         out["output_field"] = of.strip()
     out["send_screenshot"] = bool(out["send_screenshot"])
     out["send_markdown"] = bool(out["send_markdown"])
+    prov = str(out.get("provider") or DEFAULT_PROVIDER).strip().lower()
+    if prov not in SUPPORTED_PROVIDERS:
+        prov = DEFAULT_PROVIDER
+    out["provider"] = prov
     sm = str(out.get("subpage_markdown_mode") or "none").strip().lower()
     if sm not in SUBPAGE_MARKDOWN_MODES:
         sm = "none"
@@ -233,6 +258,12 @@ def _load_all_tasks(base_dir: Path) -> dict[str, dict[str, Any]]:
 def _validate_core(t: dict[str, Any]) -> None:
     if not isinstance(t.get("meta_prompt"), str) or not str(t["meta_prompt"]).strip():
         raise ValueError("task meta_prompt must be a non-empty string")
+    provider = str(t.get("provider") or DEFAULT_PROVIDER).strip().lower()
+    if provider not in SUPPORTED_PROVIDERS:
+        raise ValueError(
+            f'task provider must be one of: {", ".join(sorted(SUPPORTED_PROVIDERS))}'
+        )
+    t["provider"] = provider
     if not isinstance(t.get("model"), str) or not str(t["model"]).strip():
         raise ValueError("task model must be a non-empty string")
     if not (bool(t.get("send_screenshot")) or bool(t.get("send_markdown"))):
@@ -271,6 +302,7 @@ def _snapshot_for_run(t: dict[str, Any]) -> dict[str, Any]:
         "label": t["label"],
         "output_field": t["output_field"],
         "meta_prompt": t["meta_prompt"],
+        "provider": t["provider"],
         "model": t["model"],
         "send_screenshot": t["send_screenshot"],
         "send_markdown": t["send_markdown"],
@@ -300,7 +332,32 @@ def _after_for_log(result: str | dict[str, Any]) -> str:
 
 
 def _generate_prompt(
-    client: genai.Client,
+    *,
+    provider: str,
+    model: str,
+    meta_prompt: str,
+    png_bytes: Optional[bytes],
+    markdown_text: Optional[str],
+    response_json_schema: Optional[dict[str, Any]] = None,
+) -> str | dict[str, Any]:
+    if provider == "openrouter":
+        return _generate_prompt_openrouter(
+            model=model,
+            meta_prompt=meta_prompt,
+            png_bytes=png_bytes,
+            markdown_text=markdown_text,
+            response_json_schema=response_json_schema,
+        )
+    return _generate_prompt_gemini(
+        model=model,
+        meta_prompt=meta_prompt,
+        png_bytes=png_bytes,
+        markdown_text=markdown_text,
+        response_json_schema=response_json_schema,
+    )
+
+
+def _generate_prompt_gemini(
     *,
     model: str,
     meta_prompt: str,
@@ -308,6 +365,7 @@ def _generate_prompt(
     markdown_text: Optional[str],
     response_json_schema: Optional[dict[str, Any]] = None,
 ) -> str | dict[str, Any]:
+    client = _get_thread_genai_client()
     contents: list[Any] = []
     if png_bytes is not None:
         contents.append(types.Part.from_bytes(data=png_bytes, mime_type="image/png"))
@@ -344,6 +402,57 @@ def _generate_prompt(
     text = response.text
     if not isinstance(text, str) or not text.strip():
         raise ValueError("Gemini returned empty response")
+    return text.strip()
+
+
+def _generate_prompt_openrouter(
+    *,
+    model: str,
+    meta_prompt: str,
+    png_bytes: Optional[bytes],
+    markdown_text: Optional[str],
+    response_json_schema: Optional[dict[str, Any]] = None,
+) -> str | dict[str, Any]:
+    client = _get_thread_openrouter_client()
+    content: list[dict[str, Any]] = []
+    if png_bytes is not None:
+        b64 = base64.b64encode(png_bytes).decode("ascii")
+        content.append(
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{b64}"},
+            }
+        )
+    if markdown_text is not None:
+        content.append(
+            {"type": "text", "text": f"Website markdown extract:\n\n{markdown_text}"}
+        )
+    content.append({"type": "text", "text": meta_prompt})
+    kwargs: dict[str, Any] = {
+        "model": model,
+        "messages": [{"role": "user", "content": content}],
+    }
+    if response_json_schema:
+        kwargs["response_format"] = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "task_output",
+                "strict": True,
+                "schema": response_json_schema,
+            },
+        }
+    resp = client.chat.completions.create(**kwargs)
+    text = resp.choices[0].message.content if resp.choices else None
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("OpenRouter returned empty response")
+    if response_json_schema:
+        try:
+            obj = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"OpenRouter returned non-JSON text: {exc}") from exc
+        if not isinstance(obj, dict):
+            raise ValueError("OpenRouter structured response must be a JSON object")
+        return obj
     return text.strip()
 
 
@@ -683,9 +792,8 @@ def _run_place_ai_job(
         )
         rjs = settings.get("response_json_schema")
         schema = rjs if isinstance(rjs, dict) else None
-        client = _get_thread_genai_client()
         result = _generate_prompt(
-            client,
+            provider=settings["provider"],
             model=settings["model"],
             meta_prompt=settings["meta_prompt"],
             png_bytes=png_bytes,
@@ -808,10 +916,6 @@ def main() -> None:
     load_dotenv(".env.local")
     load_dotenv()
 
-    if not os.environ.get("GEMINI_API_KEY"):
-        logger.error("GEMINI_API_KEY is not set. Add it to .env.local or export it.")
-        sys.exit(1)
-
     if args.limit is not None and args.limit < 1:
         logger.error("--limit must be at least 1")
         sys.exit(2)
@@ -838,6 +942,16 @@ def main() -> None:
         settings = _resolved_task(base_dir, task_id)
     except ValueError as exc:
         logger.error("Invalid settings: %s", exc)
+        sys.exit(1)
+
+    provider = settings["provider"]
+    if provider == "gemini" and not os.environ.get("GEMINI_API_KEY"):
+        logger.error("GEMINI_API_KEY is not set. Add it to .env.local or export it.")
+        sys.exit(1)
+    if provider == "openrouter" and not os.environ.get("OPENROUTER_API_KEY"):
+        logger.error(
+            "OPENROUTER_API_KEY is not set. Add it to .env.local or export it."
+        )
         sys.exit(1)
 
     out_field = settings["output_field"]

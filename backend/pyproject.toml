@@ -11,6 +11,8 @@ dependencies = [
     "google-genai>=1.0.0",
     "markitdown>=0.1.0",
     "patchright>=1.58.2",
+    "browser-use>=0.1.40",
+    "minify-html>=0.15.0",
 ]
 
 [project.optional-dependencies]

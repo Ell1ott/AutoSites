@@ -2,6 +2,7 @@
 // finalized yet; this helper centralizes the URL guess so we can swap it
 // from one place when they are.
 
+import { getPiBackendBase } from "./pi-url"
 import type { Lead, SlimLead } from "./types"
 
 /**
@@ -12,12 +13,11 @@ import type { Lead, SlimLead } from "./types"
  *   2. Convention route `/leads/:place_id/screenshot` — the backend may or
  *      may not serve this yet. `<img onError>` should always handle 404.
  *
- * Returns null when NEXT_PUBLIC_PI_URL is unset (the API base is unknown).
+ * Returns null when the API base is unknown (e.g. production without env).
  */
 export function getScreenshotUrl(lead: SlimLead | Lead): string | null {
-  const base = process.env.NEXT_PUBLIC_PI_URL
-  if (!base) return null
-  const cleanBase = base.replace(/\/+$/, "")
+  const cleanBase = getPiBackendBase()
+  if (!cleanBase) return null
   const dynPath = lead.dynamic?.screenshot_path
   if (typeof dynPath === "string" && dynPath.trim()) {
     return `${cleanBase}/screenshots/${encodeURIComponent(dynPath)}`
