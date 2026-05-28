@@ -287,7 +287,10 @@ function EventBody({ event, onExport }: EventBodyProps): React.JSX.Element {
       )
     }
     case "warn": {
-      const msg = (data.message as string | undefined) ?? safeStringify(data)
+      const msg =
+        event.message ||
+        (data.message as string | undefined) ||
+        safeStringify(data)
       return <span className="text-amber-500">{msg}</span>
     }
     case "metric": {

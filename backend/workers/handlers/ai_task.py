@@ -1,102 +1,243 @@
-"""`ai_task` job handler — runs one AI task across selected places.
+"""`ai_task` job handler — runs one configured AI task across selected places.
 
-Args: `{task: <name>, place_ids: [..]?, limit?, force?, subpage_markdown_mode?}`.
+In-process runtime. Task config lives in the `ai_tasks` table (the DB is the
+single source of truth — adding a new task is one row, no script edit). The
+runtime in `backend/ai/` loads the screenshot + markdown from disk, expands the
+meta_prompt's `{{var}}` placeholders, calls the configured provider/model, and
+returns the parsed output. This handler iterates the scope, persists each
+result to `places.dynamic.<output_field>`, and streams item_start/item_done
+events to the dashboard.
 
-Currently wraps `mapsLeadsFetcher/generate_design_prompts.py` via subprocess so
-we get full real-time event streaming without re-implementing 1100+ lines. Later
-this can be ported in-process when convenient. After the subprocess finishes,
-we sync any new outputs from `maps_businesses.json` into `places.dynamic` so the
-new system is the source of truth going forward.
+Args:
+    task: str                    (required) — name of the task row in `ai_tasks`
+    place_ids: list[str]         (optional) — explicit scope; picked places are
+                                              always regenerated
+    limit: int                   (optional) — when no place_ids, cap at N places
+                                              still missing the output_field
+    force: bool                  (optional) — regenerate even if output_field set
+                                              (always True when place_ids passed)
 """
 from __future__ import annotations
 
-import json
-from pathlib import Path
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
+from ai.runtime import MissingInputError, ProviderError, run_task_for_place
 from db.connection import session
-from db.repos import ai_outputs_log, ai_runs, places, fields as fields_repo
-from workers.handlers._subprocess import run_legacy_script
+from db.repos import ai_outputs_log, ai_runs, ai_tasks, fields as fields_repo, places
 
-_REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-_MAPS_JSON = _REPO_ROOT / "mapsLeadsFetcher" / "maps_businesses.json"
+
+_DEFAULT_WORKERS = 4
+_MAX_WORKERS = 32
 
 
 def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
-    task = args.get("task")
-    if not isinstance(task, str) or not task:
+    task_name = args.get("task")
+    if not isinstance(task_name, str) or not task_name:
         raise ValueError("args.task is required")
 
-    cli: list[str] = ["--task", task]
-    place_ids = args.get("place_ids")
-    if isinstance(place_ids, list) and place_ids:
-        cli.extend(["--place-ids", ",".join(str(p) for p in place_ids)])
-    if "limit" in args and args["limit"] is not None:
-        cli.extend(["--limit", str(int(args["limit"]))])
-    if args.get("force"):
-        cli.append("--force")
-    subm = args.get("subpage_markdown_mode")
-    if isinstance(subm, str) and subm:
-        cli.extend(["--subpage-markdown-mode", subm])
+    raw_place_ids = args.get("place_ids")
+    place_ids: list[str] = []
+    if isinstance(raw_place_ids, list) and raw_place_ids:
+        place_ids = [str(p) for p in raw_place_ids if isinstance(p, (str, int))]
+    force = bool(args.get("force")) or bool(place_ids)
+    limit_raw = args.get("limit")
+    limit = int(limit_raw) if isinstance(limit_raw, int) or (isinstance(limit_raw, str) and limit_raw.isdigit()) else None
+
+    # ---- resolve task ----------------------------------------------------
+    with session() as c:
+        task_row = ai_tasks.get(c, task_name)
+    if task_row is None:
+        raise ValueError(f"unknown ai_task {task_name!r}")
+    if task_row.get("task_type", "place") != "place":
+        raise ValueError(
+            f"ai_task {task_name!r} has task_type={task_row.get('task_type')!r}, "
+            "but this handler only runs task_type='place'"
+        )
+    task_config: dict[str, Any] = task_row.get("config") or {}
+    output_field = task_config.get("output_field")
+    if not isinstance(output_field, str) or not output_field:
+        raise ValueError(f"ai_task {task_name!r} has no output_field configured")
+    model = str(task_config.get("model") or "")
+    error_field = f"{output_field}_error"
+
+    # ---- resolve scope ---------------------------------------------------
+    targets = _select_places(place_ids, output_field, force, limit)
+    if not targets:
+        log.started(task=task_name, total=0)
+        log.info("no places matched scope — nothing to do", task=task_name)
+        log.finished(summary={"task": task_name, "processed": 0})
+        return {"task": task_name, "processed": 0, "generated": 0, "skipped": 0, "failed": 0}
+
+    workers = max(1, min(int(task_config.get("workers") or _DEFAULT_WORKERS), _MAX_WORKERS))
+    log.started(
+        task=task_name,
+        total=len(targets),
+        model=model,
+        provider=str(task_config.get("provider") or "gemini"),
+        output_field=output_field,
+        workers=workers,
+    )
+    log.progress(done=0, total=len(targets))
 
     is_cancelled = args["__cancel__"] if callable(args.get("__cancel__")) else (lambda: False)
+    counts = {"processed": 0, "generated": 0, "skipped": 0, "failed": 0}
 
-    log.started(task=task, place_ids_count=len(place_ids) if isinstance(place_ids, list) else None)
+    def _one(place: dict[str, Any]) -> tuple[dict[str, Any], float, str | dict[str, Any] | None, BaseException | None]:
+        t0 = time.monotonic()
+        try:
+            result = run_task_for_place(task_config, place)
+            return place, (time.monotonic() - t0) * 1000, result, None
+        except BaseException as exc:  # noqa: BLE001
+            return place, (time.monotonic() - t0) * 1000, None, exc
 
-    summary = run_legacy_script(
-        script="generate_design_prompts.py",
-        cli_args=cli,
-        log=log,
-        is_cancelled=is_cancelled,
-    )
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix=f"ai_task-{task_name}") as ex:
+        # Emit item_start eagerly so the dashboard shows what's in flight even
+        # before any completes.
+        for p in targets:
+            log.item_start(place_id=p["place_id"], name=p.get("name"))
 
-    synced = _sync_from_maps_json(task, log)
-    summary["synced_outputs"] = synced
+        future_to_place = {ex.submit(_one, p): p for p in targets}
 
-    # Record the run row too (the script also appends to its own runs.json; we
-    # mirror into ai_runs so /ai-runs queries see it).
-    # Strip runner-injected private keys (e.g. __cancel__ callable) before persisting.
+        for fut in as_completed(future_to_place):
+            if is_cancelled():
+                log.cancelled(at_item=future_to_place[fut].get("place_id"))
+                # Don't bother waiting on stragglers; the dispatcher will return.
+                break
+            place, dur_ms, result, err = fut.result()
+            pid = place["place_id"]
+            counts["processed"] += 1
+
+            if err is None:
+                _persist_success(pid, output_field, error_field, result, model=model, run_id=log.job_id)
+                counts["generated"] += 1
+                log.item_done(
+                    place_id=pid,
+                    duration_ms=dur_ms,
+                    outputs={output_field: result},
+                )
+            elif isinstance(err, MissingInputError):
+                counts["skipped"] += 1
+                log.warn(
+                    f"skip {pid}: {err}",
+                    place_id=pid,
+                    name=place.get("name"),
+                    reason=str(err),
+                )
+            elif isinstance(err, ProviderError):
+                counts["failed"] += 1
+                _persist_failure(pid, error_field, output_field, str(err))
+                log.warn(
+                    f"failed {pid}: {err}",
+                    place_id=pid,
+                    name=place.get("name"),
+                    error=str(err),
+                    error_class=type(err).__name__,
+                )
+            else:
+                counts["failed"] += 1
+                _persist_failure(pid, error_field, output_field, f"{type(err).__name__}: {err}")
+                log.warn(
+                    f"failed {pid}: {type(err).__name__}: {err}",
+                    place_id=pid,
+                    name=place.get("name"),
+                    error=str(err),
+                    error_class=type(err).__name__,
+                )
+            log.progress(done=counts["processed"], total=len(targets))
+
+    # ---- final bookkeeping ----------------------------------------------
+    fields_repo.invalidate()
     persist_args = {k: v for k, v in args.items() if not k.startswith("__")}
     with session() as c:
         ai_runs.upsert(
             c,
             run_id=log.job_id,
-            task=task,
-            started_at=None,  # subprocess events carry these; not required here
+            task=task_name,
+            started_at=None,
             finished_at=None,
-            status="ok" if summary.get("exit_code") == 0 else "failed",
+            status="ok" if counts["failed"] == 0 else "failed",
             args=persist_args,
-            counts={"events_seen": summary.get("events_seen")},
+            counts=counts,
         )
-    fields_repo.invalidate()
+
+    summary = {"task": task_name, **counts}
     return summary
 
 
-def _sync_from_maps_json(task: str, log) -> int:
-    """Pull `<task>` values out of maps_businesses.json into `places.dynamic`
-    and `ai_outputs_log`. Returns the number of places updated."""
-    if not _MAPS_JSON.exists():
-        return 0
-    try:
-        with _MAPS_JSON.open(encoding="utf-8") as f:
-            obj = json.load(f)
-    except (OSError, json.JSONDecodeError):
-        log.warn("could not re-read maps_businesses.json for sync")
-        return 0
-    items = (obj.get("api_response") or {}).get("places") or []
-    n = 0
+# ---------------------------------------------------------------------------
+# Scope resolution
+# ---------------------------------------------------------------------------
+
+
+def _select_places(
+    explicit_ids: list[str],
+    output_field: str,
+    force: bool,
+    limit: int | None,
+) -> list[dict[str, Any]]:
+    """Return the place rows to process.
+
+    - With explicit `place_ids`: fetch each (in the given order), always regenerate.
+    - Without: scan for places that don't already have `output_field` in
+      `dynamic`, capped by `limit`.
+    - With `force` and no explicit ids: scan all places (capped by `limit`).
+    """
     with session() as c:
-        for p in items:
-            pid = p.get("id")
-            if not pid or task not in p:
-                continue
-            row = c.execute("SELECT 1 FROM places WHERE place_id = ?", (pid,)).fetchone()
-            if not row:
-                continue
-            value = p[task]
-            places.set_dynamic(c, pid, task, value)
-            ai_outputs_log.append(
-                c, place_id=pid, task=task, value=value, run_id=log.job_id
+        if explicit_ids:
+            out: list[dict[str, Any]] = []
+            for pid in explicit_ids:
+                row = places.get(c, pid)
+                if row is not None:
+                    out.append(row)
+            return out
+
+        if force:
+            return places.list_(
+                c,
+                limit=limit if limit is not None else 1_000_000,
+                order_by="name",
+                direction="ASC",
             )
-            n += 1
-    return n
+
+        where = f"json_extract(dynamic, '$.{output_field}') IS NULL"
+        return places.list_(
+            c,
+            where_sql=where,
+            limit=limit if limit is not None else 1_000_000,
+            order_by="name",
+            direction="ASC",
+        )
+
+
+# ---------------------------------------------------------------------------
+# Persistence
+# ---------------------------------------------------------------------------
+
+
+def _persist_success(
+    place_id: str,
+    output_field: str,
+    error_field: str,
+    value: Any,
+    *,
+    model: str,
+    run_id: str,
+) -> None:
+    with session() as c:
+        places.merge_dynamic(c, place_id, {output_field: value, error_field: None})
+        ai_outputs_log.append(
+            c,
+            place_id=place_id,
+            task=output_field,
+            value=value,
+            model=model or None,
+            run_id=run_id,
+        )
+
+
+def _persist_failure(place_id: str, error_field: str, output_field: str, message: str) -> None:
+    with session() as c:
+        # Keep the previous output (if any) intact — only set the error field.
+        places.set_dynamic(c, place_id, error_field, message)
