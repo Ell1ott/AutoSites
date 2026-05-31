@@ -101,14 +101,14 @@ export function LeadsHeader({
     <div className="flex flex-col gap-3 border-b border-border bg-background px-4 py-3">
       {/* Row 1: title + count, view toggle + search */}
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-baseline gap-2">
-          <h1 className="text-[15px] font-semibold text-foreground">
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-[16px] font-semibold tracking-tight text-foreground">
             Leads
           </h1>
-          <span className="text-[12px] text-muted-foreground">
+          <span className="inline-flex h-5 items-center rounded-full bg-muted px-2 text-[11px] font-medium tabular-nums text-muted-foreground">
             {filteredCount === totalCount
               ? `${totalCount} ${totalCount === 1 ? "lead" : "leads"}`
-              : `${filteredCount} of ${totalCount} leads`}
+              : `${filteredCount} of ${totalCount}`}
             {view === "map" &&
               mapPointsCount != null &&
               mapMissingCount != null &&
@@ -125,7 +125,7 @@ export function LeadsHeader({
           <div
             role="tablist"
             aria-label="View mode"
-            className="inline-flex h-8 items-center rounded-md border border-border bg-card p-0.5"
+            className="inline-flex h-8 items-center rounded-lg border border-border bg-muted/70 p-0.5"
           >
             {VIEW_BUTTONS.map((b) => {
               const active = view === b.value
@@ -138,10 +138,10 @@ export function LeadsHeader({
                   onClick={() => onViewChange(b.value)}
                   title={b.label}
                   className={cn(
-                    "inline-flex h-7 w-8 items-center justify-center rounded-sm text-muted-foreground transition-colors",
+                    "inline-flex h-7 w-8 items-center justify-center rounded-md transition-all duration-200",
                     active
-                      ? "bg-accent text-foreground"
-                      : "hover:bg-accent/40 hover:text-foreground",
+                      ? "bg-card text-primary shadow-[var(--shadow-card)]"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <HugeiconsIcon

@@ -63,16 +63,16 @@ export function SideNav() {
         width: expanded ? 200 : 48,
         transition: "width 150ms ease-out",
       }}
-      className="flex h-full shrink-0 flex-col border-r bg-background"
+      className="flex h-full shrink-0 flex-col border-r border-sidebar-border bg-sidebar"
     >
       <Link
         href="/overview"
         className={cn(
-          "flex items-center border-b border-border py-3 px-2",
+          "flex items-center border-b border-sidebar-border py-3 px-2",
           expanded ? "gap-2" : "justify-center",
         )}
       >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.46_0.19_270)] text-[15px] font-bold text-primary-foreground shadow-[var(--shadow-card)]">
           A
         </span>
         {expanded ? (
@@ -86,7 +86,7 @@ export function SideNav() {
         {NAV_GROUPS.map((group, groupIdx) => (
           <div key={group.id}>
             {groupIdx > 0 ? (
-              <div className="my-1 mx-2 h-px bg-border/60" />
+              <div className="hairline my-1 mx-2 h-px" />
             ) : null}
             <div className="flex flex-col gap-0.5">
               {group.items.map(({ href, label, icon }) => {
@@ -104,8 +104,8 @@ export function SideNav() {
                         ? "gap-2.5 px-2.5"
                         : "w-[calc(100%-8px)] justify-center",
                       active
-                        ? "relative bg-transparent text-foreground before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[2px] before:rounded-r before:bg-primary"
-                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                        ? "relative bg-primary/10 font-medium text-primary before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[2.5px] before:rounded-r before:bg-primary"
+                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                     )}
                   >
                     <HugeiconsIcon icon={icon} size={16} strokeWidth={1.5} />
@@ -133,7 +133,7 @@ export function SideNav() {
         ))}
       </nav>
 
-      <div className="flex flex-col gap-0.5 border-t border-border py-1">
+      <div className="flex flex-col gap-0.5 border-t border-sidebar-border py-1">
         {expanded ? (
           <div className="mx-1 flex items-center justify-between gap-1 px-1">
             <QueueIndicator />

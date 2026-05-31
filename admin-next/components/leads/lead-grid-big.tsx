@@ -9,6 +9,7 @@ import { useSelectionStore } from "@/lib/store/selection"
 import type { SlimLead } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { LeadScoreBadge } from "./lead-score-badge"
 import { LeadScreenshot } from "./lead-screenshot"
 import { useRowSelection } from "./use-row-selection"
 
@@ -40,10 +41,10 @@ export function LeadGridBig({ rows, onSelect, selectedId }: Props) {
               if (e.key === "Enter") onSelect(lead.place_id)
             }}
             className={cn(
-              "group/card relative flex flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground transition-all",
-              "hover:ring-1 hover:ring-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-              isSelected && "ring-2 ring-primary",
-              isActive && "ring-2 ring-primary",
+              "group/card card-interactive relative flex flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-[var(--shadow-card)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+              (isSelected || isActive) &&
+                "border-primary/60 ring-2 ring-primary/50",
             )}
           >
             <LeadScreenshot
@@ -72,9 +73,8 @@ export function LeadGridBig({ rows, onSelect, selectedId }: Props) {
             </div>
 
             {score != null && (
-              <div className="absolute top-3 right-3 inline-flex h-6 items-center gap-1 rounded-full bg-foreground/85 px-2 text-[12px] font-medium text-background">
-                <HugeiconsIcon icon={StarIcon} size={12} strokeWidth={2} />
-                {score}
+              <div className="absolute top-3 right-3">
+                <LeadScoreBadge score={score} size="md" />
               </div>
             )}
 

@@ -281,25 +281,30 @@ export function OverviewDashboard({ rows, fields, isLoading }: Props) {
             const inner = (
               <>
                 <div
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.18)]"
                   style={{ background: kpi.color }}
                 >
                   <HugeiconsIcon
                     icon={kpi.icon}
-                    size={10}
+                    size={14}
                     strokeWidth={2}
                     className="text-white"
                   />
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-[11px] text-muted-foreground">
+                  <span className="truncate text-[11px] font-medium text-muted-foreground">
                     {kpi.label}
                   </span>
-                  <span className="text-[20px] font-semibold leading-tight tabular-nums text-foreground">
+                  <span className="flex items-baseline gap-1 text-[24px] font-semibold leading-tight tabular-nums text-foreground">
                     {count}
+                    {kpi.id !== "total" && stats.total > 0 ? (
+                      <span className="text-[11px] font-medium text-muted-foreground tabular-nums">
+                        {percent}%
+                      </span>
+                    ) : null}
                   </span>
                 </div>
-                <div className="relative h-8 w-1 shrink-0 overflow-hidden rounded-full bg-muted">
+                <div className="relative h-9 w-1.5 shrink-0 overflow-hidden rounded-full bg-muted">
                   <div
                     className="absolute bottom-0 left-0 w-full rounded-full transition-all"
                     style={{
@@ -311,7 +316,7 @@ export function OverviewDashboard({ rows, fields, isLoading }: Props) {
               </>
             )
             const className =
-              "flex h-16 items-center gap-3 rounded-lg border bg-card p-3 shadow-[var(--shadow-card)] transition-colors duration-200 hover:bg-card/80"
+              "card-interactive flex h-[76px] items-center gap-3 rounded-xl border bg-card p-3.5 shadow-[var(--shadow-card)]"
 
             if (href) {
               return (

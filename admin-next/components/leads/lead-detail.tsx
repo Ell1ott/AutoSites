@@ -936,11 +936,11 @@ function GeneralData({
             src={screenshotUrl}
             alt={`${lead.name} screenshot`}
             onError={() => setShotFailed(true)}
-            className="aspect-[16/10] w-full cursor-zoom-in rounded-md border bg-muted/30 object-cover object-top"
+            className="aspect-[16/10] w-full cursor-zoom-in rounded-xl border bg-muted/30 object-cover object-top shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-pop)]"
             // TODO: clicking should open a lightbox; deferred for v1.
           />
         ) : (
-          <div className="text-muted-foreground flex aspect-[16/10] w-full items-center justify-center rounded-md border bg-muted/30">
+          <div className="text-muted-foreground flex aspect-[16/10] w-full items-center justify-center rounded-xl border bg-gradient-to-br from-muted/40 to-muted/10">
             <HugeiconsIcon
               icon={Image01Icon}
               size={20}

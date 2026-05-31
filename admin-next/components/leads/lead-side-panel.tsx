@@ -24,8 +24,8 @@ export function LeadSidePanel({ placeId, onClose }: Props) {
   const setLeadDetailFullScreen = useUiStore((s) => s.setLeadDetailFullScreen)
 
   return (
-    <aside className="flex h-full min-h-0 flex-col border-l border-border bg-background">
-      <div className="flex items-center justify-end gap-1 border-b border-border px-2 py-1.5">
+    <aside className="flex h-full min-h-0 flex-col border-l border-border bg-surface-1">
+      <div className="glass-header flex items-center justify-end gap-1 border-b border-border px-2 py-1.5">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

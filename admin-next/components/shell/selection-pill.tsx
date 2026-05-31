@@ -156,9 +156,9 @@ export function SelectionPill() {
         aria-label="Selection actions"
         className={cn(
           "fixed bottom-4 left-1/2 z-50 -translate-x-1/2",
-          "flex h-9 items-center gap-1 rounded-full",
-          "bg-zinc-900 text-zinc-100 shadow-lg ring-1 ring-black/30",
-          "pl-3 pr-1",
+          "flex h-10 items-center gap-1 rounded-full",
+          "bg-[oklch(0.205_0.012_263)] text-zinc-100 shadow-[var(--shadow-lift)] ring-1 ring-white/10",
+          "pl-3.5 pr-1.5 backdrop-blur",
         )}
       >
         <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
@@ -240,8 +240,8 @@ export function SelectionPill() {
           onClick={handleRun}
           disabled={!canRun}
           className={cn(
-            "inline-flex h-7 items-center gap-1 rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground",
-            "hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50",
+            "inline-flex h-7 items-center gap-1 rounded-full bg-primary px-3 text-[12px] font-semibold text-primary-foreground shadow-[var(--shadow-card)]",
+            "transition-all hover:bg-primary/90 hover:shadow-[var(--shadow-pop)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none",
           )}
         >
           <HugeiconsIcon icon={PlayIcon} size={12} strokeWidth={2} />

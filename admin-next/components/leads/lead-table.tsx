@@ -742,7 +742,7 @@ export function LeadTable({
                 <col key={h.id} style={{ width: h.getSize() }} />
               ))}
             </colgroup>
-            <thead className="bg-background sticky top-0 z-10">
+            <thead className="sticky top-0 z-10 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
               <tr>
                 {leadingHeaders.map((header) => (
                   <th
@@ -807,12 +807,12 @@ export function LeadTable({
                     key={row.id}
                     onClick={() => onSelect(lead.place_id)}
                     className={cn(
-                      "group/row h-9 cursor-pointer border-b border-border/60 transition-colors",
+                      "group/row h-9 cursor-pointer border-b border-border/50 transition-colors",
                       isActive
-                        ? "bg-accent/70"
+                        ? "bg-primary/10"
                         : isSelected
-                          ? "bg-accent/50"
-                          : "hover:bg-muted/30",
+                          ? "bg-accent"
+                          : "hover:bg-muted/40",
                     )}
                   >
                     {row.getVisibleCells().map((cell) => {
