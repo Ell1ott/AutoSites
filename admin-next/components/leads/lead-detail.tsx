@@ -39,8 +39,19 @@ import {
   fieldClauseKey,
   type Lead,
 } from "@/lib/types"
+import {
+  getListingAddress,
+  getListingPhone,
+  getMapsUrl,
+} from "@/lib/lead-contacts"
+import {
+  contactCounts,
+  parseWebsiteContacts,
+} from "@/lib/website-contacts"
 import { cn } from "@/lib/utils"
 
+import { ContactTab } from "./contact-tab"
+import { WebsiteContactsCard } from "./website-contacts-card"
 import { InspirationTab } from "./inspiration-tab"
 import { RatingEditor } from "./rating-editor"
 import {
@@ -92,6 +103,7 @@ const SKIP_KEYS = new Set<string>([
   "updated_at",
   "screenshot_path",
   "crawl_pages",
+  "website_contacts",
 ])
 
 /**
@@ -178,6 +190,7 @@ export function LeadDetail({
   const lead = leadQuery.data
   const tasks = tasksQuery.data ?? []
   const designIdeasCount = variantDesignCount(lead)
+  const contactHitCount = contactCounts(parseWebsiteContacts(lead.dynamic)).total
   const handleClose = onClose ?? (() => router.back())
   const showFullHeader = activeTab === "overview" || activeTab === "ai"
 
@@ -255,12 +268,17 @@ export function LeadDetail({
           <TabsContent value="design-ideas" className={tabPanelClass}>
             <VariantDesignsTab lead={lead} tasks={tasks} />
           </TabsContent>
+
+          <TabsContent value="contact" className={tabPanelClass}>
+            <ContactTab lead={lead} />
+          </TabsContent>
         </div>
       </div>
 
       <LeadDetailTabBar
         lead={lead}
         designIdeasCount={designIdeasCount}
+        contactHitCount={contactHitCount}
         hideClose={hideClose}
         onClose={handleClose}
       />
@@ -288,11 +306,13 @@ const titlePillRadiusClass =
 function LeadDetailTabBar({
   lead,
   designIdeasCount,
+  contactHitCount,
   hideClose,
   onClose,
 }: {
   lead: Lead
   designIdeasCount: number
+  contactHitCount: number
   hideClose?: boolean
   onClose: () => void
 }): React.JSX.Element {
@@ -309,6 +329,10 @@ function LeadDetailTabBar({
         >
           <TabsList className="h-auto border-0 bg-transparent p-0 shadow-none">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="contact">
+              Contact
+              {contactHitCount > 0 ? ` (${contactHitCount})` : ""}
+            </TabsTrigger>
             <TabsTrigger value="ai">AI</TabsTrigger>
             <TabsTrigger value="design-ideas">
               Design ideas
@@ -351,39 +375,6 @@ function ExperimentPanel({ placeId }: { placeId: string }): React.JSX.Element {
 // Header
 // -----------------------------------------------------------------------------
 
-function getPhone(lead: Lead): string | null {
-  const candidates = [
-    lead.dynamic?.phone,
-    lead.dynamic?.formatted_phone_number,
-    lead.dynamic?.international_phone_number,
-    lead.dynamic?.phone_number,
-  ]
-  for (const c of candidates) {
-    if (typeof c === "string" && c.trim()) return c
-  }
-  return null
-}
-
-function getAddress(lead: Lead): string | null {
-  const candidates = [
-    lead.dynamic?.formatted_address,
-    lead.dynamic?.address,
-    lead.dynamic?.vicinity,
-  ]
-  for (const c of candidates) {
-    if (typeof c === "string" && c.trim()) return c
-  }
-  return null
-}
-
-function getMapsUrl(lead: Lead): string {
-  const explicit = lead.dynamic?.google_maps_url
-  if (typeof explicit === "string" && explicit.trim()) return explicit
-  const addr = getAddress(lead)
-  const q = addr ?? lead.name
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
-}
-
 function getCategory(lead: Lead): string | null {
   const types = lead.dynamic?.types
   if (Array.isArray(types) && types.length > 0) {
@@ -416,8 +407,8 @@ function LeadTitlePill({
   const reduceMotion = useReducedMotion()
 
   const category = getCategory(lead)
-  const address = getAddress(lead)
-  const phone = getPhone(lead)
+  const address = getListingAddress(lead)
+  const phone = getListingPhone(lead)
 
   const detailItems: React.ReactNode[] = []
 
@@ -760,7 +751,7 @@ function OverviewHeader({
 }
 
 function LeadQuickActions({ lead }: { lead: Lead }): React.JSX.Element {
-  const phone = getPhone(lead)
+  const phone = getListingPhone(lead)
   const mapsUrl = getMapsUrl(lead)
 
   return (
@@ -951,6 +942,8 @@ function GeneralData({
           </div>
         )}
       </div>
+
+      {compact ? <WebsiteContactsCard lead={lead} compact={compact} /> : null}
 
       {/* Crawl-page thumbnail strip */}
       {crawlPages && crawlPages.length > 0 ? (

@@ -162,11 +162,23 @@ def run_task_for_place(
             sorted(set(missing)),
         )
 
-    text_parts: list[str] = []
+    # The task instruction becomes the system prompt; the documents (markdown
+    # extract + screenshot) are the user turn the model acts on. Keeping them
+    # separate follows standard prompting practice and puts the instruction
+    # firmly at the top, ahead of all context.
+    system_prompt = expanded
+
+    context_parts: list[str] = []
     if markdown_blob is not None:
-        text_parts.append(f"Website markdown extract:\n\n{markdown_blob}")
-    text_parts.append(expanded)
-    prompt_text = "\n\n".join(text_parts)
+        context_parts.append(f"Website markdown extract:\n\n{markdown_blob}")
+    user_text = "\n\n".join(context_parts).strip()
+    if not user_text:
+        # No textual context (e.g. screenshot-only task) — give the user turn
+        # a minimal anchor so providers that require non-empty content are happy.
+        user_text = "Apply the instructions to the attached context."
+
+    # Provenance record shown in the UI: system instruction first, then context.
+    prompt_text = f"[SYSTEM]\n{system_prompt}\n\n[USER]\n{user_text}"
 
     # ---- model call ------------------------------------------------------
     provider = str(task_config.get("provider", "gemini"))
@@ -181,7 +193,8 @@ def run_task_for_place(
     result = call(
         provider=provider,
         model=model,
-        text=prompt_text,
+        text=user_text,
+        system=system_prompt,
         image_bytes=image_bytes,
         response_schema=response_schema if response_schema else None,
     )

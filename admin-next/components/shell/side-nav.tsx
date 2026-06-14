@@ -11,6 +11,7 @@ import {
   Compass01Icon,
   Globe02Icon,
   Menu01Icon,
+  WorkflowSquare01Icon,
 } from "@hugeicons/core-free-icons"
 
 import {
@@ -31,6 +32,7 @@ const NAV_GROUPS = [
       { href: "/leads", label: "Leads", icon: UserGroupIcon },
       { href: "/queue", label: "Queue", icon: Queue01Icon },
       { href: "/tasks", label: "Tasks", icon: Task01Icon },
+      { href: "/flow-2", label: "Flow 2", icon: WorkflowSquare01Icon },
     ],
   },
   {

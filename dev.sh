@@ -31,10 +31,10 @@ if [ ! -d admin-next/node_modules ]; then
     echo "[dev] admin-next: first run, installing with bun…"
     ( cd admin-next && bun install )
 fi
-if [ ! -f backend/data/leads.db ]; then
-    echo "[dev] backend: initializing SQLite…"
-    ( cd backend && uv run python -m db.migrate )
-    if [ -f mapsLeadsFetcher/maps_businesses.json ]; then
+( cd backend && uv run python -m db.migrate )
+if [ -f mapsLeadsFetcher/maps_businesses.json ]; then
+    places_count=$(cd backend && uv run python -c "from db.connection import connect; c=connect(); print(c.execute('SELECT COUNT(*) FROM places').fetchone()[0]); c.close()")
+    if [ "$places_count" = "0" ]; then
         echo "[dev] backend: importing existing JSON data…"
         ( cd backend && uv run python -m scripts.migrate_from_json )
     fi

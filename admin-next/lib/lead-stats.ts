@@ -1,4 +1,5 @@
 import { readField } from "./filter"
+import { hasContacts } from "./website-contacts"
 import type { FieldDescriptor, FilterClause, SlimLead } from "./types"
 
 export type ScoreBucket = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
@@ -7,6 +8,7 @@ export type LeadStatsSnapshot = {
   total: number
   withWebsite: number
   scraped: number
+  withContacts: number
   multiPageCrawl: number
   visualScore: number
   designBrief: number
@@ -183,6 +185,7 @@ export function computeLeadStats(
 
   let withWebsite = 0
   let scraped = 0
+  let withContacts = 0
   let multiPageCrawl = 0
   let visualScore = 0
   let designBrief = 0
@@ -195,6 +198,7 @@ export function computeLeadStats(
 
     const crawlCount = crawlPageCount(lead)
     if (isScraped(lead)) scraped += 1
+    if (hasContacts(lead)) withContacts += 1
     if (crawlCount >= 2) multiPageCrawl += 1
 
     if (visualRatingPopulated(lead, visualKey)) visualScore += 1
@@ -227,6 +231,7 @@ export function computeLeadStats(
     total,
     withWebsite,
     scraped,
+    withContacts,
     multiPageCrawl,
     visualScore,
     designBrief,
@@ -293,6 +298,12 @@ export function buildPipelineSteps(stats: LeadStatsSnapshot): PipelineStep[] {
       percent: pct(stats.scraped),
     },
     {
+      id: "contacts",
+      label: "Contacts",
+      count: stats.withContacts,
+      percent: pct(stats.withContacts),
+    },
+    {
       id: "visual",
       label: "Visual score",
       count: stats.visualScore,
@@ -332,6 +343,9 @@ export function statFilterHref(
       break
     case "scraped":
       clauses.push({ key: "dynamic.crawl_pages", op: "gte", value: 1 })
+      break
+    case "contacts":
+      clauses.push({ key: "dynamic.website_contacts", op: "exists" })
       break
     case "visual":
       if (!visualKey) return null

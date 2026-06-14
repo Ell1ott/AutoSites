@@ -1,7 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Alert02Icon, Cancel01Icon, Queue01Icon, Search01Icon } from "@hugeicons/core-free-icons"
@@ -24,6 +25,14 @@ export default function QueuePage() {
   const [openJobId, setOpenJobId] = useState<string | null>(null)
   const [tab, setTab] = useState<"active" | "history">("active")
   const [search, setSearch] = useState("")
+
+  // Deep link: `/queue?job=<id>` (e.g. from the bottom-right job overlay)
+  // opens that job's full task drawer on mount.
+  const searchParams = useSearchParams()
+  const jobParam = searchParams.get("job")
+  useEffect(() => {
+    if (jobParam) setOpenJobId(jobParam)
+  }, [jobParam])
 
   const active = useJobs(["queued", "running"])
   const history = useJobs(["done", "failed", "cancelled"])

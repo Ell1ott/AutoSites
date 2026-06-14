@@ -1,29 +1,15 @@
-"""`html_to_md` job handler — converts crawled HTML to Markdown.
+"""`html_to_md` job handler: thin wrapper over `jobs.html_to_md.run`.
 
-Wraps `mapsLeadsFetcher/html_to_markdown.py`.
+Converts each place's crawled HTML (recorded in `places.dynamic.website_crawl`)
+to Markdown, saving the `.md` next to its `.html`. Ported from the legacy
+`html_to_markdown.py` script (which read maps_businesses.json).
 """
 from __future__ import annotations
 
 from typing import Any
 
-from workers.handlers._subprocess import run_legacy_script
+from jobs import html_to_md
 
 
 def run(args: dict[str, Any], log) -> dict[str, Any]:  # noqa: ANN001
-    cli: list[str] = []
-    pids = args.get("place_ids")
-    if isinstance(pids, list) and pids:
-        cli.extend(["--place-ids", ",".join(str(p) for p in pids)])
-    if "limit" in args and args["limit"] is not None:
-        cli.extend(["--limit", str(int(args["limit"]))])
-    if args.get("force"):
-        cli.append("--force")
-
-    is_cancelled = args["__cancel__"] if callable(args.get("__cancel__")) else (lambda: False)
-    log.started(scope="html_to_md", place_ids_count=len(pids) if isinstance(pids, list) else None)
-    return run_legacy_script(
-        script="html_to_markdown.py",
-        cli_args=cli,
-        log=log,
-        is_cancelled=is_cancelled,
-    )
+    return html_to_md.run(args, log)

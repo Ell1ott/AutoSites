@@ -43,11 +43,32 @@ export function AiCallDetailModal({ logId, onClose }: Props): React.JSX.Element 
         ) : data ? (
           <div className="flex max-h-[75vh] flex-col gap-4 overflow-auto pr-1">
             <MetaGrid d={data} />
-            <Section
-              title="Prompt"
-              text={data.prompt_text ?? ""}
-              monospace
-            />
+            {(() => {
+              const { system, user } = splitPrompt(data.prompt_text ?? "")
+              if (system === null && user === null) {
+                return (
+                  <Section
+                    title="Prompt"
+                    text={data.prompt_text ?? ""}
+                    monospace
+                  />
+                )
+              }
+              return (
+                <>
+                  <Section
+                    title="System prompt"
+                    text={system ?? ""}
+                    monospace
+                  />
+                  <Section
+                    title="User message (documents)"
+                    text={user ?? ""}
+                    monospace
+                  />
+                </>
+              )
+            })()}
             {data.image_b64 ? (
               <div>
                 <div className="text-muted-foreground mb-1 text-xs font-medium uppercase tracking-wide">
@@ -79,6 +100,18 @@ export function AiCallDetailModal({ logId, onClose }: Props): React.JSX.Element 
       </DialogContent>
     </Dialog>
   )
+}
+
+// The runtime stores the prompt as "[SYSTEM]\n…\n\n[USER]\n…". Split it back
+// into its two parts for display; fall back to a single block for older rows
+// (or any value) that don't carry the markers.
+function splitPrompt(text: string): {
+  system: string | null
+  user: string | null
+} {
+  const m = /^\[SYSTEM\]\n([\s\S]*?)\n\n\[USER\]\n([\s\S]*)$/.exec(text)
+  if (!m) return { system: null, user: null }
+  return { system: m[1], user: m[2] }
 }
 
 function MetaGrid({ d }: { d: AiCallDetail }): React.JSX.Element {

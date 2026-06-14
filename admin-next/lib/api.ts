@@ -17,6 +17,7 @@ import type {
   JobLevel,
   JobSnapshot,
   JobStatus,
+  StrategyPromptResponse,
   Lead,
   LeadsListResponse,
   SortClause,
@@ -290,6 +291,11 @@ export const api = {
   // ----- /ai-outputs-log -----
   async aiCall(logId: number): Promise<AiCallDetail> {
     return request<AiCallDetail>(`/ai-outputs-log/${logId}`)
+  },
+
+  // ----- /strategy -----
+  async strategyPrompt(): Promise<StrategyPromptResponse> {
+    return request<StrategyPromptResponse>("/strategy")
   },
 
   // ----- /healthz -----

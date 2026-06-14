@@ -579,10 +579,10 @@ def main() -> None:
     parser.add_argument(
         "--max-crawl-depth",
         type=int,
-        default=2,
+        default=1,
         help=(
             "Maximum BFS depth from the homepage for internal links (0 = homepage only); "
-            "default 2"
+            "default 1"
         ),
     )
     parser.add_argument(

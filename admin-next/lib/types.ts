@@ -96,6 +96,8 @@ export type SlimLead = {
   has_screenshot?: boolean
   /** True when `screenshots/{place_id}.md` (root markdown) exists. */
   has_markdown?: boolean
+  /** True when `dynamic.website_contacts.extracted_at` is set. */
+  has_contacts?: boolean
   updated_at: string
 }
 
@@ -124,10 +126,12 @@ export type JobStatus = "queued" | "running" | "done" | "failed" | "cancelled"
 export type JobKind =
   | "fetch_leads"
   | "ai_task"
+  | "generate_inspiration_queries"
   | "find_inspiration"
   | "variant_design"
   | "crawl"
   | "html_to_md"
+  | "extract_contacts"
   | (string & {})
 
 export type Job = {
@@ -295,6 +299,9 @@ export type AiTaskConfig = {
   // Variant automation (task_type === "variant").
   start_url?: string
   generation_timeout_s?: number
+  // Discard gate (only meaningful on the discard_score task): leads scoring at
+  // or above this value are discarded and do not continue into creative work.
+  discard_at?: number
   [k: string]: unknown
 }
 
@@ -356,4 +363,15 @@ export type Rule = {
   filter: FilterClauses
   model_override?: string
   included_context_override?: string[]
+}
+
+// -----------------------------------------------------------------------------
+// Strategy — paste-ready "what should I do next?" prompt (GET /strategy)
+// -----------------------------------------------------------------------------
+
+export type StrategyPromptResponse = {
+  /** Full paste-ready bundle: system framing + operation snapshot. */
+  prompt: string
+  /** Structured snapshot the prompt is built from (kept for future previews). */
+  snapshot: Record<string, unknown>
 }

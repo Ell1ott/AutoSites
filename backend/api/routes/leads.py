@@ -63,10 +63,7 @@ def list_leads(
         offset=offset,
     )
     for r in rows:
-        pid = r.get("place_id")
-        if isinstance(pid, str):
-            r["has_screenshot"] = (SCREENSHOTS_DIR / f"{pid}.png").is_file()
-            r["has_markdown"] = (SCREENSHOTS_DIR / f"{pid}.md").is_file()
+        _enrich_lead_row(r)
     total = places.count(db, where_sql=where_sql, params=params)
     return {
         "total": total,
@@ -81,6 +78,7 @@ def get_lead(place_id: str, db=Depends(get_db_ro)) -> dict[str, Any]:
     row = places.get(db, place_id)
     if not row:
         raise HTTPException(status_code=404, detail="place not found")
+    _enrich_lead_row(row)
     row["ai_history"] = ai_outputs_log.history(db, place_id=place_id, limit=50)
     return row
 
@@ -133,6 +131,18 @@ def patch_lead(place_id: str, body: dict[str, Any], db=Depends(get_db)) -> dict[
         places.merge_dynamic(db, place_id, dynamic_only)
     fields.invalidate()
     return places.get(db, place_id)
+
+
+def _enrich_lead_row(row: dict[str, Any]) -> None:
+    """Attach derived artifact flags used by the admin UI."""
+    pid = row.get("place_id")
+    if not isinstance(pid, str):
+        return
+    row["has_screenshot"] = (SCREENSHOTS_DIR / f"{pid}.png").is_file()
+    row["has_markdown"] = (SCREENSHOTS_DIR / f"{pid}.md").is_file()
+    dynamic = row.get("dynamic") if isinstance(row.get("dynamic"), dict) else {}
+    wc = dynamic.get("website_contacts") if isinstance(dynamic, dict) else None
+    row["has_contacts"] = bool(isinstance(wc, dict) and wc.get("extracted_at"))
 
 
 def _safe_order(order_by: str) -> str:

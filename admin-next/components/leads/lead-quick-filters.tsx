@@ -24,6 +24,7 @@ import {
   mergeQuickFilters,
   parseQuickFiltersFromClauses,
   isQuickFilterActive,
+  type ContactsQuick,
   type CrawlQuick,
   type LeadQuickFiltersState,
   type OpenNowQuick,
@@ -89,6 +90,7 @@ export function LeadQuickFilters({ clauses, onClausesChange }: Props) {
 
   const secondaryActive =
     quick.crawl !== "all" ||
+    quick.contacts !== "all" ||
     quick.minRating !== "any" ||
     quick.minReviewCount !== "any" ||
     quick.leadScoreGt !== "any" ||
@@ -120,6 +122,22 @@ export function LeadQuickFilters({ clauses, onClausesChange }: Props) {
             { value: "all", label: "All" },
             { value: "with", label: "With" },
             { value: "without", label: "Without" },
+          ]}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className="text-[11px] font-medium text-muted-foreground">
+          Contacts
+        </span>
+        <Toggle3<ContactsQuick>
+          ariaLabel="Website contacts"
+          value={quick.contacts}
+          onChange={(contacts) => patch({ contacts })}
+          options={[
+            { value: "all", label: "All" },
+            { value: "has", label: "Has" },
+            { value: "missing", label: "Missing" },
           ]}
         />
       </div>

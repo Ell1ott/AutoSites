@@ -1,11 +1,10 @@
 """Load on-disk inputs for an AI task: screenshot bytes, root markdown, and
 optionally subpage markdown.
 
-The crawler still writes `website_crawl.pages` into
-`mapsLeadsFetcher/maps_businesses.json`. The AI runtime reads that JSON to map
-recommended-subpage hints to their markdown files. When the crawler is later
-ported to write straight into the DB, the only thing that needs to change here
-is `_crawl_pages_for_place`.
+The crawler writes `website_crawl.pages` into `places.dynamic` (see
+`jobs/crawl_sites.py`). The AI runtime reads it from the DB to map
+recommended-subpage hints to their markdown files. Screenshot/HTML/markdown
+files themselves still live on disk under `mapsLeadsFetcher/screenshots/`.
 """
 from __future__ import annotations
 
@@ -20,7 +19,6 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _MLF = _REPO_ROOT / "mapsLeadsFetcher"
 _SCREENSHOTS = _MLF / "screenshots"
-_MAPS_JSON = _MLF / "maps_businesses.json"
 
 SUBPAGE_MARKDOWN_MODES = frozenset({"none", "all", "recommended"})
 
@@ -36,6 +34,69 @@ def screenshot_path(place_id: str) -> Path:
 
 def root_markdown_path(place_id: str) -> Path:
     return _SCREENSHOTS / f"{place_id}.md"
+
+
+def crawl_html_on_disk(place_id: str) -> bool:
+    """True when crawled HTML exists on disk (home page or subpages)."""
+    return root_html_path(place_id).is_file() or any(
+        _SCREENSHOTS.glob(f"{place_id}__*.html")
+    )
+
+
+def root_html_path(place_id: str) -> Path:
+    return _SCREENSHOTS / f"{place_id}.html"
+
+
+def reconstruct_website_crawl_from_disk(place_id: str) -> dict[str, Any] | None:
+    """Build minimal `website_crawl` metadata from legacy on-disk crawl files.
+
+    Leads crawled before SQLite migration often have `{place_id}.html` and
+    subpage files on disk but no `places.dynamic.website_crawl` row yet.
+    """
+    pages: list[dict[str, Any]] = []
+
+    home_html = root_html_path(place_id)
+    if home_html.is_file():
+        entry: dict[str, Any] = {
+            "depth": 0,
+            "html_path": f"screenshots/{place_id}.html",
+        }
+        home_png = screenshot_path(place_id)
+        home_md = root_markdown_path(place_id)
+        if home_png.is_file():
+            entry["screenshot_path"] = f"screenshots/{place_id}.png"
+        if home_md.is_file():
+            entry["markdown_path"] = f"screenshots/{place_id}.md"
+        pages.append(entry)
+
+    for html_path in sorted(_SCREENSHOTS.glob(f"{place_id}__*.html")):
+        entry = {
+            "depth": 1,
+            "html_path": f"screenshots/{html_path.name}",
+        }
+        png = html_path.with_suffix(".png")
+        md = html_path.with_suffix(".md")
+        if png.is_file():
+            entry["screenshot_path"] = f"screenshots/{png.name}"
+        if md.is_file():
+            entry["markdown_path"] = f"screenshots/{md.name}"
+        pages.append(entry)
+
+    if not pages:
+        return None
+    return {"root": {}, "discovered_links": [], "pages": pages}
+
+
+def resolve_website_crawl(wc_from_db: Any, place_id: str) -> tuple[dict[str, Any] | None, bool]:
+    """Return `(website_crawl, from_disk)` using DB metadata or on-disk files."""
+    if isinstance(wc_from_db, dict):
+        raw_pages = wc_from_db.get("pages")
+        if isinstance(raw_pages, list) and raw_pages:
+            return wc_from_db, False
+    recon = reconstruct_website_crawl_from_disk(place_id)
+    if recon is not None:
+        return recon, True
+    return None, False
 
 
 def load_screenshot(place_id: str) -> bytes | None:
@@ -128,46 +189,47 @@ def assemble_markdown_blob(
 def _crawl_pages_for_place(place_id: str) -> list[dict[str, Any]]:
     """Look up `website_crawl.pages` for a place, excluding the home page row.
 
-    Reads `maps_businesses.json` (the crawler's source of truth) every call —
-    the file is small and only the recommended-subpage tasks need it.
+    Reads `places.dynamic.website_crawl` from the DB (written by the crawler).
+    Only the recommended-subpage tasks need it.
     """
-    if not _MAPS_JSON.is_file():
+    from db.connection import session  # noqa: PLC0415 - avoid import cycle at module load
+
+    try:
+        with session(readonly=True) as c:
+            row = c.execute(
+                "SELECT json_extract(dynamic, '$.website_crawl') AS wc "
+                "FROM places WHERE place_id = ?",
+                (place_id,),
+            ).fetchone()
+    except Exception as exc:  # pragma: no cover - DB unavailable
+        logger.warning("could not read website_crawl for %s: %s", place_id, exc)
+        return []
+    if not row or not row["wc"]:
         return []
     try:
-        with _MAPS_JSON.open(encoding="utf-8") as f:
-            doc = json.load(f)
-    except (OSError, json.JSONDecodeError) as exc:
-        logger.warning("could not read maps_businesses.json: %s", exc)
+        wc = json.loads(row["wc"])
+    except (TypeError, ValueError):
         return []
-    api = doc.get("api_response") or {}
-    places = api.get("places")
-    if not isinstance(places, list):
+    if not isinstance(wc, dict):
+        return []
+    raw = wc.get("pages")
+    if not isinstance(raw, list):
         return []
     root_screenshot_rel = f"screenshots/{place_id}.png"
     root_md_rel = f"screenshots/{place_id}.md"
-    for p in places:
-        if not isinstance(p, dict) or p.get("id") != place_id:
+    out: list[dict[str, Any]] = []
+    for r in raw:
+        if not isinstance(r, dict):
             continue
-        wc = p.get("website_crawl")
-        if not isinstance(wc, dict):
-            return []
-        raw = wc.get("pages")
-        if not isinstance(raw, list):
-            return []
-        out: list[dict[str, Any]] = []
-        for row in raw:
-            if not isinstance(row, dict):
-                continue
-            sp = row.get("screenshot_path")
-            mp = row.get("markdown_path")
-            is_home = (isinstance(sp, str) and sp.strip() == root_screenshot_rel) or (
-                isinstance(mp, str) and mp.strip() == root_md_rel
-            )
-            if is_home:
-                continue
-            out.append(row)
-        return out
-    return []
+        sp = r.get("screenshot_path")
+        mp = r.get("markdown_path")
+        is_home = (isinstance(sp, str) and sp.strip() == root_screenshot_rel) or (
+            isinstance(mp, str) and mp.strip() == root_md_rel
+        )
+        if is_home:
+            continue
+        out.append(r)
+    return out
 
 
 def _normalize_hints(raw: Any) -> list[dict[str, Any]]:

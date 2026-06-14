@@ -27,7 +27,8 @@ def pending() -> list[Path]:
     return sorted(_MIGRATIONS_DIR.glob("*.sql"))
 
 
-def run() -> int:
+def ensure(*, verbose: bool = False) -> int:
+    """Apply any pending migrations. Returns how many were applied."""
     conn = connect()
     try:
         done = applied(conn)
@@ -36,7 +37,8 @@ def run() -> int:
             if path.name in done:
                 continue
             sql = path.read_text(encoding="utf-8")
-            print(f"  applying {path.name}", flush=True)
+            if verbose:
+                print(f"  applying {path.name}", flush=True)
             # executescript() implicitly commits, so we don't wrap it in a manual
             # transaction. All migration statements use IF NOT EXISTS so re-running
             # after a partial failure is safe.
@@ -45,10 +47,16 @@ def run() -> int:
                 "INSERT INTO _migrations(name) VALUES (?)", (path.name,)
             )
             ran += 1
-        print(f"done. {ran} migration(s) applied, {len(done) + ran} total.")
-        return 0
+        if verbose:
+            print(f"done. {ran} migration(s) applied, {len(done) + ran} total.")
+        return ran
     finally:
         conn.close()
+
+
+def run() -> int:
+    ensure(verbose=True)
+    return 0
 
 
 if __name__ == "__main__":

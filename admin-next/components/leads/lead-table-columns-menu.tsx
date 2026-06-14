@@ -24,6 +24,7 @@ const STATIC_COLUMNS: Array<{ key: string; label: string }> = [
   { key: "rating", label: "Rating" },
   { key: "review_count", label: "Reviews" },
   { key: "website", label: "Site" },
+  { key: "contacts", label: "Contacts" },
 ]
 
 function dynamicColumnId(fieldKey: string): string {
@@ -51,6 +52,7 @@ export function LeadTableColumnsMenu() {
       "ai_summary",
       "description",
       "screenshot_path",
+      "website_contacts",
     ])
     const candidates = fields
       .filter((f) => f.source === "dynamic")

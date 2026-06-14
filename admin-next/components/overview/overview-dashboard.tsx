@@ -23,11 +23,18 @@ import {
   type ScoreBucket,
   type LeadStatsSnapshot,
 } from "@/lib/lead-stats"
-import { leadScoreHeatStyle } from "@/lib/lead-score-heat"
+import { leadScoreHeatFill } from "@/lib/lead-score-heat"
+import { CopyStrategyButton } from "@/components/overview/copy-strategy-button"
 import { useJobs } from "@/hooks/use-jobs"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis } from "recharts"
 import type { FieldDescriptor, Job, SlimLead } from "@/lib/types"
-import { cn } from "@/lib/utils"
 
 type Props = {
   rows: SlimLead[]
@@ -219,12 +226,15 @@ export function OverviewDashboard({ rows, fields, isLoading }: Props) {
             )}
           </p>
         </div>
-        <Link
-          href="/leads"
-          className="text-[12px] text-primary hover:underline"
-        >
-          Open leads list →
-        </Link>
+        <div className="flex items-center gap-3">
+          <CopyStrategyButton />
+          <Link
+            href="/leads"
+            className="text-[12px] text-primary hover:underline"
+          >
+            Open leads list →
+          </Link>
+        </div>
       </header>
 
       <section aria-label="Right now">
@@ -619,6 +629,10 @@ function Sparkline({
   )
 }
 
+const HISTOGRAM_CONFIG = {
+  count: { label: "Leads", color: "var(--chart-1)" },
+} satisfies ChartConfig
+
 function ScoreHistogram({
   subtitle,
   buckets,
@@ -628,45 +642,45 @@ function ScoreHistogram({
   buckets: Record<ScoreBucket, number>
   useHeat?: boolean
 }) {
-  const max = Math.max(1, ...SCORE_BUCKETS.map((b) => buckets[b]))
+  const data = SCORE_BUCKETS.map((score) => ({
+    score,
+    count: buckets[score],
+    fill: useHeat ? leadScoreHeatFill(score) : "var(--color-count)",
+  }))
 
   return (
     <div>
       <p className="text-[11px] tabular-nums text-muted-foreground">
         {subtitle}
       </p>
-      <div className="mt-4 flex items-end gap-1.5 h-28">
-        {SCORE_BUCKETS.map((score) => {
-          const count = buckets[score]
-          const heightPct = (count / max) * 100
-          const heat = useHeat ? leadScoreHeatStyle(score) : undefined
-          return (
-            <div
-              key={score}
-              className="flex min-w-0 flex-1 flex-col items-center gap-1"
-            >
-              <span className="text-[9px] tabular-nums text-muted-foreground">
-                {count > 0 ? count : ""}
-              </span>
-              <div className="flex w-full flex-1 items-end">
-                <div
-                  className={cn(
-                    "w-full min-h-[2px] rounded-t-sm transition-all duration-200",
-                    !useHeat && "bg-chart-1",
-                  )}
-                  style={{
-                    height: `${Math.max(heightPct, count > 0 ? 6 : 0)}%`,
-                    ...(heat ?? {}),
-                  }}
-                />
-              </div>
-              <span className="text-[9px] tabular-nums text-muted-foreground">
-                {score}
-              </span>
-            </div>
-          )
-        })}
-      </div>
+      <ChartContainer config={HISTOGRAM_CONFIG} className="mt-3 h-32 w-full">
+        <BarChart accessibilityLayer data={data} margin={{ top: 16 }}>
+          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <XAxis
+            dataKey="score"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={6}
+            fontSize={9}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent nameKey="count" hideIndicator />}
+          />
+          <Bar dataKey="count" radius={[3, 3, 0, 0]} isAnimationActive={false}>
+            <LabelList
+              dataKey="count"
+              position="top"
+              fontSize={9}
+              className="fill-muted-foreground tabular-nums"
+              formatter={(v) => (Number(v) > 0 ? String(v) : "")}
+            />
+            {data.map((d) => (
+              <Cell key={d.score} fill={d.fill} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
     </div>
   )
 }

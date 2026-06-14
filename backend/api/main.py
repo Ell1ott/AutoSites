@@ -1,6 +1,8 @@
 """FastAPI app entrypoint."""
 from __future__ import annotations
 
+import env_bootstrap  # noqa: F401  # loads backend/.env before anything reads os.environ
+
 import contextlib
 import logging
 import os
@@ -13,8 +15,10 @@ from api.routes import leads as leads_routes
 from api.routes import ratings as ratings_routes
 from api.routes import runs as runs_routes
 from api.routes import screenshots as screenshots_routes
+from api.routes import strategy as strategy_routes
 from api.routes import tasks as tasks_routes
 from db.connection import connect
+from db.migrate import ensure as ensure_db_schema
 from db.repos import jobs as jobs_repo
 from workers.dispatcher import Dispatcher
 from workers.event_bus import EventBus
@@ -46,6 +50,10 @@ def _max_concurrent() -> int:
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
+    applied = ensure_db_schema()
+    if applied:
+        logger.info("applied %d pending migration(s)", applied)
+
     # Reap any jobs left behind by a previous run. We never auto-resume.
     conn = connect()
     try:
@@ -88,6 +96,7 @@ app.include_router(tasks_routes.router)
 app.include_router(runs_routes.router)
 app.include_router(runs_routes.log_router)
 app.include_router(screenshots_routes.router)
+app.include_router(strategy_routes.router)
 
 
 @app.get("/healthz")

@@ -50,6 +50,11 @@ import {
 import { useAiTasks } from "@/hooks/use-ai-tasks"
 import { useFields } from "@/hooks/use-fields"
 import { readField } from "@/lib/filter"
+import {
+  contactCounts,
+  parseWebsiteContacts,
+  primaryEmail,
+} from "@/lib/website-contacts"
 import { missingInputsForLead } from "@/lib/missing-inputs"
 import { useSelectionStore } from "@/lib/store/selection"
 import { useUiStore } from "@/lib/store/ui"
@@ -92,6 +97,7 @@ const STATIC_COLUMNS: Array<{
   { key: "rating", label: "Rating", align: "right" },
   { key: "review_count", label: "Reviews", align: "right" },
   { key: "website", label: "Site" },
+  { key: "contacts", label: "Contacts" },
 ]
 
 /** Stable id for a dynamic field column in the table and in persisted prefs. */
@@ -172,6 +178,29 @@ function renderCell(lead: SlimLead, key: string): ReactNode {
   }
   if (key === "name") {
     return <span className="font-medium text-foreground">{lead.name}</span>
+  }
+  if (key === "contacts") {
+    const wc = parseWebsiteContacts(lead.dynamic)
+    const email = primaryEmail(wc)
+    const counts = contactCounts(wc)
+    if (!lead.has_contacts && !wc?.extracted_at) {
+      return <span className="text-[11px] text-muted-foreground">—</span>
+    }
+    if (email) {
+      return (
+        <span className="line-clamp-1 font-mono text-[11px] text-foreground">
+          {email}
+        </span>
+      )
+    }
+    if (counts.total > 0) {
+      return (
+        <span className="text-[11px] tabular-nums text-muted-foreground">
+          {counts.total} hit{counts.total === 1 ? "" : "s"}
+        </span>
+      )
+    }
+    return <span className="text-[11px] text-muted-foreground">empty</span>
   }
   const v = readField(lead as unknown as Record<string, unknown>, key)
   if (v === undefined || v === null || v === "") {
@@ -432,6 +461,7 @@ export function LeadTable({
       "ai_summary",
       "description",
       "screenshot_path",
+      "website_contacts",
     ])
     const candidates = fields
       .filter((f) => f.source === "dynamic")

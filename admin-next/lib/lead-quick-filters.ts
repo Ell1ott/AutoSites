@@ -9,6 +9,7 @@ export const QUICK_OPEN_NOW_KEY = "__quick_open_now"
 export type WebsiteQuick = "all" | "with" | "without"
 export type CrawlQuick = "all" | "multi" | "none"
 export type OpenNowQuick = "all" | "open" | "closed"
+export type ContactsQuick = "all" | "has" | "missing"
 
 export const MIN_RATING_OPTIONS = ["3", "3.5", "4", "4.5", "5"] as const
 export type MinRatingOption = (typeof MIN_RATING_OPTIONS)[number] | "any"
@@ -24,6 +25,7 @@ export type LeadQuickFiltersState = {
   /** Strictly greater than N (same as legacy `> N`). */
   leadScoreGt: "any" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"
   openNow: OpenNowQuick
+  contacts: ContactsQuick
 }
 
 export const DEFAULT_QUICK_FILTERS: LeadQuickFiltersState = {
@@ -33,6 +35,7 @@ export const DEFAULT_QUICK_FILTERS: LeadQuickFiltersState = {
   minReviewCount: "any",
   leadScoreGt: "any",
   openNow: "all",
+  contacts: "all",
 }
 
 function sameClause(a: FilterClause, b: FilterClause): boolean {
@@ -85,6 +88,13 @@ function isQuickOpenNowClause(c: FilterClause): boolean {
   return c.key === QUICK_OPEN_NOW_KEY && c.op === "eq"
 }
 
+function isQuickContactsClause(c: FilterClause): boolean {
+  return (
+    c.key === "dynamic.website_contacts" &&
+    (c.op === "exists" || c.op === "notexists")
+  )
+}
+
 /**
  * Remove clauses that were produced by the quick-filter bar (best-effort) so we
  * can replace them without duplicating.
@@ -97,7 +107,8 @@ export function stripQuickFilterClauses(clauses: FilterClause[]): FilterClause[]
       !isQuickRatingClause(c) &&
       !isQuickReviewClause(c) &&
       !isQuickScoreClause(c) &&
-      !isQuickOpenNowClause(c),
+      !isQuickOpenNowClause(c) &&
+      !isQuickContactsClause(c),
   )
 }
 
@@ -129,6 +140,12 @@ export function quickFilterClauses(state: LeadQuickFiltersState): FilterClause[]
   }
   if (state.openNow === "closed") {
     out.push({ key: QUICK_OPEN_NOW_KEY, op: "eq", value: "closed" })
+  }
+  if (state.contacts === "has") {
+    out.push({ key: "dynamic.website_contacts", op: "exists" })
+  }
+  if (state.contacts === "missing") {
+    out.push({ key: "dynamic.website_contacts", op: "notexists" })
   }
   return out
 }
@@ -175,6 +192,14 @@ export function parseQuickFiltersFromClauses(
       else if (raw === "closed") s.openNow = "closed"
     }
   }
+  for (const c of clauses) {
+    if (c.key === "dynamic.website_contacts" && c.op === "exists") {
+      s.contacts = "has"
+    }
+    if (c.key === "dynamic.website_contacts" && c.op === "notexists") {
+      s.contacts = "missing"
+    }
+  }
   return s
 }
 
@@ -204,7 +229,8 @@ export function isQuickFilterActive(state: LeadQuickFiltersState): boolean {
     state.minRating !== "any" ||
     state.minReviewCount !== "any" ||
     state.leadScoreGt !== "any" ||
-    state.openNow !== "all"
+    state.openNow !== "all" ||
+    state.contacts !== "all"
   )
 }
 
@@ -216,6 +242,7 @@ export function quickFiltersEqual(a: LeadQuickFiltersState, b: LeadQuickFiltersS
     a.minRating === b.minRating &&
     a.minReviewCount === b.minReviewCount &&
     a.leadScoreGt === b.leadScoreGt &&
-    a.openNow === b.openNow
+    a.openNow === b.openNow &&
+    a.contacts === b.contacts
   )
 }

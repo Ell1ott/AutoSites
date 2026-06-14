@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatEventTime } from "@/lib/format/event-time"
+import { eventsToPlainText } from "@/lib/format/event-line"
 import type { JobEvent, JobLevel } from "@/lib/types"
 import { AiCallDetailModal } from "@/components/ai/ai-call-detail-modal"
 
@@ -26,7 +27,38 @@ type Props = {
   autoScroll?: boolean
   /** Shown when events.length === 0. */
   emptyHint?: string
+  /** Show a floating "Copy logs" button (timestamp-free plain text). Default true. */
+  copyable?: boolean
   className?: string
+}
+
+// -----------------------------------------------------------------------------
+// Copy-logs button
+// -----------------------------------------------------------------------------
+
+function CopyLogsButton({ events }: { events: JobEvent[] }): React.JSX.Element {
+  const [copied, setCopied] = useState(false)
+  async function copy(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(eventsToPlainText(events))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard may be unavailable (e.g. insecure context); ignore.
+    }
+  }
+  return (
+    <Button
+      type="button"
+      size="xs"
+      variant="secondary"
+      onClick={copy}
+      className="absolute right-2 top-2 z-10 opacity-70 hover:opacity-100"
+      title="Copy full logs without timestamps"
+    >
+      {copied ? "Copied" : "Copy logs"}
+    </Button>
+  )
 }
 
 // -----------------------------------------------------------------------------
@@ -60,6 +92,7 @@ export function AiEventStream({
   mode = "stream",
   autoScroll = true,
   emptyHint = "No events yet.",
+  copyable = true,
   className,
 }: Props): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -98,8 +131,9 @@ export function AiEventStream({
 
   if (mode === "list") {
     return (
-      <>
-        <div className={cn("flex flex-col gap-2", className)}>
+      <div className={cn("relative", className)}>
+        {copyable ? <CopyLogsButton events={filtered} /> : null}
+        <div className="flex flex-col gap-2">
           {filtered.map((event) => (
             <div
               key={event.id ?? `${event.seq}-${event.event}`}
@@ -119,20 +153,18 @@ export function AiEventStream({
           ))}
         </div>
         <AiCallDetailModal logId={openCallId} onClose={() => setOpenCallId(null)} />
-      </>
+      </div>
     )
   }
 
   // stream mode
   return (
-    <>
+    <div className={cn("relative min-h-0", className)}>
+      {copyable ? <CopyLogsButton events={filtered} /> : null}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className={cn(
-          "min-h-0 overflow-auto overscroll-contain font-mono text-[12px] leading-snug whitespace-pre-wrap",
-          className,
-        )}
+        className="h-full min-h-0 overflow-auto overscroll-contain font-mono text-[12px] leading-snug whitespace-pre-wrap"
       >
         {filtered.map((event) => (
           <div
@@ -153,7 +185,7 @@ export function AiEventStream({
         ))}
       </div>
       <AiCallDetailModal logId={openCallId} onClose={() => setOpenCallId(null)} />
-    </>
+    </div>
   )
 }
 
@@ -206,13 +238,39 @@ function EventBody({ event, onExport, onOpenAiCall }: EventBodyProps): React.JSX
       const placeId = (data.place_id as string | undefined) ?? ""
       const ms = (data.duration_ms as number | undefined) ?? 0
       const outputs = data.outputs as Record<string, unknown> | undefined
-      const keys = outputs ? Object.keys(outputs) : []
+      const entries = outputs ? Object.entries(outputs) : []
+      // Surface error values inline so failures are immediately readable.
+      const errEntry = entries.find(([k]) => k === "error" || k.endsWith("_error"))
+      const errText = errEntry ? formatOutputValue(errEntry[1]) : undefined
+      const failed = Boolean(errText)
+      const hasDetails = entries.length > 0
       return (
-        <span>
-          <span className="text-emerald-500">✓ </span>
-          {placeId} · {ms}ms
-          {keys.length > 0 ? (
-            <span className="text-muted-foreground"> · outputs: {keys.join(", ")}</span>
+        <span className="inline-flex flex-col gap-0.5">
+          <span>
+            <span className={failed ? "text-destructive" : "text-emerald-500"}>
+              {failed ? "✗ " : "✓ "}
+            </span>
+            {placeId} · {Math.round(ms)}ms
+            {errText ? (
+              <span className="text-destructive"> · {errText}</span>
+            ) : entries.length > 0 ? (
+              <span className="text-muted-foreground">
+                {" "}
+                · outputs: {entries.map(([k]) => k).join(", ")}
+              </span>
+            ) : null}
+          </span>
+          {hasDetails ? (
+            <details className="text-muted-foreground">
+              <summary className="cursor-pointer text-[11px] select-none">
+                details
+              </summary>
+              <pre className="text-[11px] whitespace-pre-wrap mt-1">
+                {entries
+                  .map(([k, v]) => `${k}: ${formatOutputValue(v)}`)
+                  .join("\n")}
+              </pre>
+            </details>
           ) : null}
         </span>
       )
@@ -247,12 +305,13 @@ function EventBody({ event, onExport, onOpenAiCall }: EventBodyProps): React.JSX
       const place = (data.place_name as string | undefined) ?? (data.place_id as string | undefined) ?? ""
       const ms = (data.duration_ms as number | undefined) ?? 0
       const hasImage = Boolean(data.has_image)
+      const preview = previewOneLine(data.response_preview as string | undefined)
       return (
-        <span className="inline-flex flex-wrap items-center gap-2">
+        <span className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             onClick={() => logId !== undefined && onOpenAiCall?.(logId)}
-            className="text-left underline-offset-2 hover:underline disabled:cursor-not-allowed"
+            className="shrink-0 text-left underline-offset-2 hover:underline disabled:cursor-not-allowed"
             disabled={logId === undefined || !onOpenAiCall}
             title="View full prompt + response"
           >
@@ -263,6 +322,14 @@ function EventBody({ event, onExport, onOpenAiCall }: EventBodyProps): React.JSX
               · {model} · {ms}ms{hasImage ? " · 📷" : ""}
             </span>
           </button>
+          {preview ? (
+            <span
+              className="text-muted-foreground/80 min-w-0 flex-1 truncate italic"
+              title={preview}
+            >
+              “{preview}”
+            </span>
+          ) : null}
         </span>
       )
     }
@@ -381,6 +448,24 @@ function EventBody({ event, onExport, onOpenAiCall }: EventBodyProps): React.JSX
         </span>
       )
     }
+  }
+}
+
+/** Collapse a multi-line preview to a single trimmed line. CSS handles the
+ * length cap via `truncate`; the backend already caps the raw text at ~240. */
+function previewOneLine(v: string | undefined): string {
+  if (!v) return ""
+  return v.replace(/\s+/g, " ").trim()
+}
+
+function formatOutputValue(v: unknown): string {
+  if (v == null) return "—"
+  if (typeof v === "string") return v
+  if (typeof v === "number" || typeof v === "boolean") return String(v)
+  try {
+    return JSON.stringify(v, null, 2)
+  } catch {
+    return String(v)
   }
 }
 

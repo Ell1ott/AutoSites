@@ -67,7 +67,7 @@ export const useUiStore = create<UiState>()(
       mapColorField: "lead_score",
       setMapColorField: (key) => set({ mapColorField: key }),
 
-      leadTableColumnHidden: {},
+      leadTableColumnHidden: { contacts: true },
       setLeadTableColumnHidden: (columnId, hidden) =>
         set((s) => {
           const next = { ...s.leadTableColumnHidden }
@@ -95,7 +95,7 @@ export const useUiStore = create<UiState>()(
 
       resetLeadTableColumns: () =>
         set({
-          leadTableColumnHidden: {},
+          leadTableColumnHidden: { contacts: true },
           leadTableDataColumnShown: {},
           leadTableColumnOrder: [],
           leadTableColumnSizing: {},

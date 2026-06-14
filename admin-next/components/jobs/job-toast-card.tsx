@@ -10,14 +10,17 @@
 
 import * as React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   ArrowDown01Icon,
+  ArrowExpandDiagonal01Icon,
   ArrowUp01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
+import { CopyButton } from "@/components/ai/copy-button"
 import { AiEventStream } from "@/components/ai/ai-event-stream"
 import { JobResultView } from "@/components/jobs/job-result-view"
 import { JobStatusBadge } from "@/components/queue/job-status-badge"
@@ -101,6 +104,28 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
     [events],
   )
 
+  // Full plain-text error details for the quick-copy button. Prefers the
+  // terminal `error` event (class + message + traceback), falling back to
+  // any ai_call_error.
+  const errorText = useMemo(() => {
+    if (!isErrored) return ""
+    const err =
+      events.find((e) => e.event === "error") ??
+      events.find((e) => e.event === "ai_call_error")
+    if (!err) return ""
+    const data = (err.data ?? {}) as Record<string, unknown>
+    const cls =
+      (data.class as string | undefined) ??
+      (data.error_class as string | undefined) ??
+      "Error"
+    const msg =
+      (data.message as string | undefined) ?? err.message ?? ""
+    const parts = [`${cls}: ${msg}`]
+    const tb = data.traceback as string | undefined
+    if (tb) parts.push("", tb)
+    return parts.join("\n")
+  }, [isErrored, events])
+
   return (
     <div
       className={cn(
@@ -134,6 +159,17 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
               : ""}
           </div>
         </div>
+        <Button
+          asChild
+          size="icon-sm"
+          variant="ghost"
+          aria-label="Open full task view in Queue"
+          title="Open in Queue"
+        >
+          <Link href={`/queue?job=${encodeURIComponent(jobId)}`}>
+            <HugeiconsIcon icon={ArrowExpandDiagonal01Icon} strokeWidth={2} />
+          </Link>
+        </Button>
         <Button
           type="button"
           size="icon-sm"
@@ -186,8 +222,16 @@ export function JobToastCard({ jobId, title, kind }: Props): React.JSX.Element {
 
       {/* Footer status hint */}
       {isErrored ? (
-        <div className="bg-destructive/10 text-destructive px-3 py-1.5 text-[11px]">
-          Errored — click X to dismiss.
+        <div className="bg-destructive/10 text-destructive flex items-center justify-between gap-2 py-1.5 pl-3 pr-1.5 text-[11px]">
+          <span>Errored — click X to dismiss.</span>
+          {errorText ? (
+            <CopyButton
+              text={errorText}
+              label="Copy error"
+              ariaLabel="Copy error details"
+              className="text-destructive hover:text-destructive h-6 shrink-0 px-1.5"
+            />
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -263,7 +307,16 @@ function summarizeEvent(e: JobEvent): string {
     case "item_done": {
       const placeId = (data.place_id as string | undefined) ?? ""
       const ms = (data.duration_ms as number | undefined) ?? 0
-      return `✓ ${placeId} · ${ms}ms`
+      const outputs = data.outputs as Record<string, unknown> | undefined
+      const errEntry = outputs
+        ? Object.entries(outputs).find(([k]) => k === "error" || k.endsWith("_error"))
+        : undefined
+      if (errEntry && errEntry[1] != null) {
+        const err =
+          typeof errEntry[1] === "string" ? errEntry[1] : JSON.stringify(errEntry[1])
+        return `✗ ${placeId} · ${Math.round(ms)}ms · ${err}`
+      }
+      return `✓ ${placeId} · ${Math.round(ms)}ms`
     }
     case "ai_call_start": {
       const model = (data.model as string | undefined) ?? ""

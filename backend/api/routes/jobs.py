@@ -32,6 +32,7 @@ _VALID_KINDS = {
     "ai_task",
     "crawl",
     "html_to_md",
+    "extract_contacts",
     "find_inspiration",
     "generate_inspiration_queries",
     "variant_design",

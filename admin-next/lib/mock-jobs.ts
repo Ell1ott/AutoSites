@@ -47,6 +47,17 @@ export const MOCK_JOBS: Job[] = [
     finished_at: T_MINUS_30M,
   },
   {
+    id: "job-done-002",
+    kind: "extract_contacts",
+    status: "done",
+    args: { place_ids: ["ChIJmock"] },
+    progress: { done: 12, total: 12 },
+    result: { extracted: 10, skipped: 2, missing: 0, failed: 0, places: 12 },
+    created_at: T_MINUS_1H,
+    started_at: T_MINUS_1H,
+    finished_at: T_MINUS_30M,
+  },
+  {
     id: "job-failed-001",
     kind: "ai_task",
     status: "failed",

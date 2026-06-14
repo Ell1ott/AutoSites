@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import env_bootstrap  # noqa: F401  # loads backend/.env before anything reads os.environ
+
 import os
 
 
