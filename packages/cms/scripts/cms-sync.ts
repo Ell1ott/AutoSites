@@ -199,8 +199,23 @@ function findSelfClosingTags(src: string, tagName: string): TagMatch[] {
     const start = m.index;
     let i = start + m[0].length;
     let braceDepth = 0;
+    let inString: '"' | "'" | null = null;
     while (i < src.length - 1) {
       const ch = src[i];
+      if (inString) {
+        if (ch === "\\") {
+          i += 2;
+          continue;
+        }
+        if (ch === inString) inString = null;
+        i++;
+        continue;
+      }
+      if (ch === '"' || ch === "'") {
+        inString = ch;
+        i++;
+        continue;
+      }
       if (ch === "{") braceDepth++;
       else if (ch === "}") braceDepth--;
       else if (
