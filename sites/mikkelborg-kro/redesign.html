@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mikkelborg Kro · Selskaber &amp; Bed &amp; Breakfast i Sønderjylland</title>
+<meta name="description" content="Mikkelborg Kro i Rødding — hjemmelavet selskabsmad, hyggelige værelser og sønderjysk kroliv tæt på Jels Søerne." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f6f1e5;
+    --paper-deep: #efe7d4;
+    --ink: #24291f;
+    --ink-soft: #5a5f50;
+    --spruce: #22432f;
+    --spruce-deep: #1a3524;
+    --paprika: #b3502a;
+    --paprika-deep: #93401f;
+    --straw: #d9a441;
+    --line: rgba(36, 41, 31, 0.18);
+    --line-soft: rgba(36, 41, 31, 0.1);
+    --display: "Fraunces", "Georgia", serif;
+    --body: "Karla", "Helvetica Neue", sans-serif;
+    --max: 1200px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+
+  ::selection { background: var(--paprika); color: var(--paper); }
+
+  body {
+    font-family: var(--body);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Paper grain over everything */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 clamp(20px, 5vw, 56px); }
+
+  /* ---------- Typography helpers ---------- */
+  .eyebrow {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--paprika);
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 34px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.05; }
+
+  .display-xl {
+    font-size: clamp(52px, 9.5vw, 132px);
+    letter-spacing: -0.015em;
+  }
+  .display-lg { font-size: clamp(38px, 5.6vw, 68px); letter-spacing: -0.01em; }
+  .display-md { font-size: clamp(26px, 3.2vw, 36px); }
+
+  em.flourish {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--paprika);
+  }
+
+  .lede {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(19px, 2.1vw, 24px);
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 18px 30px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    background: transparent;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn:active { transform: scale(0.98); }
+  .btn.solid { background: var(--paprika); border-color: var(--paprika); color: var(--paper); }
+  .btn.solid:hover { background: var(--paprika-deep); border-color: var(--paprika-deep); }
+  .btn.ghost-light { border-color: rgba(246, 241, 229, 0.5); color: var(--paper); }
+  .btn.ghost-light:hover { background: var(--paper); color: var(--spruce-deep); }
+  .btn svg { transition: transform 0.3s ease; }
+  .btn:hover svg { transform: translateX(4px); }
+
+  /* ---------- Header ---------- */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    transition: background 0.35s ease, box-shadow 0.35s ease;
+  }
+  header.scrolled {
+    background: rgba(246, 241, 229, 0.92);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 var(--line-soft);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 84px;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px);
+  }
+  .brand {
+    font-family: var(--display);
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand svg { flex-shrink: 0; }
+  .nav-links { display: flex; align-items: center; gap: 34px; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: color 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--paprika); }
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--spruce);
+    padding: 12px 22px;
+    border-radius: 999px;
+    transition: background 0.25s ease;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { background: var(--spruce-deep); }
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: 110px;
+    background:
+      radial-gradient(ellipse 90% 60% at 70% -10%, rgba(217, 164, 65, 0.16), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 10% 110%, rgba(34, 67, 47, 0.1), transparent 65%),
+      var(--paper);
+  }
+  .hero .wrap { position: relative; z-index: 2; width: 100%; }
+  .hero-kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .hero h1 { max-width: 12ch; }
+  .hero h1 .line { display: block; overflow: hidden; }
+  .hero h1 .line > span {
+    display: block;
+    transform: translateY(110%);
+    animation: rise 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+  .hero h1 .line:nth-child(2) > span { animation-delay: 0.12s; }
+  @keyframes rise { to { transform: translateY(0); } }
+
+  .hero-sub {
+    margin-top: 34px;
+    max-width: 46ch;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.45s forwards;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 44px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.6s forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Line-art kro illustration, anchored right */
+  .hero-art {
+    position: absolute;
+    right: clamp(-80px, 2vw, 60px);
+    bottom: 0;
+    width: clamp(360px, 46vw, 720px);
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.35s forwards;
+  }
+  .hero-art svg { width: 100%; height: auto; display: block; }
+  .hero-art .stroke { stroke: var(--spruce); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .hero-art .fill-warm { fill: rgba(217, 164, 65, 0.35); }
+  .hero-art .fill-paprika { fill: rgba(179, 80, 42, 0.22); }
+  @media (max-width: 900px) {
+    .hero-art { position: static; width: min(92vw, 520px); margin: 48px auto 0; }
+    .hero { padding-bottom: 0; }
+  }
+
+  .hero-foot {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--line);
+    margin-top: clamp(40px, 7vh, 90px);
+  }
+  .hero-foot-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 40px;
+    justify-content: space-between;
+    padding: 20px 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Ticker ---------- */
+  .ticker {
+    background: var(--spruce);
+    color: var(--paper);
+    overflow: hidden;
+    padding: 16px 0;
+    border-top: 1px solid var(--spruce-deep);
+    border-bottom: 1px solid var(--spruce-deep);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    gap: 0;
+    animation: scroll 36s linear infinite;
+  }
+  .ticker span {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 19px;
+    padding: 0 28px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 56px;
+  }
+  .ticker span::after { content: "❦"; font-style: normal; color: var(--straw); font-size: 15px; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+
+  /* ---------- Sections ---------- */
+  section { padding: clamp(80px, 12vw, 150px) 0; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.19, 1, 0.22, 1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Velkommen */
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+    gap: clamp(40px, 6vw, 90px);
+    align-items: start;
+  }
+  .about-grid h2 { margin: 22px 0 28px; }
+  .about-copy p + p { margin-top: 1.2em; }
+  .about-aside {
+    border-left: 1px solid var(--line);
+    padding-left: clamp(24px, 3vw, 44px);
+    display: grid;
+    gap: 34px;
+  }
+  .fact h3 {
+    font-size: 15px;
+    font-family: var(--body);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--spruce);
+    margin-bottom: 8px;
+  }
+  .fact p { color: var(--ink-soft); font-size: 16px; }
+  .notice {
+    background: var(--paper-deep);
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 18px 22px;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .notice strong { color: var(--ink); }
+  @media (max-width: 860px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .about-aside { border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 36px; }
+  }
+
+  /* ---------- Selskaber / menu ---------- */
+  .menu-section {
+    background: var(--spruce-deep);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 85% 8%, rgba(217, 164, 65, 0.12), transparent 60%),
+      radial-gradient(ellipse 50% 45% at 8% 95%, rgba(179, 80, 42, 0.14), transparent 60%);
+    pointer-events: none;
+  }
+  .menu-section .wrap { position: relative; }
+  .menu-head { max-width: 720px; margin-bottom: clamp(48px, 6vw, 80px); }
+  .menu-head .eyebrow { color: var(--straw); }
+  .menu-head h2 { margin: 22px 0 24px; }
+  .menu-head p { color: rgba(246, 241, 229, 0.72); }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 3.5vw, 48px);
+  }
+  .menu-card {
+    background: rgba(246, 241, 229, 0.045);
+    border: 1px solid rgba(246, 241, 229, 0.14);
+    border-radius: 18px;
+    padding: clamp(28px, 3.4vw, 44px);
+    transition: border-color 0.35s ease, transform 0.35s ease, background 0.35s ease;
+  }
+  .menu-card:hover {
+    border-color: rgba(217, 164, 65, 0.55);
+    background: rgba(246, 241, 229, 0.07);
+    transform: translateY(-4px);
+  }
+  .menu-card h3 {
+    font-size: clamp(24px, 2.6vw, 30px);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--straw);
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+  .menu-card h3::after { content: ""; flex: 1; height: 1px; background: rgba(217, 164, 65, 0.3); }
+  .dish { display: flex; align-items: baseline; gap: 10px; padding: 11px 0; }
+  .dish + .dish { border-top: 1px solid rgba(246, 241, 229, 0.09); }
+  .dish .name { font-size: 16px; color: rgba(246, 241, 229, 0.92); max-width: 34ch; }
+  .dish .name small { display: block; color: rgba(246, 241, 229, 0.5); font-size: 13.5px; margin-top: 2px; }
+  .dish .dots { flex: 1; border-bottom: 1px dotted rgba(246, 241, 229, 0.3); transform: translateY(-4px); min-width: 24px; }
+  .dish .price {
+    font-family: var(--display);
+    font-size: 17px;
+    color: var(--straw);
+    white-space: nowrap;
+  }
+  .menu-fine {
+    margin-top: clamp(36px, 4vw, 56px);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px 48px;
+    align-items: center;
+    border-top: 1px solid rgba(246, 241, 229, 0.16);
+    padding-top: 32px;
+  }
+  .menu-fine ul { list-style: none; display: grid; gap: 8px; }
+  .menu-fine li {
+    font-size: 14.5px;
+    color: rgba(246, 241, 229, 0.65);
+    padding-left: 20px;
+    position: relative;
+  }
+  .menu-fine li::before { content: "◆"; position: absolute; left: 0; font-size: 8px; top: 6px; color: var(--straw); }
+  @media (max-width: 820px) {
+    .menu-grid { grid-template-columns: 1fr; }
+    .menu-fine { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- B&B ---------- */
+  .bnb-head { max-width: 700px; }
+  .bnb-head h2 { margin: 22px 0 24px; }
+  .bnb-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+    gap: clamp(40px, 6vw, 90px);
+    margin-top: clamp(44px, 5vw, 70px);
+    align-items: start;
+  }
+  .amenities { display: grid; gap: 0; }
+  .amenity {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .amenity:last-child { border-bottom: 1px solid var(--line); }
+  .amenity svg { flex-shrink: 0; margin-top: 3px; }
+  .amenity h3 { font-family: var(--body); font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+  .amenity p { font-size: 15px; color: var(--ink-soft); }
+
+  .rate-card {
+    background: var(--paper-deep);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: clamp(28px, 3.5vw, 46px);
+    position: relative;
+  }
+  .rate-card::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+  .rate-card h3 {
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 30px);
+    color: var(--paprika);
+    margin-bottom: 26px;
+    text-align: center;
+  }
+  .rate { display: flex; align-items: baseline; gap: 10px; padding: 14px 0; }
+  .rate + .rate { border-top: 1px solid var(--line-soft); }
+  .rate .name { font-size: 16px; }
+  .rate .name small { display: block; font-size: 13.5px; color: var(--ink-soft); }
+  .rate .dots { flex: 1; border-bottom: 1px dotted var(--line); transform: translateY(-4px); min-width: 24px; }
+  .rate .price { font-family: var(--display); font-size: 20px; color: var(--spruce); white-space: nowrap; }
+  .rate .price small { font-size: 12px; font-family: var(--body); color: var(--ink-soft); display: block; text-align: right; }
+  .rate-cta { text-align: center; margin-top: 30px; }
+  @media (max-width: 860px) {
+    .bnb-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Omegn ---------- */
+  .area { background: var(--paper-deep); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+  .area-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(40px, 5vw, 64px); }
+  .area-head h2 { margin-top: 22px; }
+  .area-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); }
+  .area-card {
+    background: var(--paper);
+    padding: clamp(24px, 2.8vw, 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 220px;
+    transition: background 0.3s ease;
+  }
+  .area-card:hover { background: #fbf8f0; }
+  .area-card .num { font-family: var(--display); font-style: italic; font-size: 15px; color: var(--paprika); }
+  .area-card h3 { font-size: 22px; }
+  .area-card p { font-size: 15px; color: var(--ink-soft); margin-top: auto; }
+  @media (max-width: 980px) { .area-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .area-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Kontakt / CTA ---------- */
+  .contact { text-align: center; }
+  .contact .eyebrow { justify-content: center; }
+  .contact .eyebrow::after { content: ""; width: 34px; height: 1px; background: currentColor; }
+  .contact h2 { margin: 26px auto 20px; max-width: 16ch; }
+  .contact .lede { max-width: 52ch; margin: 0 auto; }
+  .contact-phone {
+    display: inline-block;
+    font-family: var(--display);
+    font-size: clamp(34px, 5vw, 56px);
+    color: var(--spruce);
+    text-decoration: none;
+    margin-top: 40px;
+    border-bottom: 2px solid var(--paprika);
+    padding-bottom: 6px;
+    transition: color 0.3s ease;
+  }
+  .contact-phone:hover { color: var(--paprika); }
+  .contact-mail { display: block; margin-top: 18px; color: var(--ink-soft); text-decoration: none; font-size: 17px; }
+  .contact-mail:hover { color: var(--paprika); }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--spruce-deep); color: rgba(246, 241, 229, 0.75); }
+  .foot-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    padding: clamp(56px, 7vw, 90px) 0 48px;
+  }
+  .foot-brand {
+    font-family: var(--display);
+    font-size: clamp(30px, 3.4vw, 42px);
+    color: var(--paper);
+    line-height: 1.15;
+  }
+  .foot-brand em { font-style: italic; color: var(--straw); }
+  footer h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--straw);
+    margin-bottom: 18px;
+  }
+  footer ul { list-style: none; display: grid; gap: 10px; }
+  footer a { color: rgba(246, 241, 229, 0.75); text-decoration: none; transition: color 0.25s ease; font-size: 15.5px; }
+  footer a:hover { color: var(--paper); }
+  footer address { font-style: normal; font-size: 15.5px; line-height: 1.8; }
+  .foot-bottom {
+    border-top: 1px solid rgba(246, 241, 229, 0.14);
+    padding: 24px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    justify-content: space-between;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(246, 241, 229, 0.45);
+  }
+  @media (max-width: 760px) { .foot-main { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <nav class="nav">
+    <a class="brand" href="#top" aria-label="Mikkelborg Kro — forside">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M4 15 L16 5 L28 15" stroke="#b3502a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 14 V26 H25 V14" stroke="#22432f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13 26 V19 H19 V26" stroke="#22432f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Mikkelborg Kro
+    </a>
+    <div class="nav-links">
+      <a href="#velkommen">Kroen</a>
+      <a href="#selskaber">Selskaber</a>
+      <a href="#bed-breakfast">Bed &amp; Breakfast</a>
+      <a href="#omegn">Omegnen</a>
+    </div>
+    <a class="nav-cta" href="tel:+4522277465">Ring 22 27 74 65</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-label="Velkommen">
+    <div class="wrap">
+      <div class="hero-kicker">
+        <span class="eyebrow">Mikkelborg · Rødding · Sønderjylland</span>
+      </div>
+      <h1 class="display-xl">
+        <span class="line"><span>Kroliv, som</span></span>
+        <span class="line"><span>det <em class="flourish">smager</em>.</span></span>
+      </h1>
+      <p class="lede hero-sub">
+        Hjemmelavet selskabsmad, en varm seng og sønderjysk gæstfrihed —
+        midt i det grønne mellem Rødding og Jels Søerne.
+      </p>
+      <div class="hero-actions">
+        <a class="btn solid" href="#selskaber">
+          Se selskabsmenuen
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn" href="#bed-breakfast">Overnatning</a>
+      </div>
+    </div>
+
+    <!-- Line-art illustration of the kro -->
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 640 380" fill="none">
+        <!-- sun -->
+        <circle cx="520" cy="80" r="42" class="fill-warm"/>
+        <!-- rolling field -->
+        <path class="stroke" d="M10 340 Q160 310 320 336 T630 330" opacity="0.5"/>
+        <path class="stroke" d="M40 362 Q200 338 360 358 T628 352" opacity="0.3"/>
+        <!-- main house body -->
+        <rect x="150" y="200" width="300" height="140" class="stroke"/>
+        <!-- thatched roof -->
+        <path class="stroke fill-paprika" d="M130 202 L300 96 L470 202 Z"/>
+        <path class="stroke" d="M162 182 L300 96 M438 182 L300 96" opacity="0.35"/>
+        <!-- chimney + smoke -->
+        <path class="stroke" d="M380 150 v-42 h26 v58"/>
+        <path class="stroke" d="M392 96 q10 -12 0 -22 q-9 -10 2 -20" opacity="0.55"/>
+        <!-- door -->
+        <rect x="278" y="252" width="44" height="88" class="stroke"/>
+        <circle cx="312" cy="298" r="3" fill="#22432f"/>
+        <path class="stroke" d="M268 252 q32 -26 64 0" />
+        <!-- windows -->
+        <g class="stroke">
+          <rect x="182" y="238" width="52" height="52"/>
+          <path d="M208 238 v52 M182 264 h52"/>
+          <rect x="366" y="238" width="52" height="52"/>
+          <path d="M392 238 v52 M366 264 h52"/>
+          <rect x="276" y="140" width="48" height="40"/>
+          <path d="M300 140 v40 M276 160 h48"/>
+        </g>
+        <!-- hanging kro sign -->
+        <path class="stroke" d="M450 226 h58 M479 226 v14"/>
+        <rect x="458" y="240" width="42" height="30" class="stroke fill-warm"/>
+        <!-- fence -->
+        <g class="stroke" opacity="0.6">
+          <path d="M60 340 v-28 M92 340 v-28 M124 340 v-28"/>
+          <path d="M48 322 h88"/>
+          <path d="M496 340 v-28 M528 340 v-28 M560 340 v-28"/>
+          <path d="M484 322 h88"/>
+        </g>
+        <!-- tree -->
+        <g class="stroke">
+          <path d="M80 306 v-58"/>
+          <path d="M80 250 q-34 4 -40 -22 q28 -8 40 8 q4 -30 32 -32 q6 26 -24 36 q22 0 26 18 q-22 10 -34 -8" opacity="0.75"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="wrap hero-foot">
+      <div class="hero-foot-inner">
+        <span>Selskaber op til alle lejligheder</span>
+        <span>Bed &amp; Breakfast fra 440 kr.</span>
+        <span>Mikkelborg Bygade 5, 6630 Rødding</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TICKER ============ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Hjemmelavet mad</span><span>Fødselsdage</span><span>Bryllupper</span><span>Konfirmationer</span><span>Mindesammenkomster</span><span>Bed &amp; Breakfast</span><span>Jels Søerne</span><span>Sønderjysk gæstfrihed</span>
+      <span>Hjemmelavet mad</span><span>Fødselsdage</span><span>Bryllupper</span><span>Konfirmationer</span><span>Mindesammenkomster</span><span>Bed &amp; Breakfast</span><span>Jels Søerne</span><span>Sønderjysk gæstfrihed</span>
+    </div>
+  </div>
+
+  <!-- ============ VELKOMMEN ============ -->
+  <section id="velkommen">
+    <div class="wrap about-grid">
+      <div class="about-copy reveal">
+        <span class="eyebrow">Velkommen</span>
+        <h2 class="display-lg">En kro med <em class="flourish">hjerterum</em> og god, ærlig mad</h2>
+        <p>
+          Mikkelborg Kro ligger i den lille landsby Mikkelborg ved Rødding, midt i det
+          smukke sønderjyske landskab. Her holder vi fast i det, en kro skal kunne:
+          god hjemmelavet mad, ordentlige portioner og en værtsfamilie, der tager
+          personligt imod.
+        </p>
+        <p>
+          Vi holder alle former for selskaber — fra runde fødselsdage og konfirmationer
+          til bryllupper og mindesammenkomster — og tilbyder hyggelige værelser til jer,
+          der vil blive natten over og opleve området omkring Jels Søerne.
+        </p>
+      </div>
+      <aside class="about-aside reveal">
+        <div class="fact">
+          <h3>Selskaber</h3>
+          <p>Alt fra tarteletter til helstegt pattegris — med borddækning og oprydning inkluderet i prisen.</p>
+        </div>
+        <div class="fact">
+          <h3>Overnatning</h3>
+          <p>Unikt indrettede værelser med eget bad og toilet, fra 440 kr. pr. nat.</p>
+        </div>
+        <div class="fact">
+          <h3>Jeres værtinde</h3>
+          <p>Kate Bay står personligt for køkkenet og jeres fest.</p>
+        </div>
+        <p class="notice">
+          <strong>Bemærk:</strong> Krostuen og restauranten holder i øjeblikket lukket.
+          Selskaber og Bed &amp; Breakfast bookes som altid på telefon
+          <a href="tel:+4522277465" style="color: var(--paprika);">22&nbsp;27&nbsp;74&nbsp;65</a>.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ SELSKABER ============ -->
+  <section id="selskaber" class="menu-section">
+    <div class="wrap">
+      <div class="menu-head reveal">
+        <span class="eyebrow">Selskaber</span>
+        <h2 class="display-lg">Menukort til <em class="flourish" style="color: var(--straw);">festen</em></h2>
+        <p class="lede" style="color: rgba(246,241,229,0.72);">
+          Sammensæt jeres egen menu af hjemmelavede retter. Alle priser er pr. person
+          ved minimum 30 kuverter.
+        </p>
+      </div>
+
+      <div class="menu-grid">
+        <article class="menu-card reveal">
+          <h3>Forretter</h3>
+          <div class="dish"><span class="name">Tarteletter med høns og asparges</span><span class="dots"></span><span class="price">69,-</span></div>
+          <div class="dish"><span class="name">Hjemmelavet hønsesalat <small>på ananasbund, hjertesalat &amp; hjemmelavet brød</small></span><span class="dots"></span><span class="price">89,-</span></div>
+          <div class="dish"><span class="name">Hjemmelavet tunmousse <small>på hjertesalat &amp; hjemmelavet brød</small></span><span class="dots"></span><span class="price">84,-</span></div>
+          <div class="dish"><span class="name">Hjemmelavet tærte <small>med broccoli/skinke eller tomat/porre</small></span><span class="dots"></span><span class="price">74,-</span></div>
+          <div class="dish"><span class="name">Laksemousse på kiks <small>med grønt &amp; babyspirer</small></span><span class="dots"></span><span class="price">99,-</span></div>
+          <div class="dish"><span class="name">Halv jomfruhummer <small>med grønt, friske asparges og hjemmelavet brød</small></span><span class="dots"></span><span class="price">169,-</span></div>
+        </article>
+
+        <article class="menu-card reveal">
+          <h3>Hovedretter</h3>
+          <div class="dish"><span class="name">Svinekam stegt som vildt <small>brun sovs, kartofler, waldorfsalat, tyttebær, gulerødder &amp; bønner</small></span><span class="dots"></span><span class="price">188,-</span></div>
+          <div class="dish"><span class="name">Gammeldags højreb <small>med flødekartofler og salatbuffet</small></span><span class="dots"></span><span class="price">219,-</span></div>
+          <div class="dish"><span class="name">Gammeldags kalvesteg som vildt <small>brun sovs, kartofler, waldorfsalat, tyttebær, gulerødder &amp; bønner</small></span><span class="dots"></span><span class="price">209,-</span></div>
+          <div class="dish"><span class="name">Gammeldags oksesteg <small>brun sovs, kartofler, waldorfsalat, tyttebær, gulerødder &amp; bønner</small></span><span class="dots"></span><span class="price">219,-</span></div>
+          <div class="dish"><span class="name">Glaseret hamburgerryg <small>med flødekartofler og salatbuffet</small></span><span class="dots"></span><span class="price">188,-</span></div>
+          <div class="dish"><span class="name">Helstegt pattegris <small>flødekartofler, salatbuffet, hjemmelavet brød &amp; tzatziki · min. 40 kuverter</small></span><span class="dots"></span><span class="price">189,-</span></div>
+        </article>
+
+        <article class="menu-card reveal">
+          <h3>Desserter</h3>
+          <div class="dish"><span class="name">Nøddebund med rabarberskum <small>friske jordbær &amp; chokolade</small></span><span class="dots"></span><span class="price">69,-</span></div>
+          <div class="dish"><span class="name">Hjemmelavet is <small>jordbær, chokolade eller vanilje — med frugt og vafler</small></span><span class="dots"></span><span class="price">69,-</span></div>
+          <div class="dish"><span class="name">Daim-islagkage</span><span class="dots"></span><span class="price">79,-</span></div>
+          <div class="dish"><span class="name">Chokoladelagkage <small>med hindbærskum</small></span><span class="dots"></span><span class="price">48,-</span></div>
+          <div class="dish"><span class="name">Citronfromage <small>med flødeskum</small></span><span class="dots"></span><span class="price">59,-</span></div>
+        </article>
+
+        <article class="menu-card reveal">
+          <h3>Ekstra &amp; natmad</h3>
+          <div class="dish"><span class="name">Kaffe med småkager</span><span class="dots"></span><span class="price">49,-</span></div>
+          <div class="dish"><span class="name">Kaffe med hjemmebag</span><span class="dots"></span><span class="price">69,-</span></div>
+          <div class="dish"><span class="name">Natmad <small>diverse supper efter eget valg med flutes</small></span><span class="dots"></span><span class="price">89,-</span></div>
+          <div class="dish"><span class="name">Ad libitum vin og drikkelse <small>i 4 timer</small></span><span class="dots"></span><span class="price">220,-</span></div>
+        </article>
+      </div>
+
+      <div class="menu-fine reveal">
+        <ul>
+          <li>Alle priser er pr. person ved minimum 30 kuverter.</li>
+          <li>Borddækning og oprydning er inkluderet i prisen.</li>
+          <li>Betaling med kontant eller kort senest 7 dage inden festen.</li>
+        </ul>
+        <a class="btn ghost-light" href="tel:+4522277465">
+          Book jeres fest
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BED & BREAKFAST ============ -->
+  <section id="bed-breakfast">
+    <div class="wrap">
+      <div class="bnb-head reveal">
+        <span class="eyebrow">Bed &amp; Breakfast</span>
+        <h2 class="display-lg">Sov godt, <em class="flourish">vågn op på landet</em></h2>
+        <p class="lede">
+          Nyd et afslappende ophold hos os og oplev det naturskønne område ved
+          Jels Søerne. Alle værelser er indrettet unikt — og morgenkaffen er altid klar.
+        </p>
+      </div>
+
+      <div class="bnb-layout">
+        <div class="amenities reveal">
+          <div class="amenity">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 20v-8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8M4 20h18M4 20v2m18-2v2M7 9V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3" stroke="#b3502a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div>
+              <h3>Eget bad og toilet</h3>
+              <p>Alle værelser har eget bad og toilet, og hvert rum er indrettet med sit eget udtryk.</p>
+            </div>
+          </div>
+          <div class="amenity">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M5 4h16v6a8 8 0 0 1-16 0V4Z" stroke="#b3502a" stroke-width="1.8" stroke-linejoin="round"/><path d="M21 6h2a2 2 0 0 1 0 4h-2M6 22h14" stroke="#b3502a" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div>
+              <h3>Fri kaffe og te</h3>
+              <p>Elkedel, brødrister og fri kaffe/te — døgnet rundt.</p>
+            </div>
+          </div>
+          <div class="amenity">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><rect x="3" y="4" width="20" height="13" rx="1.5" stroke="#b3502a" stroke-width="1.8"/><path d="M9 21h8m-4-4v4" stroke="#b3502a" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div>
+              <h3>Fællesareal</h3>
+              <p>Hyggeligt fællesareal med spiseplads, fjernsyn og køleskab.</p>
+            </div>
+          </div>
+          <div class="amenity">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M4 18c2-6 5-9 9-9s7 3 9 9M13 9V5m0 0 3 2m-3-2-3 2M3 21h20" stroke="#b3502a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div>
+              <h3>Sengelinned og håndklæder</h3>
+              <p>Inkluderet i prisen — pak let og kom, som I er.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rate-card reveal">
+          <h3>Vores priser</h3>
+          <div class="rate"><span class="name">2-personersværelse <small>max. to overnattende gæster</small></span><span class="dots"></span><span class="price">650,-<small>pr. nat</small></span></div>
+          <div class="rate"><span class="name">2-personersværelse <small>én overnattende gæst</small></span><span class="dots"></span><span class="price">530,-<small>pr. nat</small></span></div>
+          <div class="rate"><span class="name">3-personersværelse <small>max. tre overnattende gæster</small></span><span class="dots"></span><span class="price">900,-<small>pr. nat</small></span></div>
+          <div class="rate"><span class="name">Enkeltværelse</span><span class="dots"></span><span class="price">440,-<small>pr. nat</small></span></div>
+          <div class="rate-cta">
+            <a class="btn solid" href="tel:+4522277465">Book værelse · 22 27 74 65</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OMEGNEN ============ -->
+  <section id="omegn" class="area">
+    <div class="wrap">
+      <div class="area-head reveal">
+        <div>
+          <span class="eyebrow">Omegnen</span>
+          <h2 class="display-lg">Et besøg <em class="flourish">værd</em></h2>
+        </div>
+        <p style="max-width: 38ch; color: var(--ink-soft);">
+          Mikkelborg ligger midt i et af Sønderjyllands smukkeste hjørner —
+          med søer, golf og levende museer lige om hjørnet.
+        </p>
+      </div>
+      <div class="area-grid reveal">
+        <div class="area-card">
+          <span class="num">№ 1</span>
+          <h3>Jels Søerne</h3>
+          <p>Naturskønt søområde med skovstier, badebro og de berømte vikingespil — få minutter fra kroen.</p>
+        </div>
+        <div class="area-card">
+          <span class="num">№ 2</span>
+          <h3>Royal Oak Golfklub</h3>
+          <p>Smukt beliggende golfbane ved Jels Søerne, for både øvede og nybegyndere.</p>
+        </div>
+        <div class="area-card">
+          <span class="num">№ 3</span>
+          <h3>Wellings Landsbymuseum</h3>
+          <p>Et helt særligt levende museum, hvor gamle dage stadig er hverdag.</p>
+        </div>
+        <div class="area-card">
+          <span class="num">№ 4</span>
+          <h3>Klokke- og skolemuseum</h3>
+          <p>Lokale perler i Rødding-området — og Vejen by er kun 10 minutters kørsel væk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KONTAKT ============ -->
+  <section id="kontakt" class="contact">
+    <div class="wrap reveal">
+      <span class="eyebrow">Kontakt</span>
+      <h2 class="display-lg">Skal vi holde <em class="flourish">jeres</em> næste fest?</h2>
+      <p class="lede">
+        Ring til os og fortæl om jeres ønsker — så finder vi sammen den helt
+        rigtige menu og de rigtige rammer.
+      </p>
+      <a class="contact-phone" href="tel:+4522277465">22 27 74 65</a>
+      <a class="contact-mail" href="mailto:info@mikkelborgkro.dk">info@mikkelborgkro.dk</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-main">
+      <div>
+        <p class="foot-brand">Mikkelborg Kro<br /><em>— midt i det sønderjyske</em></p>
+      </div>
+      <div>
+        <h4>Find rundt</h4>
+        <ul>
+          <li><a href="#velkommen">Kroen</a></li>
+          <li><a href="#selskaber">Selskaber</a></li>
+          <li><a href="#bed-breakfast">Bed &amp; Breakfast</a></li>
+          <li><a href="#omegn">Omegnen</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Besøg os</h4>
+        <address>
+          Mikkelborg Bygade 5<br />
+          6630 Rødding<br />
+          <a href="tel:+4522277465">Tlf. 22 27 74 65</a><br />
+          <a href="mailto:info@mikkelborgkro.dk">info@mikkelborgkro.dk</a>
+        </address>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Mikkelborg Kro</span>
+      <span>Mikkelborg Bygade 5 · 6630 Rødding</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Header background on scroll
+  const header = document.getElementById("site-header");
+  const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 24);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Scroll reveal
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      }
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+  );
+  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+</script>
+
+</body>
+</html>

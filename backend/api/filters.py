@@ -105,7 +105,20 @@ def parse_query(qs: dict[str, list[str]]) -> tuple[str, list[Any]]:
     return " AND ".join(clauses), params
 
 
+def _discard_score_expr(*, numeric: bool = False) -> str:
+    expr = "json_extract(dynamic, '$.discard_score.score')"
+    if numeric:
+        return f"CAST({expr} AS REAL)"
+    return expr
+
+
+def _is_discard_score_field(field: str) -> bool:
+    return field == "discard_score" or _json_subkey(field, "dynamic.") == "discard_score"
+
+
 def _col_expr(field: str, *, numeric: bool = False) -> str:
+    if _is_discard_score_field(field):
+        return _discard_score_expr(numeric=numeric)
     if field in _TYPED_COLUMNS:
         return field
     sk = _json_subkey(field, "data.")

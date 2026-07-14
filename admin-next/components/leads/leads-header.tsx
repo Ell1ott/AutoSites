@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useFields } from "@/hooks/use-fields"
+import { isComparableLeadField } from "@/lib/field-descriptors"
 import { getMapColorOptions } from "@/lib/lead-map-color"
 import type { LeadsViewMode } from "@/lib/store/ui"
 import {
@@ -86,7 +87,7 @@ export function LeadsHeader({
   const sortableFields = useMemo(() => {
     // Only stable columns + scalar dynamic fields. Filter out object/array.
     return fields
-      .filter((f) => !f.type.startsWith("array") && f.type !== "object")
+      .filter(isComparableLeadField)
       .map((f) => ({
         key: fieldClauseKey(f),
         label:

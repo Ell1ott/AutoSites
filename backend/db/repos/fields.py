@@ -164,6 +164,12 @@ def discover(conn: sqlite3.Connection, *, force: bool = False) -> dict[str, Any]
         if ov:
             _apply_override(entry, ov)
 
+    for entry in dynamic:
+        if entry["key"] == "discard_score":
+            entry.setdefault("display", "Discard score")
+            entry["format"] = "discard-score"
+            break
+
     out = {"total": total, "columns": columns, "dynamic": dynamic, "data_fields": data_fields}
     _CACHE["at"] = now
     _CACHE["value"] = out

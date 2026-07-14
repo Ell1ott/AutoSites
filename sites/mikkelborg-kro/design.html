@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mikkelborg Kro | Historic Danish Seaside Inn</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#1a1c1e",
+                    "on-background": "#e5e2db",
+                    "tertiary": "#ceced1",
+                    "on-error": "#690005",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#574500",
+                    "error-container": "#93000a",
+                    "tertiary-container": "#b2b3b5",
+                    "inverse-primary": "#735c00",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#3a3935",
+                    "surface-container-lowest": "#0e0e0b",
+                    "surface-variant": "#353530",
+                    "on-tertiary-fixed": "#1a1c1e",
+                    "on-tertiary-fixed-variant": "#454749",
+                    "tertiary-fixed-dim": "#c6c6c9",
+                    "on-secondary-fixed-variant": "#454749",
+                    "secondary-container": "#454749",
+                    "surface-container-low": "#1c1c18",
+                    "secondary-fixed-dim": "#c6c6c9",
+                    "primary-fixed": "#ffe088",
+                    "tertiary-fixed": "#e2e2e5",
+                    "surface-dim": "#131410",
+                    "surface-tint": "#e9c349",
+                    "outline-variant": "#4d4635",
+                    "on-surface": "#e5e2db",
+                    "on-surface-variant": "#d0c5af",
+                    "inverse-surface": "#e5e2db",
+                    "on-tertiary-container": "#434547",
+                    "surface-container-high": "#2a2a26",
+                    "primary-fixed-dim": "#e9c349",
+                    "on-primary": "#3c2f00",
+                    "secondary": "#c6c6c9",
+                    "primary": "#f2ca50",
+                    "surface-container-highest": "#353530",
+                    "on-primary-fixed": "#241a00",
+                    "inverse-on-surface": "#31312c",
+                    "surface": "#131410",
+                    "surface-container": "#20201c",
+                    "background": "#131410",
+                    "on-primary-container": "#554300",
+                    "outline": "#99907c",
+                    "secondary-fixed": "#e2e2e5",
+                    "on-secondary": "#2f3133",
+                    "primary-container": "#d4af37",
+                    "on-tertiary": "#2f3133",
+                    "on-secondary-container": "#b4b5b7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "24px",
+                    "section-gap": "120px",
+                    "container-max": "1280px",
+                    "base": "8px",
+                    "gutter": "32px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Playfair Display"],
+                    "body-md": ["\"Source Serif 4\""],
+                    "label-caps": ["Plus Jakarta Sans"],
+                    "body-lg": ["\"Source Serif 4\""],
+                    "display-lg-mobile": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-md": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131410;
+            color: #e5e2db;
+            scroll-behavior: smooth;
+        }
+
+        .gold-underline {
+            position: relative;
+        }
+        .gold-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 60px;
+            height: 1px;
+            background-color: #f2ca50;
+        }
+
+        .ornate-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: #f2ca50;
+            opacity: 0.6;
+        }
+        .ornate-divider::before, .ornate-divider::after {
+            content: '';
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(to right, transparent, #f2ca50, transparent);
+        }
+
+        .diamond-bullet::before {
+            content: '◆';
+            color: #f2ca50;
+            font-size: 0.7em;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
+        .nav-link-active {
+            color: #f2ca50 !important;
+            font-weight: 700;
+            border-bottom: 2px solid #f2ca50;
+            padding-bottom: 4px;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(19, 20, 16, 0.4), rgba(19, 20, 16, 0.95));
+        }
+
+        .dot-leader {
+            display: flex;
+            align-items: baseline;
+        }
+        .dot-leader::after {
+            content: '';
+            flex-grow: 1;
+            border-bottom: 1px dotted rgba(242, 202, 80, 0.3);
+            margin: 0 8px;
+            order: 2;
+        }
+        .dot-leader .price {
+            order: 3;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-surface/90 backdrop-blur-sm border-b border-primary/20">
+<nav class="flex justify-between items-center w-full px-margin-desktop h-24 max-w-container-max mx-auto">
+<a class="font-headline-md text-headline-md font-semibold text-primary dark:text-primary tracking-widest uppercase" href="/">
+                Mikkelborg Kro
+            </a>
+<div class="hidden md:flex items-center space-x-12">
+<a class="font-label-caps text-label-caps text-primary font-bold border-b-2 border-primary pb-1" href="#">Heritage</a>
+<a class="font-label-caps text-label-caps text-on-surface dark:text-on-surface hover:text-primary transition-colors duration-300" href="#">Dining</a>
+<a class="font-label-caps text-label-caps text-on-surface dark:text-on-surface hover:text-primary transition-colors duration-300" href="#">Events</a>
+<a class="font-label-caps text-label-caps text-on-surface dark:text-on-surface hover:text-primary transition-colors duration-300" href="#">Rooms</a>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 font-label-caps text-label-caps hover:bg-primary-fixed-dim transition-all duration-300 active:scale-[0.99] uppercase tracking-widest">
+                Book a Table
+            </button>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-screen min-h-[700px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 hero-gradient z-10"></div>
+<img class="w-full h-full object-cover" data-alt="An expansive, atmospheric wide shot of the historic Mikkelborg Kro inn at dusk. The white-walled, thatched-roof building glows with warm golden light from within its windows. The surrounding Danish landscape is soft and moody, with a hint of the Baltic sea in the distance under a deep indigo sky. The visual style is cinematic and luxurious, emphasizing the heritage and warmth of the location." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl1mIcdU1BXRzOlx8AjKq0NNOS5RYYWygZhqvW16slLAttS-zVu8-WLcYCpCBT3bF94BM2fr5-lXmhHHTADKCo0fslV_MDQCr3V9GE5AoqP0j1Gq6JzY-YPcbh2R3UV8SM8Q_r3fz-VW2r-0pi8XuY5RZq3ozCQo-nVaIHnB3czYl1ZDJlvdmXuvIicFVAH309NsvBkPtyj-J4IItNpdIW1mDBBhP0952PnGGu3MfxGS4MH2lKPMbR"/>
+</div>
+<div class="relative z-20 max-w-container-max mx-auto px-margin-desktop w-full text-center md:text-left">
+<span class="font-label-caps text-label-caps text-primary uppercase mb-6 block tracking-[0.3em]">Established 1912</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-8 max-w-3xl leading-tight">
+                    Where Danish Tradition <br/> Meets <span class="italic font-normal">Coastal Serenity.</span>
+</h1>
+<div class="flex flex-col md:flex-row gap-6 mt-12">
+<button class="bg-primary text-on-primary px-10 py-5 font-label-caps text-label-caps hover:bg-primary-fixed-dim transition-all duration-300 uppercase tracking-widest">
+                        Explore Our Suites
+                    </button>
+<button class="border border-primary text-primary px-10 py-5 font-label-caps text-label-caps hover:bg-primary/5 transition-all duration-300 uppercase tracking-widest">
+                        Reserve a Table
+                    </button>
+</div>
+</div>
+</section>
+<!-- Our Heritage Section -->
+<section class="py-section-gap max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+<div class="md:col-span-7 space-y-8">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-[0.3em]">The Legacy</span>
+<h2 class="font-headline-md text-headline-md border-l-4 border-primary pl-6">
+                        A Century of Coastal Hospitality
+                    </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                        For over a hundred years, Mikkelborg Kro has stood as a beacon of warmth on the Danish coast. Originally a waypoint for weary travelers, it has evolved into a sanctuary of refined comfort without losing its historic soul. Every timber, every stone, and every greeting carries the weight of a legacy built on genuine care and artisanal excellence.
+                    </p>
+<ul class="space-y-4 font-body-md text-on-background">
+<li class="diamond-bullet">Historically preserved architecture from the early 20th century.</li>
+<li class="diamond-bullet">Family-owned and managed through three generations.</li>
+<li class="diamond-bullet">Recipient of the Nordic Heritage Award for Preservation.</li>
+</ul>
+</div>
+<div class="md:col-span-5 relative group">
+<div class="absolute -inset-4 border border-primary/20 transition-all group-hover:scale-105 duration-700"></div>
+<img class="relative z-10 w-full aspect-[4/5] object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-700" data-alt="A detailed close-up of the architectural details of Mikkelborg Kro, showing the traditional black timber framing and white-washed walls typical of historic Danish inns. The lighting is soft morning sun, casting gentle shadows. The image captures the texture of the old wood and the craftsmanship of the century-old building, maintaining a warm, exclusive, and quiet atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNQpesVjrtu5qf25y_wemGiVfWFR0Phqyu2KUb0vYcUl2snz9cX_EkgqlpigVwKyvrFnxaEPTWQpKb22f9Evd-ulL2USTuLD-YAidpL-hWmKCDDG7CPaFKqWb7V4Lbs4EuAYda5CbpfLJ3VV_6XIoP1WaDQO3fNtOEQOoL0Is69ITyy29ngjA7t9RNEjg5e0Caei3cphso2Dv192Z9YxKWkAqiJQfQ9A2eatAcOjD5vYyq2MXY7X33"/>
+</div>
+</div>
+</section>
+<!-- Ornate Divider -->
+<div class="max-w-container-max mx-auto px-margin-desktop py-base">
+<div class="ornate-divider">
+<span class="material-symbols-outlined text-primary scale-125" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+</div>
+</div>
+<!-- Culinary Excellence Section -->
+<section class="py-section-gap bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center mb-16">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-[0.3em]">Fine Dining</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mt-4 mb-6">The Taste of the North</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto italic">
+                        "Hyper-local ingredients met with classical French technique."
+                    </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Feature Card 1 -->
+<div class="bg-surface-container p-12 border border-primary/10 hover:border-primary/40 transition-all duration-500 group">
+<div class="h-64 mb-8 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A beautifully plated dish featuring fresh local seafood, perhaps scallops or langoustines, garnished with delicate micro-greens and a saffron-infused emulsion. The plating is minimalist and modern, set against a dark ceramic plate that complements the gold and slate tones of the Mikkelborg Kro design system. Moody, high-contrast lighting makes the colors of the food appear luminous." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc0pdPNZSjdrIk_TcGN1TUUhJL8Xsl1h97Bvbhop_C0JmwBmHznOv-LFOmuTM8GbTAn6_d8kXzlHNbzkDm49cffYR4jk80VA9YopwweqN4nU3EJ1rkZilYusi6VLTlfkEC2zYWp1gk-w9mX1quJg2A2X21teX3Gi6IbnLznlExRNcJPs8lCyhBnGW0Z27MvsQ11e9r-6yJVzjDOx4XQqd5TA6rzyiR3oN70jAi1tNv0qDNvPOI6EGg"/>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-4 text-primary">Coastal Harvest</h3>
+<p class="font-body-md text-on-surface-variant mb-8">Direct from the local waters of the Øresund, our seafood is caught at dawn and served by dusk.</p>
+<div class="space-y-3 font-label-caps text-label-caps text-primary/80">
+<div class="dot-leader">Local Blue Mussels <span class="price">185 DKK</span></div>
+<div class="dot-leader">Wild Turbot with Leeks <span class="price">325 DKK</span></div>
+</div>
+</div>
+<!-- Feature Card 2 -->
+<div class="bg-surface-container p-12 border border-primary/10 hover:border-primary/40 transition-all duration-500 group lg:-translate-y-8">
+<div class="h-64 mb-8 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The interior of the Mikkelborg Kro restaurant at night. Tables are set with crisp white linens, polished silver, and thin-stemmed wine glasses reflecting the amber glow of candlelight. Dark wood paneling and gold accents create an atmosphere of quiet prestige and exclusivity. The mood is intimate, warm, and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoYwL-ocbnk_c07rvRDaUF1uIpDtV__AZ0Y8oD7wJ5j8vCjqA2FryRe9nk-sxG9fYtm99qETJ0ayTWLujKSHZLT9EmUXAgQU3lBW0mLPPFFSDH1pI-7v4gMXqzkejoliHjQK1nGATQQqmyGp1OUnBs_i0bn25yxTXTaoIrIibzNacUbDubpUPa7HZBonIIB83wyfGi4vyXM_CQOjTA1zfsqe8mNVKU5uNlyjq1AjiGD2z6AHMvACny"/>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-4 text-primary">The Wine Vault</h3>
+<p class="font-body-md text-on-surface-variant mb-8">A curated collection of over 400 labels, featuring rare vintages and modern biodynamic treasures.</p>
+<button class="font-label-caps text-label-caps text-primary border-b border-primary pb-1 hover:text-primary-fixed transition-colors">View Wine List</button>
+</div>
+<!-- Feature Card 3 -->
+<div class="bg-surface-container p-12 border border-primary/10 hover:border-primary/40 transition-all duration-500 group">
+<div class="h-64 mb-8 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A high-end dessert featuring seasonal berries, elderflower sorbet, and gold-leaf flakes, presented on a bespoke artisan plate. The image uses shallow depth of field to focus on the intricate textures of the dessert. Dark, atmospheric lighting with soft gold accents aligns with the luxury seaside inn aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZZZNVVohiWG3lcTij0WXH8BNKKM7M8frrhgsD0EAnIE49GXrQzUzM5UakvSQOO0MDOdbgZmoSNJv19sElvU1auiX40CNKXVG4oLyET7bHmtWm4kRvbMdJz0QGMrTFhmnuvmXeeZpZOu7iQpIuGBKDPS3-Pht2nudMR_cAANJAgn8stBloiOfhdCDTfnA3-GnVncsTEdDLOZGHGRH0nTLHq9qKs7FiMxSmMtUXAqlqqz8wLqdn4EzY"/>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-4 text-primary">Artisanal Pastry</h3>
+<p class="font-body-md text-on-surface-variant mb-8">Each morning begins with the scent of freshly baked sourdough and delicate Danish pastries.</p>
+<div class="space-y-3 font-label-caps text-label-caps text-primary/80">
+<div class="dot-leader">Elderflower Sorbet <span class="price">95 DKK</span></div>
+<div class="dot-leader">Traditional Kransekage <span class="price">110 DKK</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Cozy Retreats Section -->
+<section class="py-section-gap max-w-container-max mx-auto px-margin-desktop">
+<div class="flex flex-col lg:flex-row gap-gutter">
+<div class="lg:w-1/3">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-[0.3em]">The Stay</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-headline-md lg:text-display-lg mt-6 mb-8">Cozy Retreats</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-12">
+                        Our rooms are designed as sanctuaries. Each suite blends the rustic charm of a historic inn with the contemporary comforts of a luxury retreat. Think soft linen, antique furnishings, and the rhythmic sound of waves.
+                    </p>
+<div class="space-y-8">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">bed</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-1">Master Suites</h4>
+<p class="font-body-md text-on-surface-variant">Panoramic sea views and private fireplaces for ultimate tranquility.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">local_cafe</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-1">Morning Indulgence</h4>
+<p class="font-body-md text-on-surface-variant">Chef-prepared breakfast delivered to your door at your requested hour.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-base h-fit">
+<div class="relative overflow-hidden group aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" data-alt="A luxury bedroom suite at Mikkelborg Kro featuring a plush king-sized bed with layered white linens and navy blue wool blankets. The walls are deep charcoal with gold-framed botanical prints. A large window overlooks a misty seaside garden. Warm, low-key lighting creates a cozy, hygge-inspired atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD_5m191SSuhPS8iSKlP_-s8rlFPzXWlzNj8s_us-rOSsD5UZRBYnnHnh_hzQoeDaDOCm1qPHIJyAonYsR_81eeMQ1vlquIPkj3J3ChNQVnbuTccHHDEssXFy8rStbPZ8X9zYe-G0OTOM3kS3WezcA6XoeLZcrqBu1OrthOywtkYG_aUksDdOfsQ6LvNj-q7ZSwyb7iiYKZWGJIZKxUCqwO9RSukDrUj0yGV8-2nFqkPyJg-idkTrk"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary px-6 py-3 font-label-caps text-label-caps tracking-widest uppercase">View Suite</button>
+</div>
+</div>
+<div class="relative overflow-hidden group aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" data-alt="A designer bathroom in a suite at Mikkelborg Kro, featuring a large freestanding copper bathtub reflecting warm golden light. The floor is dark slate tile. High-end towels and minimalist artisanal toiletries are neatly arranged. The style is one of understated luxury and relaxation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8nElzKeS1N8wuuDra-Ld1lVYSwKMtg1BrBSIZruGGs0s3tdQIGbnmzvP54lnQhi5TTak5MJpLQ8G-9teIgRSdZx8AjvMin_wZfKV6GW_tYO94LE3YYLF39ejPZKxbfYOoXKdCXjcuVSAnVyzuwVSbfMUTWHLSi15DNoudfQHLQUZ7izlD1jh9iBEm5Rw5YjZe9GHtU8T2FpQ7Dc3ka4rel-1pHe5bMIZWRvvRmWcTnDSM3yIyDNbp"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-primary text-on-primary px-6 py-3 font-label-caps text-label-caps tracking-widest uppercase">View Bath</button>
+</div>
+</div>
+<div class="md:col-span-2 relative h-80 group overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105" data-alt="A long, low-angle shot of a cozy reading nook in a suite, with a leather armchair, a small bookshelf filled with vintage Danish literature, and a small gold table holding a glass of sherry. The light from a nearby window is soft and diffused, creating a serene, timeless feeling of peace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpLrDwn18MQJcqLsV1nPb8nup2QDFhK0kyLzv2swzoLDy81LuOLuEjeze7f_1v6V5Dpzv4x32gBwtLEYnaDBuLEDSYGbtYVug_5xN9yHSA8OO1OiGOgEcyVAIlEjqHomDoc7lSpO8JO72MSCrVVJTjP68uyekpoXbOEwoe8E1SOdz2vtltjMczE7xiQ3jJnftq2vvr8WcNMsXpEyBWDrYzvL7UHrws3sIACx_WaT1A4WDq_ivqTJFM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-8">
+<div>
+<h4 class="font-headline-sm text-headline-sm text-white">The Admiral's Lounge</h4>
+<p class="text-on-surface-variant">A shared space for quiet reflection and curated spirits.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Call to Action -->
+<section class="py-section-gap bg-primary/5 border-y border-primary/10">
+<div class="max-w-container-max mx-auto px-margin-desktop text-center">
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-8 italic">Experience the Silence of the Sea.</h2>
+<div class="flex justify-center gap-8">
+<button class="bg-primary text-on-primary px-12 py-5 font-label-caps text-label-caps hover:bg-primary-fixed-dim transition-all duration-300 uppercase tracking-[0.2em] font-bold">
+                        Check Availability
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-low border-t border-primary/20">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="space-y-6">
+<div class="font-headline-sm text-headline-sm text-primary dark:text-primary tracking-widest uppercase">Mikkelborg Kro</div>
+<p class="font-body-md text-on-surface-variant">Experience the pinnacle of Danish coastal hospitality. A sanctuary of peace since 1912.</p>
+<div class="flex space-x-4">
+<a class="text-primary hover:scale-110 transition-transform" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-primary hover:scale-110 transition-transform" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+</div>
+</div>
+<div class="space-y-6">
+<h4 class="font-label-caps text-label-caps text-primary uppercase">Quick Links</h4>
+<ul class="space-y-3 font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Opening Hours</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Press Kit</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="font-label-caps text-label-caps text-primary uppercase">Location</h4>
+<p class="font-body-md text-on-surface-variant">Strandvejen 142<br/>2970 Hørsholm<br/>Denmark</p>
+<p class="font-body-md text-on-surface-variant">+45 45 86 00 12<br/>info@mikkelborg-kro.dk</p>
+</div>
+<div class="space-y-6">
+<h4 class="font-label-caps text-label-caps text-primary uppercase">Newsletter</h4>
+<p class="font-body-md text-on-surface-variant">Receive invitations to our seasonal harvest festivals.</p>
+<form class="flex gap-2">
+<input class="bg-surface border border-primary/20 text-on-surface font-body-md p-3 w-full focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Your Email" type="email"/>
+<button class="bg-primary text-on-primary p-3 aspect-square flex items-center justify-center hover:bg-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</form>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-8 border-t border-primary/10 text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">
+                © 2024 Mikkelborg Kro. All rights reserved. Managed with tradition since 1912.
+            </p>
+</div>
+</footer>
+<script>
+        // Simple header transparency effect on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('h-20', 'bg-surface/95', 'shadow-2xl');
+                header.classList.remove('h-24', 'bg-surface/90');
+            } else {
+                header.classList.add('h-24', 'bg-surface/90');
+                header.classList.remove('h-20', 'bg-surface/95', 'shadow-2xl');
+            }
+        });
+    </script>
+</body></html>

@@ -14,6 +14,7 @@ import {
   operatorsForField,
   valueWidgetForField,
 } from "@/lib/filter"
+import { enrichFieldDescriptors } from "@/lib/field-descriptors"
 import {
   fieldClauseKey,
   type FieldDescriptor,
@@ -558,10 +559,13 @@ export function FilterBuilder({
   const fetched = useFieldsQuery()
 
   const allFields = useMemo(() => {
-    if (fields) return fields
+    if (fields) return enrichFieldDescriptors(fields)
     const data = fetched.data
     if (!data) return []
-    return [...(data.columns ?? []), ...(data.dynamic ?? [])]
+    return enrichFieldDescriptors([
+      ...(data.columns ?? []),
+      ...(data.dynamic ?? []),
+    ])
   }, [fields, fetched.data])
 
   const filterableFields = useMemo(() => {

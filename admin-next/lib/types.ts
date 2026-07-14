@@ -50,6 +50,8 @@ export function fieldClauseKey(f: FieldDescriptor): string {
 // a default widget when unknown.
 export const FIELD_FORMAT_STARS_1_10 = "stars-1-10"
 export const FIELD_FORMAT_NUMERIC_STRING = "numeric-string"
+/** Structured `{ score, reason }` object — compare/sort on `.score`. */
+export const FIELD_FORMAT_DISCARD_SCORE = "discard-score"
 
 // -----------------------------------------------------------------------------
 // Filter / sort types

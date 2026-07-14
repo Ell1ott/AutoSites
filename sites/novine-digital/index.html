@@ -28,13 +28,19 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        html {
+            width: 100%;
+            overflow-x: clip;
+        }
+
         body {
             background-color: var(--paper);
             color: var(--ink);
             font-family: 'Inter', sans-serif;
             font-weight: 300;
             line-height: 1.6;
-            overflow-x: hidden;
+            width: 100%;
+            overflow-x: clip;
         }
 
         /* grain overlay */
@@ -171,7 +177,7 @@
             align-self: center;
             z-index: 1;
             width: min(400%, 1400px);
-            --hero-art-x: 65%;
+            --hero-art-x: 48%;
             --hero-parallax-y: 0px;
             transform: translateX(var(--hero-art-x)) translateY(var(--hero-parallax-y));
             transform-origin: center right;
@@ -197,6 +203,7 @@
 
         /* ===== HERO SHOWCASE OVERLAY ===== */
         .hero-showcase {
+            display: none; /* temporarily hidden */
             position: relative;
             z-index: 12;
             width: min(720px, 100%);
@@ -552,7 +559,35 @@
             gap: 48px 56px;
         }
 
-        .what-item h3 {
+        .what-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            column-gap: 20px;
+        }
+
+        .what-icon {
+            padding-top: 13px;
+            grid-column: 1;
+            grid-row: 1;
+            width: 72px;
+            height: 82px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: start;
+        }
+
+        .what-icon img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            opacity: 0.88;
+        }
+
+        .what-copy h3 {
             font-family: var(--serif);
             font-weight: 300;
             font-size: 22px;
@@ -560,7 +595,7 @@
             letter-spacing: -0.01em;
         }
 
-        .what-item p {
+        .what-copy p {
             font-size: 15px;
             line-height: 1.65;
             opacity: 0.88;
@@ -574,7 +609,7 @@
             opacity: 0.9;
         }
 
-        /* ===== APPROACH / PROCESS ===== */
+        /* ===== APPROACH / HOW WE WORK ===== */
         .approach-section {
             background: var(--linen);
             color: #3F342A;
@@ -588,72 +623,58 @@
             margin: 0 auto;
         }
 
-        .approach-intro {
-            max-width: 640px;
-            margin-bottom: 120px;
-        }
-
-        .approach-intro .meta-label {
+        .approach-body {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 40px;
+            font-family: var(--serif);
+            font-weight: 300;
+            font-size: 22px;
+            line-height: 1.55;
             color: #3F342A;
-            opacity: 0.6;
         }
 
-        .approach-intro h2 {
-            font-family: var(--serif);
-            font-weight: 300;
-            font-style: italic;
-            font-size: clamp(36px, 4.6vw, 60px);
-            line-height: 1.1;
-            letter-spacing: -0.015em;
-            margin-top: 22px;
+        .approach-body .featured-kicker {
+            color: #3F342A;
         }
 
-        .process-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
+        .approach-body p + p {
+            margin-top: 1.4em;
         }
 
-        .process-step {
+        .approach-inline {
             display: grid;
-            grid-template-columns: minmax(0, 200px) minmax(0, 1fr) minmax(0, 1fr);
-            gap: 24px 40px;
-            padding: 32px 0;
-            border-top: 0.5px solid rgba(63, 52, 42, 0.28);
-            align-items: start;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 18px;
+            max-width: 1280px;
+            margin: 120px auto 0;
+            padding: 0 40px;
         }
 
-        .process-step .step-head .process-num {
-            font-size: 10px;
-            letter-spacing: 0.24em;
-            text-transform: uppercase;
-            opacity: 0.5;
+        .approach-inline figure {
+            margin: 0;
+            overflow: hidden;
+            background: #C4A88E;
+        }
+
+        .approach-inline figure:nth-child(1) { aspect-ratio: 4 / 3; align-self: end; }
+        .approach-inline figure:nth-child(2) { aspect-ratio: 3 / 4; align-self: end; }
+
+        .approach-inline img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
-            margin-bottom: 8px;
+            mix-blend-mode: multiply;
+            opacity: 0.94;
         }
 
-        .process-step .step-head h3 {
-            font-family: var(--serif);
-            font-style: italic;
-            font-weight: 300;
-            font-size: 26px;
-            letter-spacing: -0.01em;
-            line-height: 1.15;
-        }
-
-        .process-col .col-label {
-            display: block;
+        .approach-inline figcaption {
             font-size: 10px;
-            letter-spacing: 0.22em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            opacity: 0.5;
-            margin-bottom: 10px;
-        }
-
-        .process-col p {
-            font-size: 14px;
-            line-height: 1.65;
-            opacity: 0.9;
+            opacity: 0.7;
+            margin-top: 12px;
         }
 
         .faq-section {
@@ -705,7 +726,8 @@
         .contact-cta-section {
             background: var(--linen);
             color: #3F342A;
-            padding: 120px 40px 140px;
+            min-height: auto;
+            padding: 80px 40px 80px;
             display: block;
         }
 
@@ -1464,6 +1486,7 @@
             .hero {
                 padding-left: 28px;
                 padding-right: 28px;
+                overflow: hidden;
             }
 
             .hero-main {
@@ -1478,9 +1501,9 @@
 
             .hero-art {
                 grid-row: 2;
-                justify-self: start;
-                width: min(180%, 760px);
-                --hero-art-x: 20%;
+                justify-self: end;
+                width: min(130%, 640px);
+                --hero-art-x: 8%;
                 opacity: 0.6;
             }
 
@@ -1488,7 +1511,7 @@
                 font-size: clamp(40px, 8.5vw, 96px);
             }
             .gallery-wrap { grid-column: 1 / 13; }
-            .gallery-stack { height: 64vh; min-height: 460px; }
+            .gallery-stack { height: 64vh; min-height: 460px; overflow: hidden; }
             .gallery-card { width: min(68%, 420px); }
             .hero-showcase {
                 width: min(600px, 100%);
@@ -1499,10 +1522,7 @@
             .featured-meta { grid-template-columns: repeat(2, 1fr); gap: 32px 24px; }
 
             .what-grid { grid-template-columns: 1fr; gap: 40px; }
-            .process-step {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
+            .approach-inline { grid-template-columns: 1fr 1fr; }
             .approach-grid { grid-template-columns: 1fr; gap: 80px; }
             .studio-wrap {
                 flex-direction: column;
@@ -1517,9 +1537,23 @@
         }
 
         @media (max-width: 768px) {
+            section {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            nav {
+                padding: 24px 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
             .hero {
                 padding-left: 16px;
                 padding-right: 16px;
+                overflow: hidden;
             }
 
             .hero-title {
@@ -1527,12 +1561,19 @@
             }
 
             .hero-art {
-                width: min(150%, 520px);
+                width: min(115%, 100%);
+                max-width: 100%;
+                justify-self: end;
                 --hero-art-x: 0%;
                 opacity: 0.5;
             }
             .featured-inline { grid-template-columns: 1fr; }
             .featured-inline figure:nth-child(3) { grid-column: auto; aspect-ratio: 4 / 5; }
+            .approach-inline { grid-template-columns: 1fr; }
+            .approach-inline figure:nth-child(1),
+            .approach-inline figure:nth-child(2) { align-self: start; }
+            .approach-body { font-size: 19px; padding: 0 24px; }
+            .approach-inline { padding: 0 24px; margin-top: 80px; }
             .gallery-header { flex-direction: column; align-items: flex-start; }
             .hero-showcase {
                 width: min(480px, 100%);
@@ -1638,20 +1679,40 @@
             </div>
             <div class="what-grid">
                 <div class="what-item reveal">
-                    <h3>Website</h3>
-                    <p>Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+                    <div class="what-icon" aria-hidden="true">
+                        <img src="./icons/icon-website.png" alt="">
+                    </div>
+                    <div class="what-copy">
+                        <h3>Website</h3>
+                        <p>Et website der ligner dig. Designet til dig. Ingen skabeloner.</p>
+                    </div>
                 </div>
                 <div class="what-item reveal">
-                    <h3>Hosting &amp; domæne</h3>
-                    <p>Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+                    <div class="what-icon" aria-hidden="true">
+                        <img src="./icons/icon-hosting.png" alt="">
+                    </div>
+                    <div class="what-copy">
+                        <h3>Hosting &amp; domæne</h3>
+                        <p>Vi finder dit domæne, køber det, og hoster siden hos os. Du logger aldrig ind nogen steder.</p>
+                    </div>
                 </div>
                 <div class="what-item reveal">
-                    <h3>CMS — hvis du vil</h3>
-                    <p>Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+                    <div class="what-icon" aria-hidden="true">
+                        <img src="./icons/icon-cms.png" alt="">
+                    </div>
+                    <div class="what-copy">
+                        <h3>CMS — hvis du vil</h3>
+                        <p>Du behøver ikke røre siden. Men vil du ændre menukortet eller åbningstiderne, er det lige så let som et Word-dokument.</p>
+                    </div>
                 </div>
                 <div class="what-item reveal">
-                    <h3>Findbar på Google</h3>
-                    <p>Vi sørger for, at dine kunder finder dig på Google.</p>
+                    <div class="what-icon" aria-hidden="true">
+                        <img src="./icons/icon-seo.png" alt="">
+                    </div>
+                    <div class="what-copy">
+                        <h3>SEO — Findbar på Google</h3>
+                        <p>Vi sørger for, at dine kunder finder dig på Google.</p>
+                    </div>
                 </div>
             </div>
             <p class="what-closing reveal"><em>Du behøver ikke samle stykkerne selv.</em></p>
@@ -1695,104 +1756,6 @@
                     <span class="gallery-card-label">Spisehuset Nord / Helsingør</span>
                     <span class="gallery-card-arrow">^</span>
                 </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="approach-section" id="proces">
-        <div class="approach-wrap">
-            <div class="approach-intro reveal">
-                <span class="meta-label">Process</span>
-                <h2>Fra første snak til lanceret site.</h2>
-            </div>
-            <div class="process-steps">
-                <div class="process-step reveal">
-                    <div class="step-head">
-                        <span class="process-num">01/</span>
-                        <h3>Snak</h3>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Vi gør</span>
-                        <p>En kort samtale. Vi lærer dit sted at kende.</p>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Du gør</span>
-                        <p>Fortæller om dit sted. Det er alt.</p>
-                    </div>
-                </div>
-                <div class="process-step reveal">
-                    <div class="step-head">
-                        <span class="process-num">02/</span>
-                        <h3>Materialer</h3>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Vi gør</span>
-                        <p>Sender dig en kort tjekliste.</p>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Du gør</span>
-                        <p>Sender logo, åbningstider, et par billeder.</p>
-                    </div>
-                </div>
-                <div class="process-step reveal">
-                    <div class="step-head">
-                        <span class="process-num">03/</span>
-                        <h3>Design</h3>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Vi gør</span>
-                        <p>Tegner dit site fra bunden. Du ser det først.</p>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Du gør</span>
-                        <p>Siger hvad du synes. Vi justerer.</p>
-                    </div>
-                </div>
-                <div class="process-step reveal">
-                    <div class="step-head">
-                        <span class="process-num">04/</span>
-                        <h3>Byg &amp; lancering</h3>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Vi gør</span>
-                        <p>Bygger, hoster, sætter dig op på Google.</p>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Du gør</span>
-                        <p>Ingenting.</p>
-                    </div>
-                </div>
-                <div class="process-step reveal">
-                    <div class="step-head">
-                        <span class="process-num">05/</span>
-                        <h3>Overdragelse</h3>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Vi gør</span>
-                        <p>Viser dig CMS'en på 5 minutter — hvis du vil.</p>
-                    </div>
-                    <div class="process-col">
-                        <span class="col-label">Du gør</span>
-                        <p>Klipper båndet.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="conversation-section" aria-label="Fra stifteren">
-        <div class="conversation-wrap">
-            <div class="quote-block reveal">
-                <blockquote>
-                    Jeg har talt med mange café- og restaurantejere. I har som regel ikke tid til at sidde og bygge websitet selv — det giver mening. Det er derfor jeg startede novine.
-                </blockquote>
-                <div class="attribution">
-                    <div class="avatar"><img src="./founder.png" alt=""></div>
-                    <cite>
-                        <span class="name">Elliott Friedrich</span>
-                        <span class="role">Stifter, novine digital</span>
-                    </cite>
-                </div>
             </div>
         </div>
     </section>
@@ -1847,7 +1810,7 @@
             </div>
             <div class="faq-item reveal">
                 <h3>Hvor lang tid tager det?</h3>
-                <p>Typisk 3–6 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.</p>
+                <p>Typisk 1-3 uger fra første snak til lanceret site. Vi gør det aldrig længere end nødvendigt.</p>
             </div>
             <div class="faq-item reveal">
                 <h3>Skal jeg selv vedligeholde det?</h3>
@@ -1860,6 +1823,45 @@
             <div class="faq-item reveal">
                 <h3>Hvad hvis jeg ikke kan lide designet?</h3>
                 <p>Så laver vi det om. Du betaler ikke for noget, du ikke kan stå inde for.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="approach-section" id="proces">
+        <div class="approach-wrap">
+            <div class="approach-body reveal">
+                <span class="featured-kicker">Sådan arbejder vi</span>
+                <p class="dropcap">Det starter med en snak. Ikke et pitch-møde, ikke et salgsscript — bare en almindelig samtale om dit sted, hvad du mangler, og hvordan det ser ud i hverdagen. Vi lytter. Du fortæller. Det er det.</p>
+                <p>Fra der af holder vi det simpelt. Én kontaktperson hele vejen. Opdateringer når der er noget at vise — et design, en side, en justering. Du svarer når du har tid. Ingen ugentlige statusmøder, ingen trælse mailslang. Vi sender logo og åbningstider-tjeklisten, du sender det du har. Resten er vores.</p>
+                <p>Vi tegner og bygger i ét flow. Du ser resultatet løbende, og vi justerer sammen indtil det føles rigtigt. Hosting, domæne, Google — det tager vi os af. Når det er klar, klikker du bare på linket. Vil du lære CMS'en, viser vi det på fem minutter. Vil du ikke, behøver du aldrig logge ind.</p>
+            </div>
+
+            <div class="approach-inline reveal">
+                <figure>
+                    <img src="./images/ChatGPT%20Image%20May%2022,%202026,%2005_05_53%20PM.png" alt="Skitser og skærm i et roligt designstudie">
+                    <figcaption>01 / Fra skitse til skærm</figcaption>
+                </figure>
+                <figure>
+                    <img src="./images/ChatGPT%20Image%20May%2022,%202026,%2005_13_02%20PM.png" alt="Arbejdsbord med laptop og håndtegnede noter">
+                    <figcaption>02 / Arbejdsbord, roligt tempo</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <section class="conversation-section" aria-label="Fra stifteren">
+        <div class="conversation-wrap">
+            <div class="quote-block reveal">
+                <blockquote>
+                    Jeg har talt med mange café- og restaurantejere. I har som regel ikke tid til at sidde og bygge websitet selv — det giver mening. Det er derfor jeg startede novine.
+                </blockquote>
+                <div class="attribution">
+                    <div class="avatar"><img src="./founder.png" alt=""></div>
+                    <cite>
+                        <span class="name">Elliott Friedrich</span>
+                        <span class="role">Stifter, novine digital</span>
+                    </cite>
+                </div>
             </div>
         </div>
     </section>
@@ -1949,9 +1951,9 @@
 
         const galleryEndMobile = [
             { rotate: -14, x: 0, y: 0 },
-            { rotate: -4, x: 112, y: 4 },
-            { rotate: 6, x: 224, y: -8 },
-            { rotate: 14, x: 336, y: -20 }
+            { rotate: -4, x: 64, y: 4 },
+            { rotate: 6, x: 128, y: -8 },
+            { rotate: 14, x: 192, y: -20 }
         ];
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));

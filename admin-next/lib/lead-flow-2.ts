@@ -1,4 +1,5 @@
 import { readField } from "@/lib/filter"
+import { readDiscardScore } from "@/lib/discard-score"
 import { jobKindForTask } from "@/lib/job-kind"
 import { hasContacts as leadHasContacts } from "@/lib/website-contacts"
 import { clausesToParams } from "@/lib/url"
@@ -282,21 +283,6 @@ function outputExists(lead: SlimLead, key: string): boolean {
 
 function errorExists(lead: SlimLead, outputField: string): boolean {
   return valueExists(readField(lead, `dynamic.${outputField}_error`))
-}
-
-/**
- * The lead's numeric discard score, or null if unscored / unparseable. The
- * discard_score task emits a structured `{ score, reason }` object, but we also
- * tolerate a bare number or numeric string for robustness.
- */
-function leadDiscardScore(lead: SlimLead): number | null {
-  let raw: unknown = readField(lead, "discard_score")
-  if (raw && typeof raw === "object") {
-    raw = (raw as Record<string, unknown>).score
-  }
-  if (raw === null || raw === undefined) return null
-  const n = typeof raw === "number" ? raw : Number(String(raw).trim())
-  return Number.isFinite(n) ? n : null
 }
 
 /**
@@ -991,7 +977,7 @@ export function buildLeadFlow2Snapshot({
   // e.g. no website — is n/a here, not blocked).
   const passedDiscard = (lead: SlimLead): boolean => {
     if (!gateActive) return true
-    const s = leadDiscardScore(lead)
+    const s = readDiscardScore(lead)
     return s !== null && s < threshold!
   }
   const gate = gateShown ? { passed: passedDiscard } : null
@@ -1028,7 +1014,7 @@ export function buildLeadFlow2Snapshot({
       leads,
       (lead) => {
         if (!gateActive) return "complete" // open until a threshold is set
-        const s = leadDiscardScore(lead)
+        const s = readDiscardScore(lead)
         if (s !== null && s >= threshold!) return "ineligible" // discarded
         if (s === null) {
           // Unscored: n/a if it can never be scored (e.g. no website),
@@ -1058,7 +1044,7 @@ export function buildLeadFlow2Snapshot({
       // n/a on the downstream creative tasks they can no longer enter.
       const discardedIds = leads
         .filter((lead) => {
-          const s = leadDiscardScore(lead)
+          const s = readDiscardScore(lead)
           return s !== null && s >= threshold!
         })
         .map((lead) => lead.place_id)

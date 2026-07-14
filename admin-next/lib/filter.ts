@@ -6,8 +6,10 @@
 // using SQL. This module's job is to stay behavior-compatible with that.
 
 import { openNowFromLead } from "./lead-open-now"
+import { readDiscardScore } from "./discard-score"
 import { CRAWL_PAGES_KEY, QUICK_OPEN_NOW_KEY } from "./lead-quick-filters"
 import {
+  FIELD_FORMAT_DISCARD_SCORE,
   FIELD_FORMAT_NUMERIC_STRING,
   type FieldDescriptor,
   type FieldType,
@@ -95,6 +97,31 @@ function fieldByKey(
   return fields.find((x) => x.source === "dynamic" && x.key === key)
 }
 
+function isDiscardScoreKey(key: string, field?: FieldDescriptor): boolean {
+  if (field?.format === FIELD_FORMAT_DISCARD_SCORE) return true
+  return (
+    key === "discard_score" ||
+    key === "dynamic.discard_score" ||
+    key.endsWith(".discard_score")
+  )
+}
+
+/**
+ * Value used for filter/sort comparisons. Unwraps structured fields such as
+ * discard_score `{ score, reason }` to their comparable scalar.
+ */
+export function readComparableValue(
+  lead: Record<string, unknown>,
+  key: string,
+  fields?: FieldDescriptor[],
+): unknown {
+  const field = fieldByKey(key, fields)
+  if (isDiscardScoreKey(key, field)) {
+    return readDiscardScore(lead)
+  }
+  return readField(lead, key)
+}
+
 /**
  * Treat a field as numeric when its declared type is integer/number OR when
  * its declared format is "numeric-string" (e.g. legacy columns stored as text).
@@ -103,6 +130,7 @@ function isFieldNumeric(field?: FieldDescriptor): boolean {
   if (!field) return false
   if (isNumericType(field.type)) return true
   if (field.format === FIELD_FORMAT_NUMERIC_STRING) return true
+  if (field.format === FIELD_FORMAT_DISCARD_SCORE) return true
   return false
 }
 
@@ -201,7 +229,7 @@ export function evalClause(
   fields?: FieldDescriptor[],
 ): boolean {
   const field = fieldByKey(clause.key, fields)
-  const value = readField(lead, clause.key)
+  const value = readComparableValue(lead, clause.key, fields)
   const op: FilterOp = clause.op
 
   if (clause.key === QUICK_OPEN_NOW_KEY && op === "eq") {
@@ -348,7 +376,7 @@ export function applyFiltersAndSort<T extends Record<string, unknown>>(
   // Pick a non-nullish sample to infer kind when we don't have a field schema.
   let sample: unknown
   for (const r of filtered) {
-    const v = readField(r, sort.key)
+    const v = readComparableValue(r, sort.key, fields)
     if (v !== undefined && v !== null && v !== "") {
       sample = v
       break
@@ -358,7 +386,7 @@ export function applyFiltersAndSort<T extends Record<string, unknown>>(
 
   const indexed = filtered.map((row, i) => ({
     row,
-    val: readField(row, sort.key),
+    val: readComparableValue(row, sort.key, fields),
     i,
   }))
   indexed.sort((x, y) => {
@@ -410,6 +438,7 @@ export function valueWidgetForField(
     return "select"
   }
   if (field.format === "stars-1-10") return "stars-1-10"
+  if (field.format === FIELD_FORMAT_DISCARD_SCORE) return "number"
   if (isFieldNumeric(field)) return "number"
   switch (field.type) {
     case "boolean":

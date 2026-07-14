@@ -1,4 +1,11 @@
 {
+  "environmentVariables": [
+    {
+      "key": "CLAUDE_CODE_OAUTH_TOKEN",
+      "value": "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"
+    }
+  ],
+
   "permissions": {
     "allow": [
       "mcp__autosites__autosites_overview",

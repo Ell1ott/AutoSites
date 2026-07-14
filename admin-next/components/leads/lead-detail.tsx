@@ -1334,6 +1334,8 @@ function AiOutputsColumn({
             <AiOutputCard
               task={task}
               output={output}
+              placeId={lead.place_id}
+              outputField={field}
               onRerun={() => rerunMut.mutate(task)}
             />
             {isRerunning ? (

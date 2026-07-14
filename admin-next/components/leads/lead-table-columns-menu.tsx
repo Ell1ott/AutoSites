@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useFields } from "@/hooks/use-fields"
+import { isComparableLeadField } from "@/lib/field-descriptors"
 import { useUiStore } from "@/lib/store/ui"
 import { fieldClauseKey, type FieldDescriptor } from "@/lib/types"
 
@@ -57,8 +58,7 @@ export function LeadTableColumnsMenu() {
     const candidates = fields
       .filter((f) => f.source === "dynamic")
       .filter((f) => !banned.has(f.key))
-      .filter((f) => f.type !== "object")
-      .filter((f) => !f.type.startsWith("array"))
+      .filter(isComparableLeadField)
       .sort((a, b) => b.coverage - a.coverage)
     return candidates.slice(0, 2)
   }, [fields])
@@ -68,8 +68,7 @@ export function LeadTableColumnsMenu() {
     return fields
       .filter((f) => f.source === "data")
       .filter((f) => !banned.has(f.key))
-      .filter((f) => f.type !== "object")
-      .filter((f) => !f.type.startsWith("array"))
+      .filter(isComparableLeadField)
       .sort((a, b) => b.coverage - a.coverage)
   }, [fields])
 

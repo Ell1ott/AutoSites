@@ -155,6 +155,8 @@ def _safe_order(order_by: str) -> str:
     if order_by.startswith("dynamic."):
         key = order_by.split(".", 1)[1]
         if key and key.replace("_", "").isalnum() and not key[0].isdigit():
+            if key == "discard_score":
+                return "json_extract(dynamic, '$.discard_score.score')"
             return f"json_extract(dynamic, '$.{key}')"
     if order_by.startswith("data."):
         key = order_by.split(".", 1)[1]

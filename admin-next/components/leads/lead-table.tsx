@@ -49,6 +49,8 @@ import {
 } from "@/components/ui/tooltip"
 import { useAiTasks } from "@/hooks/use-ai-tasks"
 import { useFields } from "@/hooks/use-fields"
+import { readDiscardScore } from "@/lib/discard-score"
+import { isComparableLeadField } from "@/lib/field-descriptors"
 import { readField } from "@/lib/filter"
 import {
   contactCounts,
@@ -201,6 +203,14 @@ function renderCell(lead: SlimLead, key: string): ReactNode {
       )
     }
     return <span className="text-[11px] text-muted-foreground">empty</span>
+  }
+  if (key === "dynamic.discard_score" || key === "discard_score") {
+    const score = readDiscardScore(lead as unknown as Record<string, unknown>)
+    return score != null ? (
+      <span className="tabular-nums">{score}</span>
+    ) : (
+      <span className="text-muted-foreground">—</span>
+    )
   }
   const v = readField(lead as unknown as Record<string, unknown>, key)
   if (v === undefined || v === null || v === "") {
@@ -466,8 +476,7 @@ export function LeadTable({
     const candidates = fields
       .filter((f) => f.source === "dynamic")
       .filter((f) => !banned.has(f.key))
-      .filter((f) => f.type !== "object")
-      .filter((f) => !f.type.startsWith("array"))
+      .filter(isComparableLeadField)
       .sort((a, b) => b.coverage - a.coverage)
     return candidates.slice(0, 2)
   }, [fields])
@@ -477,8 +486,7 @@ export function LeadTable({
     return fields
       .filter((f) => f.source === "data")
       .filter((f) => !banned.has(f.key))
-      .filter((f) => f.type !== "object")
-      .filter((f) => !f.type.startsWith("array"))
+      .filter(isComparableLeadField)
       .sort((a, b) => b.coverage - a.coverage)
   }, [fields])
 

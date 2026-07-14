@@ -348,3 +348,72 @@ test("valueWidgetForField — covers expected mappings", () => {
     valueWidgetForField({ key: "s", type: "string", source: "column", coverage: 1, enum_values: ["a", "b"] }),
   ).toBe("select")
 })
+
+// -----------------------------------------------------------------------------
+// discard_score — structured object, compare on .score
+// -----------------------------------------------------------------------------
+
+const discardField: FieldDescriptor = {
+  key: "discard_score",
+  type: "object",
+  source: "dynamic",
+  coverage: 0.5,
+  format: "discard-score",
+  display: "Discard score",
+}
+
+function leadWithDiscardScore(score: number | null) {
+  return {
+    name: "x",
+    dynamic:
+      score == null
+        ? {}
+        : { discard_score: { score, reason: "test" } },
+  }
+}
+
+test("discard_score — gte compares numeric score inside object", () => {
+  const clause: FilterClause = {
+    key: "dynamic.discard_score",
+    op: "gte",
+    value: 8,
+  }
+  expect(evalClause(leadWithDiscardScore(8), clause, [discardField])).toBe(true)
+  expect(evalClause(leadWithDiscardScore(7), clause, [discardField])).toBe(false)
+  expect(evalClause(leadWithDiscardScore(null), clause, [discardField])).toBe(
+    false,
+  )
+})
+
+test("discard_score — exists checks for a scored value", () => {
+  const exists: FilterClause = { key: "dynamic.discard_score", op: "exists" }
+  const missing: FilterClause = {
+    key: "dynamic.discard_score",
+    op: "notexists",
+  }
+  expect(evalClause(leadWithDiscardScore(5), exists, [discardField])).toBe(true)
+  expect(evalClause(leadWithDiscardScore(5), missing, [discardField])).toBe(
+    false,
+  )
+  expect(evalClause(leadWithDiscardScore(null), exists, [discardField])).toBe(
+    false,
+  )
+  expect(evalClause(leadWithDiscardScore(null), missing, [discardField])).toBe(
+    true,
+  )
+})
+
+test("discard_score — sort by numeric score", () => {
+  const rows = [
+    { id: "a", dynamic: { discard_score: { score: 8, reason: "x" } } },
+    { id: "b", dynamic: { discard_score: { score: 3, reason: "y" } } },
+    { id: "c", dynamic: { discard_score: { score: 6, reason: "z" } } },
+  ]
+  const asc = applyFiltersAndSort(
+    rows,
+    [],
+    { key: "dynamic.discard_score", dir: "asc" },
+    [discardField],
+  )
+  expect(asc.map((r) => r.id)).toEqual(["b", "c", "a"])
+})

@@ -66,6 +66,7 @@ const MODEL_OPTIONS = [
   "claude-haiku-4-5-20251001",
   "gemini-3-flash-preview",
   "gemma-4-26b-a4b-it",
+  "gemma-4-31b-it",
   "openai/gpt-oss-120b",
 ] as const
 

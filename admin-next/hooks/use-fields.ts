@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/api"
+import { enrichFieldDescriptors } from "@/lib/field-descriptors"
 import type { FieldDescriptor, FieldsResponse } from "@/lib/types"
 
 /**
@@ -28,11 +29,11 @@ export function useFields() {
   const q = useFieldsQuery()
   const fields = useMemo<FieldDescriptor[]>(() => {
     if (!q.data) return []
-    return [
+    return enrichFieldDescriptors([
       ...(q.data.columns ?? []),
       ...(q.data.dynamic ?? []),
       ...(q.data.data_fields ?? []),
-    ]
+    ])
   }, [q.data])
   return {
     fields,

@@ -1,18 +1,26 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Loading03Icon,
+  PencilEdit02Icon,
+} from "@hugeicons/core-free-icons"
 
 import { AiMarkdown } from "@/components/ai/ai-markdown"
 import { CopyButton } from "@/components/ai/copy-button"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { api } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import {
   isVariantDesignResult,
   VariantDesignGrid,
 } from "@/components/leads/variant-design-grid"
 import { getPiBackendBase } from "@/lib/pi-url"
-import type { AiTask, InspirationPick } from "@/lib/types"
+import type { AiTask, InspirationPick, Lead } from "@/lib/types"
 
 // -----------------------------------------------------------------------------
 // Props
@@ -31,6 +39,9 @@ type Props = {
     ran_at?: string
   }
   onRerun?: () => void
+  /** When set with `outputField`, the card supports manual edits via PATCH /leads/:id. */
+  placeId?: string
+  outputField?: string
   className?: string
 }
 
@@ -62,6 +73,40 @@ function isInspirationList(v: unknown): v is InspirationPick[] {
   )
 }
 
+function usesTextEditor(task: AiTask, output: unknown): boolean {
+  if (typeof output === "string") return true
+  if (output != null) return false
+  return !task.config.response_json_schema
+}
+
+function draftFromOutput(task: AiTask, output: unknown): string {
+  if (typeof output === "string") return output
+  if (output == null) return ""
+  return stringify(output)
+}
+
+function parseDraft(
+  task: AiTask,
+  output: unknown,
+  draft: string,
+): { ok: true; value: unknown } | { ok: false; error: string } {
+  const textMode = usesTextEditor(task, output)
+  if (textMode) {
+    const trimmed = draft.trim()
+    return { ok: true, value: trimmed.length > 0 ? draft : null }
+  }
+  const trimmed = draft.trim()
+  if (!trimmed) return { ok: true, value: null }
+  try {
+    return { ok: true, value: JSON.parse(trimmed) as unknown }
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Invalid JSON",
+    }
+  }
+}
+
 // -----------------------------------------------------------------------------
 // Component
 // -----------------------------------------------------------------------------
@@ -72,18 +117,100 @@ export function AiOutputCard({
   error,
   meta,
   onRerun,
+  placeId,
+  outputField,
   className,
 }: Props): React.JSX.Element {
+  const qc = useQueryClient()
+  const canEdit = !!placeId && !!outputField
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(() => draftFromOutput(task, output))
+  const [parseError, setParseError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(draftFromOutput(task, output))
+      setParseError(null)
+    }
+  }, [task, output, editing])
+
+  const saveMut = useMutation({
+    mutationFn: async (value: unknown) => {
+      if (!placeId || !outputField) throw new Error("placeId required")
+      return api.patchLead(placeId, { [outputField]: value })
+    },
+    onMutate: async (value) => {
+      if (!placeId || !outputField) return
+      await qc.cancelQueries({ queryKey: ["lead", placeId] })
+      const prevLead = qc.getQueryData<Lead>(["lead", placeId])
+      if (!prevLead) return { prevLead: undefined }
+      qc.setQueryData<Lead>(["lead", placeId], {
+        ...prevLead,
+        dynamic: { ...prevLead.dynamic, [outputField]: value },
+      })
+      return { prevLead }
+    },
+    onError: (_err, _value, ctx) => {
+      if (ctx?.prevLead && placeId) {
+        qc.setQueryData(["lead", placeId], ctx.prevLead)
+      }
+    },
+    onSuccess: (lead) => {
+      if (placeId) qc.setQueryData(["lead", placeId], lead)
+      setEditing(false)
+      setParseError(null)
+      qc.invalidateQueries({ queryKey: ["leads"] })
+    },
+  })
+
+  function startEditing(): void {
+    setDraft(draftFromOutput(task, output))
+    setParseError(null)
+    setEditing(true)
+  }
+
+  function cancelEditing(): void {
+    setDraft(draftFromOutput(task, output))
+    setParseError(null)
+    setEditing(false)
+  }
+
+  function saveEditing(): void {
+    const parsed = parseDraft(task, output, draft)
+    if (!parsed.ok) {
+      setParseError(parsed.error)
+      return
+    }
+    saveMut.mutate(parsed.value)
+  }
+
+  const textMode = usesTextEditor(task, output)
+
   return (
     <div className={cn("rounded-lg border bg-card p-4", className)}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="font-medium text-sm">{task.label}</div>
         <div className="flex items-center gap-2">
           <MetaLine meta={meta} />
-          {output != null || typeof output === "string" ? (
+          {!editing && (output != null || typeof output === "string") ? (
             <CopyButton text={stringify(output)} label="Copy" />
           ) : null}
-          {onRerun ? (
+          {canEdit && !editing ? (
+            <Button
+              type="button"
+              size="xs"
+              variant="ghost"
+              onClick={startEditing}
+            >
+              <HugeiconsIcon
+                icon={PencilEdit02Icon}
+                size={12}
+                strokeWidth={1.75}
+              />
+              Edit
+            </Button>
+          ) : null}
+          {onRerun && !editing ? (
             <Button
               type="button"
               size="xs"
@@ -97,7 +224,61 @@ export function AiOutputCard({
       </div>
 
       <div className="mt-3">
-        {error ? (
+        {editing ? (
+          <div className="flex flex-col gap-2">
+            <Textarea
+              value={draft}
+              onChange={(e) => {
+                setDraft(e.target.value)
+                if (parseError) setParseError(null)
+              }}
+              className={cn(
+                "min-h-[140px] text-[12.5px]",
+                textMode ? "leading-relaxed" : "font-mono",
+              )}
+              placeholder={
+                textMode
+                  ? "Write or paste content…"
+                  : 'JSON, e.g. {"rating": 8, "reasoning": "…"}'
+              }
+              disabled={saveMut.isPending}
+            />
+            {!textMode ? (
+              <p className="text-muted-foreground text-[11px]">
+                Edit as JSON. Clear the field to remove this output.
+              </p>
+            ) : null}
+            {parseError ? (
+              <p className="text-destructive text-[12px]">{parseError}</p>
+            ) : null}
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={saveEditing}
+                disabled={saveMut.isPending}
+              >
+                {saveMut.isPending ? (
+                  <HugeiconsIcon
+                    icon={Loading03Icon}
+                    size={12}
+                    className="animate-spin"
+                  />
+                ) : null}
+                Save
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={cancelEditing}
+                disabled={saveMut.isPending}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : error ? (
           <ErrorBody error={error} />
         ) : typeof output === "string" ? (
           <AiMarkdown>{output}</AiMarkdown>
@@ -108,7 +289,21 @@ export function AiOutputCard({
         ) : isPlainObject(output) ? (
           <StructuredObject output={output} />
         ) : output == null ? (
-          <p className="text-muted-foreground text-sm">No output yet.</p>
+          <p className="text-muted-foreground text-sm">
+            No output yet.
+            {canEdit ? (
+              <>
+                {" "}
+                <button
+                  type="button"
+                  onClick={startEditing}
+                  className="text-primary underline-offset-2 hover:underline"
+                >
+                  Add manually
+                </button>
+              </>
+            ) : null}
+          </p>
         ) : (
           // Arrays / primitives — fall through to a JSON block.
           <details open className="text-[12.5px]">
