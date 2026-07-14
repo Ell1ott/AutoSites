@@ -2,6 +2,8 @@ import { EditableLink, EditableText } from "@autosites/cms/components";
 
 const MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Storgade+38,+4180+Sor%C3%B8";
+const MAPS_EMBED_URL =
+  "https://maps.google.com/maps?q=Storgade+38,+4180+Sor%C3%B8,+Denmark&hl=da&z=16&output=embed";
 
 export async function FooterMapSection() {
   return (
@@ -50,55 +52,14 @@ export async function FooterMapSection() {
         />
       </div>
 
-      <svg
-        className="svg-map"
-        viewBox="0 0 800 300"
-        preserveAspectRatio="none"
-        aria-hidden
-      >
-        <defs>
-          <pattern
-            id="cafe-map-grid"
-            width={40}
-            height={40}
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 40 0 L 0 0 0 40"
-              fill="none"
-              stroke="white"
-              strokeWidth={1}
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#cafe-map-grid)" />
-        <path
-          d="M0 150 Q 200 100 400 150 T 800 150"
-          stroke="var(--blue)"
-          strokeWidth={5}
-          fill="none"
-        />
-        <circle cx={450} cy={140} r={10} fill="var(--coral)" />
-        <foreignObject x={460} y={125} width={200} height={40}>
-          <div
-            {...({
-              xmlns: "http://www.w3.org/1999/xhtml",
-              style: {
-                fontFamily: "var(--font-bricolage), serif",
-                fontSize: 15,
-                color: "var(--blue)",
-                fontWeight: 700,
-              },
-            } as Record<string, unknown>)}
-          >
-            <EditableText
-              cmsKey="footer.map.marker"
-              fallback="VI ER HER"
-              as="span"
-            />
-          </div>
-        </foreignObject>
-      </svg>
+      <iframe
+        className="map-embed"
+        src={MAPS_EMBED_URL}
+        title="Kort over Café Luccas, Storgade 38, Sorø"
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        allowFullScreen
+      />
     </section>
   );
 }

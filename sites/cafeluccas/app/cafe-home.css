@@ -726,10 +726,12 @@
   opacity: 0.85;
 }
 
-.cafe-page .svg-map {
+.cafe-page .map-embed {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.6;
+  border: 0;
 }
 
 .cafe-page .icon-grid {

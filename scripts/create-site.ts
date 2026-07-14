@@ -350,6 +350,8 @@ async function main(): Promise<void> {
   if (!blankDemoEnvSource) console.log(`  # fill in sites/${args.slug}/.env.local (Supabase + PostHog)`);
   console.log(`  bun --cwd sites/${args.slug} dev`);
   console.log(`  # → http://localhost:${args.port}`);
+  console.log(`  # when ready to go live (creates Vercel project + env vars automatically):`);
+  console.log(`  bun scripts/vercel-deploy.ts ${args.slug}`);
 }
 
 main().catch((err) => {
