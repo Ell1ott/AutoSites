@@ -201,6 +201,13 @@
             z-index: 2;
         }
 
+        /* mobile-only hero elements, hidden on larger screens */
+        .hero-eyebrow,
+        .hero-sub,
+        .hero-ctas {
+            display: none;
+        }
+
         /* ===== HERO SHOWCASE OVERLAY ===== */
         .hero-showcase {
             display: none; /* temporarily hidden */
@@ -1383,6 +1390,17 @@
             transform: translateY(1px);
         }
 
+        .btn-solid {
+            background: var(--ink);
+            border-color: var(--ink);
+            color: var(--paper);
+        }
+
+        .btn-solid:hover {
+            background: var(--ink);
+            opacity: 0.9;
+        }
+
         /* ===== FOOTER ===== */
         footer {
             background: var(--paper);
@@ -1556,21 +1574,87 @@
             }
 
             .hero {
-                padding-left: 16px;
-                padding-right: 16px;
+                min-height: 100svh;
+                padding: 72px 20px 72px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 overflow: hidden;
             }
 
+            .hero .axis-v {
+                display: none;
+            }
+
+            .hero-main {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 28px;
+            }
+
+            .hero-copy {
+                display: block;
+                position: relative;
+                z-index: 2;
+            }
+
+            .hero-eyebrow {
+                display: block;
+                margin-bottom: 16px;
+            }
+
             .hero-title {
-                font-size: clamp(34px, 10vw, 64px);
+                font-size: clamp(42px, 12.5vw, 60px);
+                line-height: 1.0;
+            }
+
+            .hero-sub {
+                display: block;
+                font-family: var(--serif);
+                font-style: italic;
+                font-weight: 300;
+                font-size: 18px;
+                line-height: 1.5;
+                opacity: 0.82;
+                max-width: 28ch;
+                margin-top: 18px;
+            }
+
+            .hero-ctas {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 18px 28px;
+                margin-top: 28px;
+            }
+
+            .hero-ctas .btn {
+                white-space: nowrap;
+                text-align: center;
+                padding: 17px 30px;
+                font-size: 12px;
+                letter-spacing: 0.14em;
+            }
+
+            .hero-alt {
+                color: inherit;
+                text-decoration: none;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.14em;
+                border-bottom: 0.5px solid currentColor;
+                padding-bottom: 3px;
+                opacity: 0.75;
             }
 
             .hero-art {
-                width: min(115%, 100%);
-                max-width: 100%;
-                justify-self: end;
-                --hero-art-x: 0%;
-                opacity: 0.5;
+                display: none;
+            }
+
+            .scroll-indicator {
+                left: 20px;
+                bottom: 26px;
             }
             .featured-inline { grid-template-columns: 1fr; }
             .featured-inline figure:nth-child(3) { grid-column: auto; aspect-ratio: 4 / 5; }
@@ -1585,7 +1669,6 @@
             }
             .hero-showcase .showcase-frame { padding: 24px; }
             .showcase-mark { font-size: 19.5px; opacity: 0.58; }
-            .hero { padding-bottom: 120px; }
             .studio-people { grid-template-columns: 1fr; gap: 40px; }
             .featured-tag, .featured-caption { left: 24px; }
             .featured-tag { top: 24px; }
@@ -1620,7 +1703,13 @@
         <div class="axis axis-v" style="left: 40px;" vid="27"></div>
         <div class="hero-main">
             <div class="hero-copy">
+                <span class="meta-label hero-eyebrow">Webstudio — Danmark</span>
                 <h1 class="hero-title" vid="28">Vi bygger din næste hjemmeside^</h1>
+                <p class="hero-sub">Håndlavede hjemmesider til caféer, restauranter og bagerier — vi tager os af det hele.</p>
+                <div class="hero-ctas">
+                    <a class="btn btn-solid" href="#kontakt">Lad os samarbejde</a>
+                    <a class="hero-alt" href="tel:+4591804039">Ring til os</a>
+                </div>
 
                 <div class="hero-showcase" aria-label="Udvalgt arbejde og kontakt">
                     <div class="showcase-frame">
