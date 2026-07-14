@@ -1053,13 +1053,18 @@
             opacity: 0.85;
         }
 
-        /* ===== GALLERY (preserved) ===== */
+        /* ===== GALLERY (preserved, hidden for now) ===== */
         .gallery-section {
+            display: none;
             background: var(--paper);
             color: var(--ink);
             min-height: auto;
             padding-top: 140px;
             padding-bottom: 120px;
+        }
+
+        .nav-links > div:nth-child(2) {
+            display: none;
         }
 
         .gallery-wrap {
@@ -1625,7 +1630,7 @@
                         <span class="showcase-mark showcase-mark--br" aria-hidden="true">+</span>
 
                         <div class="showcase-strip">
-                        <a class="showcase-panel showcase-collage" href="#gallerie" aria-label="Se gallerie">
+                        <a class="showcase-panel showcase-collage" href="#kontakt" aria-label="Se gallerie">
                                 <div class="collage-grid">
                                     <div class="collage-card">
                                         <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&amp;fit=crop&amp;q=80&amp;w=600" alt="">
@@ -1642,7 +1647,7 @@
                                 </div>
                             </a>
 
-                            <a class="showcase-panel showcase-feature" href="#gallerie" aria-label="Se udvalgt projekt">
+                            <a class="showcase-panel showcase-feature" href="#kontakt" aria-label="Se udvalgt projekt">
                                 <img src="https://images.unsplash.com/photo-1616348436168-de43ad0ae138?auto=format&amp;fit=crop&amp;q=80&amp;w=1200" alt="Website vist på mobil">
                             </a>
 
@@ -1774,15 +1779,15 @@
                     </div>
                     <div>
                         <dt>Tid</dt>
-                        <dd>Man — tor<br>09:00 — 17:00 CET</dd>
+                        <dd>Man — fre<br>09:00 — 17:00 CET</dd>
                     </div>
                     <div>
                         <dt>Kapacitet</dt>
-                        <dd>Åben for nye projekter — forår 2026</dd>
+                        <dd>Åben for nye projekter</dd>
                     </div>
                     <div>
                         <dt>Sprog</dt>
-                        <dd>Dansk, engelsk</dd>
+                        <dd>Dansk, engelsk, tysk</dd>
                     </div>
                 </dl>
             </div>
