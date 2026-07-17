@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solo Pizza Næstved — Autentisk italiensk pizza</title>
+  <meta name="description" content="Solo Pizza i Næstved Storcenter — pizza, pasta, burgers og mere. Bestil via Wolt eller kom forbi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1614;
+      --ink-soft: #3d3632;
+      --muted: #6b625c;
+      --paper: #f7f3ee;
+      --paper-deep: #ebe4db;
+      --surface: #ffffff;
+      --basil: #2f5d3a;
+      --basil-deep: #1e3d26;
+      --tomato: #c43c2c;
+      --tomato-deep: #9e2e22;
+      --gold: #c4a35a;
+      --line: rgba(26, 22, 20, 0.1);
+      --shadow: 0 24px 60px rgba(26, 22, 20, 0.12);
+      --radius: 2px;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Outfit", system-ui, sans-serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+
+    .container {
+      width: min(1120px, calc(100% - 2.5rem));
+      margin-inline: auto;
+    }
+
+    /* ——— Header ——— */
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      transition: background 0.4s var(--ease), backdrop-filter 0.4s, box-shadow 0.4s;
+    }
+
+    .site-header.is-scrolled {
+      background: rgba(247, 243, 238, 0.92);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 var(--line);
+    }
+
+    .site-header.is-scrolled .brand,
+    .site-header.is-scrolled .nav a,
+    .site-header.is-scrolled .nav-toggle {
+      color: var(--ink);
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #fff;
+      transition: color 0.3s;
+    }
+
+    .brand span {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-top: -0.15rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+
+    .nav a {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.25s, opacity 0.25s;
+    }
+
+    .nav a:hover { opacity: 0.7; }
+
+    .nav-cta {
+      padding: 0.55rem 1.1rem !important;
+      background: var(--tomato);
+      color: #fff !important;
+      border-radius: var(--radius);
+      opacity: 1 !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--tomato-deep) !important;
+      opacity: 1 !important;
+    }
+
+    .nav-toggle {
+      display: none;
+      width: 2.25rem;
+      height: 2.25rem;
+      color: #fff;
+      position: relative;
+      z-index: 110;
+    }
+
+    .nav-toggle span,
+    .nav-toggle span::before,
+    .nav-toggle span::after {
+      display: block;
+      width: 1.35rem;
+      height: 1.5px;
+      background: currentColor;
+      margin: auto;
+      position: absolute;
+      left: 0; right: 0;
+      transition: transform 0.3s var(--ease), opacity 0.2s;
+    }
+
+    .nav-toggle span { top: 50%; transform: translateY(-50%); }
+    .nav-toggle span::before,
+    .nav-toggle span::after {
+      content: "";
+      top: 0;
+    }
+    .nav-toggle span::before { transform: translateY(-6px); }
+    .nav-toggle span::after { transform: translateY(6px); }
+
+    .nav-toggle.is-open span { background: transparent; }
+    .nav-toggle.is-open span::before { transform: rotate(45deg); }
+    .nav-toggle.is-open span::after { transform: rotate(-45deg); }
+
+    /* ——— Hero ——— */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: end;
+      color: #fff;
+      isolation: isolate;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      transform: scale(1.06);
+      animation: heroZoom 18s var(--ease) forwards;
+    }
+
+    @keyframes heroZoom {
+      to { transform: scale(1); }
+    }
+
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(20, 14, 10, 0.35) 0%, rgba(20, 14, 10, 0.15) 35%, rgba(20, 14, 10, 0.72) 100%),
+        radial-gradient(ellipse at 70% 30%, transparent 30%, rgba(20, 14, 10, 0.35) 100%);
+    }
+
+    .hero-content {
+      width: min(1120px, calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding: 0 0 4.5rem;
+    }
+
+    .hero-brand {
+      font-family: var(--font-display);
+      font-size: clamp(3.4rem, 9vw, 6.5rem);
+      font-weight: 600;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      max-width: 12ch;
+      opacity: 0;
+      transform: translateY(28px);
+      animation: rise 0.9s var(--ease) 0.15s forwards;
+    }
+
+    .hero-lead {
+      margin-top: 1.25rem;
+      max-width: 32ch;
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      font-weight: 300;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      transform: translateY(28px);
+      animation: rise 0.9s var(--ease) 0.35s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(28px);
+      animation: rise 0.9s var(--ease) 0.55s forwards;
+    }
+
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      border-radius: var(--radius);
+      transition: background 0.25s, color 0.25s, transform 0.25s var(--ease);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--tomato);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--tomato-deep); }
+
+    .btn-ghost {
+      background: transparent;
+      color: #fff;
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.55);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-dark {
+      background: var(--basil);
+      color: #fff;
+    }
+
+    .btn-dark:hover { background: var(--basil-deep); }
+
+    /* ——— Sections shared ——— */
+    section { padding: 5.5rem 0; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--tomato);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      max-width: 16ch;
+    }
+
+    .section-text {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 42ch;
+      font-weight: 300;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ——— Menu ——— */
+    .menu {
+      background: var(--surface);
+    }
+
+    .menu-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .menu-header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--line);
+    }
+
+    .menu-item {
+      background: var(--surface);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .menu-item figure {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--paper-deep);
+    }
+
+    .menu-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s var(--ease);
+    }
+
+    .menu-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .menu-item-body {
+      padding: 1.35rem 1.4rem 1.6rem;
+    }
+
+    .menu-item h3 {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1.15;
+    }
+
+    .menu-item p {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    .menu-also {
+      margin-top: 2.25rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .menu-also p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+      max-width: 48ch;
+    }
+
+    .menu-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .menu-tags span {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--ink-soft);
+      padding: 0.35rem 0.7rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .btn-wolt {
+      background: #009de0;
+      color: #fff;
+    }
+
+    .btn-wolt:hover {
+      background: #0088c4;
+    }
+
+    /* ——— Story ——— */
+    .story {
+      background:
+        linear-gradient(135deg, #f3efe8 0%, #e8efe6 48%, #f7f3ee 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story::before {
+      content: "";
+      position: absolute;
+      width: 42vw;
+      height: 42vw;
+      max-width: 520px;
+      max-height: 520px;
+      right: -8%;
+      top: -18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(47, 93, 58, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .story-visual {
+      position: relative;
+    }
+
+    .story-visual img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      box-shadow: var(--shadow);
+    }
+
+    .story-accent {
+      position: absolute;
+      left: -1.25rem;
+      bottom: 2rem;
+      background: var(--basil);
+      color: #fff;
+      padding: 1.25rem 1.4rem;
+      max-width: 14rem;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-style: italic;
+      line-height: 1.25;
+      box-shadow: var(--shadow);
+    }
+
+    .story-copy .section-title { max-width: 14ch; }
+
+    .story-points {
+      margin-top: 2rem;
+      display: grid;
+      gap: 1.15rem;
+    }
+
+    .story-point {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.9rem;
+      align-items: start;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .story-point strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+
+    .story-point span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    .story-num {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--tomato);
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    /* ——— Atmosphere strip ——— */
+    .atmosphere {
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      min-height: 52vh;
+    }
+
+    .atmosphere figure {
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+    }
+
+    .atmosphere img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s var(--ease);
+    }
+
+    .atmosphere figure:hover img {
+      transform: scale(1.04);
+    }
+
+    .atmosphere figcaption {
+      position: absolute;
+      left: 1.25rem;
+      bottom: 1.15rem;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 500;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    /* ——— Visit ——— */
+    .visit {
+      background: var(--ink);
+      color: #fff;
+      padding: 5.5rem 0;
+    }
+
+    .visit .section-label { color: var(--gold); }
+
+    .visit .section-title { color: #fff; }
+
+    .visit .section-text { color: rgba(255, 255, 255, 0.65); }
+
+    .visit-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      margin-top: 3rem;
+      align-items: start;
+    }
+
+    .visit-details {
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .visit-block h3 {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.55rem;
+    }
+
+    .visit-block p,
+    .visit-block a {
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.55;
+    }
+
+    .visit-block a:hover { color: #fff; }
+
+    .hours-list {
+      display: grid;
+      gap: 0.4rem;
+      list-style: none;
+    }
+
+    .hours-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.98rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .hours-list li span:last-child {
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .visit-map {
+      min-height: 360px;
+      height: 100%;
+      overflow: hidden;
+      background: #2a2623;
+      position: relative;
+      display: flex;
+      align-items: end;
+      padding: 1.75rem;
+    }
+
+    .visit-map iframe {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 360px;
+      border: 0;
+      filter: grayscale(0.15) contrast(1.02);
+    }
+
+    .visit-map-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--ink);
+      padding: 1.35rem 1.4rem;
+      width: 100%;
+      max-width: 280px;
+      box-shadow: var(--shadow);
+    }
+
+    .visit-map-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 0.35rem;
+    }
+
+    .visit-map-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    /* ——— Footer ——— */
+    .site-footer {
+      background: #120f0d;
+      color: rgba(255, 255, 255, 0.55);
+      padding: 2rem 0;
+      font-size: 0.85rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    /* ——— Mobile ——— */
+    @media (max-width: 900px) {
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+      .story-grid,
+      .visit-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .story-accent { left: 1rem; bottom: 1rem; }
+      .atmosphere { grid-template-columns: 1fr; }
+      .atmosphere figure { min-height: 240px; aspect-ratio: 16 / 9; }
+    }
+
+    @media (max-width: 700px) {
+      .nav-toggle { display: block; }
+
+      .nav {
+        position: fixed;
+        inset: 0;
+        background: rgba(18, 15, 13, 0.97);
+        flex-direction: column;
+        justify-content: center;
+        gap: 1.75rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s var(--ease);
+      }
+
+      .nav.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav a {
+        color: #fff;
+        font-size: 1.35rem;
+        font-family: var(--font-display);
+      }
+
+      .nav-cta {
+        font-family: var(--font-body) !important;
+        font-size: 0.95rem !important;
+        margin-top: 0.5rem;
+      }
+
+      .site-header.is-scrolled .nav a { color: #fff; }
+
+      .menu-grid { grid-template-columns: 1fr; }
+      .hero-content { padding-bottom: 3.25rem; }
+      section { padding: 4rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="header">
+    <a href="#top" class="brand">
+      Solo Pizza
+      <span>Næstved</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Åbn menu" aria-expanded="false">
+      <span></span>
+    </button>
+    <nav class="nav" id="nav" aria-label="Hovedmenu">
+      <a href="#menu">Menu</a>
+      <a href="#om-os">Om os</a>
+      <a href="#stemning">Stemning</a>
+      <a href="#besog">Besøg</a>
+      <a class="nav-cta" href="https://wolt.com/da/dnk/naestved/restaurant/solo-pizza-nstved" target="_blank" rel="noopener noreferrer">Bestil på Wolt</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="Forside">
+      <div class="hero-media">
+        <img
+          src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=2000&q=80"
+          alt="Friskbagt pizza med smeltet ost og tomat"
+          width="2000"
+          height="1333"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="hero-content">
+        <h1 class="hero-brand">Solo Pizza Næstved</h1>
+        <p class="hero-lead">Pizza, pasta, burgers og mere — klar til dig i Næstved Storcenter eller via Wolt.</p>
+        <div class="hero-actions">
+          <a class="btn btn-wolt" href="https://wolt.com/da/dnk/naestved/restaurant/solo-pizza-nstved" target="_blank" rel="noopener noreferrer">Bestil på Wolt</a>
+          <a class="btn btn-ghost" href="#menu">Se menuen</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu" id="menu">
+      <div class="container">
+        <div class="menu-header reveal">
+          <div>
+            <p class="section-label">Menu</p>
+            <h2 class="section-title">Noget for enhver sult</h2>
+            <p class="section-text">Fra klassiske pizzaer og pasta til burgers, sandwiches og durum — se hele sortimentet og bestil direkte på Wolt.</p>
+          </div>
+          <div class="menu-header-actions">
+            <a class="btn btn-wolt" href="https://wolt.com/da/dnk/naestved/restaurant/solo-pizza-nstved" target="_blank" rel="noopener noreferrer">Bestil på Wolt</a>
+            <a class="btn btn-dark" href="tel:+4555730466">Ring &amp; bestil</a>
+          </div>
+        </div>
+
+        <div class="menu-grid">
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=900&q=80" alt="Pizza" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>Pizzaer</h3>
+              <p>Vores hovednummer — klassiske og fyldte pizzaer, bagt og klar til dig.</p>
+            </div>
+          </article>
+
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=900&q=80" alt="Pizzasandwich" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>Pizzasandwiches</h3>
+              <p>Pizzaens storebror i sandwich-format — fyldigt og nemt at tage med.</p>
+            </div>
+          </article>
+
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80" alt="Pastaret" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>Pastaretter</h3>
+              <p>Italienske pastaretter med sauce og toppings, der mætter.</p>
+            </div>
+          </article>
+
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80" alt="Burger" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>Burgere</h3>
+              <p>Saftige burgere — når du vil have noget andet end pizza.</p>
+            </div>
+          </article>
+
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=900&q=80" alt="Durum rulle" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>Durum &amp; pitabrød</h3>
+              <p>Ruller og pita med fyld — hurtig mad, der er nem at spise på farten.</p>
+            </div>
+          </article>
+
+          <article class="menu-item reveal">
+            <figure>
+              <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80" alt="Salat og a la carte" width="900" height="675" loading="lazy" />
+            </figure>
+            <div class="menu-item-body">
+              <h3>A'la carte &amp; mere</h3>
+              <p>Forretter, fisk, kylling, schnitzler, salater, bagte kartofler og børneretter.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="menu-also reveal">
+          <div>
+            <p>Også på menuen: sandwiches, tilbehør, dyppelse og drikkevarer. Se priser og bestil levering på Wolt.</p>
+            <div class="menu-tags">
+              <span>Forretter</span>
+              <span>Sandwiches</span>
+              <span>Salater</span>
+              <span>Børneretter</span>
+              <span>Drikkevarer</span>
+            </div>
+          </div>
+          <a class="btn btn-wolt" href="https://wolt.com/da/dnk/naestved/restaurant/solo-pizza-nstved" target="_blank" rel="noopener noreferrer">Åbn fuld menu på Wolt</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="story" id="om-os">
+      <div class="container">
+        <div class="story-grid">
+          <div class="story-visual reveal">
+            <img
+              src="https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1000&q=80"
+              alt="Pizzabager der strækker dej"
+              width="1000"
+              height="1250"
+              loading="lazy"
+            />
+            <p class="story-accent">“God pizza handler om tid, ild og ærlighed.”</p>
+          </div>
+          <div class="story-copy reveal">
+            <p class="section-label">Om Solo Pizza</p>
+            <h2 class="section-title">Italiensk håndværk i Næstved</h2>
+            <p class="section-text">Vi serverer pizza og italiensk mad — og meget mere. Find os i Næstved Storcenter, ring for takeaway, eller bestil levering via Wolt.</p>
+            <div class="story-points">
+              <div class="story-point">
+                <span class="story-num">01</span>
+                <div>
+                  <strong>Dej med tålmodighed</strong>
+                  <span>Lang hævning giver smag, struktur og den berømte luftige crust.</span>
+                </div>
+              </div>
+              <div class="story-point">
+                <span class="story-num">02</span>
+                <div>
+                  <strong>Råvarer med omtanke</strong>
+                  <span>Italien-inspirerede oste, friske grøntsager og sauce lavet fra bunden.</span>
+                </div>
+              </div>
+              <div class="story-point">
+                <span class="story-num">03</span>
+                <div>
+                  <strong>I Næstved Storcenter</strong>
+                  <span>Spis her, tag med hjem, ring — eller bestil levering via Wolt.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="atmosphere" id="stemning" aria-label="Stemning">
+      <figure class="reveal">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Restaurant interiør" width="1200" height="800" loading="lazy" />
+        <figcaption>Hyggeligt hus</figcaption>
+      </figure>
+      <figure class="reveal">
+        <img src="pizzatwin_1100x_ce6baaf5-4b14-4cf0-86fc-7da577b3c1df.webp" alt="Pizza der kommer ud af ovnen" width="1100" height="800" loading="lazy" />
+        <figcaption>Varm fra ovnen</figcaption>
+      </figure>
+      <figure class="reveal">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80" alt="Italiensk middagsbord" width="900" height="800" loading="lazy" />
+        <figcaption>Del gerne</figcaption>
+      </figure>
+    </section>
+
+    <section class="visit" id="besog">
+      <div class="container">
+        <div class="reveal">
+          <p class="section-label">Besøg os</p>
+          <h2 class="section-title">Kom forbi — eller bestil</h2>
+          <p class="section-text">Find os i Næstved Storcenter. Bestil levering på Wolt, ring for takeaway — eller kom forbi og nyd maden her.</p>
+        </div>
+
+        <div class="visit-grid">
+          <div class="visit-details reveal">
+            <div class="visit-block">
+              <h3>Adresse</h3>
+              <p>Næstved Storcenter 39b<br />4700 Næstved</p>
+            </div>
+            <div class="visit-block">
+              <h3>Kontakt</h3>
+              <p>
+                <a href="tel:+4555730466">55 73 04 66</a><br />
+                <a href="https://www.facebook.com/profile.php?id=100061039050017" target="_blank" rel="noopener noreferrer">Følg os på Facebook</a>
+              </p>
+            </div>
+            <div class="visit-block">
+              <h3>Åbningstider</h3>
+              <ul class="hours-list">
+                <li><span>Mandag – Fredag</span><span>10:00 – 20:00</span></li>
+                <li><span>Lørdag – Søndag</span><span>10:00 – 16:00</span></li>
+              </ul>
+            </div>
+            <div class="menu-header-actions">
+              <a class="btn btn-wolt" href="https://wolt.com/da/dnk/naestved/restaurant/solo-pizza-nstved" target="_blank" rel="noopener noreferrer">Bestil på Wolt</a>
+              <a class="btn btn-primary" href="tel:+4555730466">Ring og bestil</a>
+            </div>
+          </div>
+
+          <div class="visit-map reveal">
+            <iframe
+              title="Solo Pizza på Google Maps"
+              src="https://maps.google.com/maps?q=Solo+Pizza,+Næstved+Storcenter+39b,+4700+Næstved&cid=12910759397491766037&z=16&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+            <div class="visit-map-card">
+              <strong>Solo Pizza</strong>
+              <p>Næstved Storcenter 39b — friskbagt pizza, hver gang.</p>
+              <a class="btn btn-dark" href="https://maps.google.com/?cid=12910759397491766037" target="_blank" rel="noopener noreferrer">Åbn i Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-brand">Solo Pizza Næstved</p>
+      <p>© <span id="year"></span> Solo Pizza. Alle rettigheder forbeholdes.</p>
+    </div>
+  </footer>
+
+  <script>
+    const header = document.getElementById("header");
+    const nav = document.getElementById("nav");
+    const navToggle = document.getElementById("navToggle");
+    const year = document.getElementById("year");
+
+    year.textContent = new Date().getFullYear();
+
+    const onScroll = () => {
+      header.classList.toggle("is-scrolled", window.scrollY > 40);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    navToggle.addEventListener("click", () => {
+      const open = nav.classList.toggle("is-open");
+      navToggle.classList.toggle("is-open", open);
+      navToggle.setAttribute("aria-expanded", String(open));
+      navToggle.setAttribute("aria-label", open ? "Luk menu" : "Åbn menu");
+      document.body.style.overflow = open ? "hidden" : "";
+    });
+
+    nav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        nav.classList.remove("is-open");
+        navToggle.classList.remove("is-open");
+        navToggle.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+      });
+    });
+
+    const reveals = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    reveals.forEach((el) => io.observe(el));
+  </script>
+</body>
+</html>

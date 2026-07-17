@@ -9,6 +9,11 @@ import { openNowFromLead } from "./lead-open-now"
 import { readDiscardScore } from "./discard-score"
 import { CRAWL_PAGES_KEY, QUICK_OPEN_NOW_KEY } from "./lead-quick-filters"
 import {
+  LOCATION_WITHIN_KEY,
+  leadWithinLocationFilter,
+  parseLocationFilterValue,
+} from "./location-filter"
+import {
   FIELD_FORMAT_DISCARD_SCORE,
   FIELD_FORMAT_NUMERIC_STRING,
   type FieldDescriptor,
@@ -238,6 +243,12 @@ export function evalClause(
     if (raw === "open" || raw === true || raw === "true") return st === true
     if (raw === "closed" || raw === false || raw === "false") return st === false
     return false
+  }
+
+  if (clause.key === LOCATION_WITHIN_KEY && op === "eq") {
+    const filter = parseLocationFilterValue(clause.value)
+    if (!filter) return false
+    return leadWithinLocationFilter(lead, filter)
   }
 
   switch (op) {

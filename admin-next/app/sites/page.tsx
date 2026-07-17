@@ -2,7 +2,6 @@ import Link from "next/link"
 
 import { Globe02Icon, Alert02Icon } from "@hugeicons/core-free-icons"
 
-import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/shell/empty-state"
 import { getSupabaseAdmin } from "@/lib/supabase-server"
 import type { SiteRow } from "@/lib/sites-types"
@@ -53,7 +52,6 @@ export default async function SitesPage() {
               : `${sites.length} site${sites.length === 1 ? "" : "s"}`}
           </p>
         </div>
-        <Button size="sm">+ New site</Button>
       </header>
 
       {error ? (
@@ -72,12 +70,7 @@ export default async function SitesPage() {
         <EmptyState
           icon={Globe02Icon}
           title="No sites yet"
-          description="Sites you create will show up here."
-          action={
-            <Button size="sm">
-              <span className="inline-flex items-center gap-1">+ New site</span>
-            </Button>
-          }
+          description="Sites will show up here once they are created."
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-5">

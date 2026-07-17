@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Konya Kebab — Tyrkisk restaurant i Næstved</title>
+  <meta name="description" content="Konya Kebab på Ramsherred 25 i Næstved. Tyrkisk restaurant med kebab, durum og grillmad. 4,3/5 på Google (342 anmeldelser). Ring 55 77 87 98." />
+  <meta name="geo.region" content="DK-82" />
+  <meta name="geo.placename" content="Næstved" />
+  <meta name="geo.position" content="55.230760599999996;11.761835699999999" />
+  <meta name="ICBM" content="55.230760599999996, 11.761835699999999" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Konya Kebab",
+    "servesCuisine": "Turkish",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Ramsherred 25",
+      "addressLocality": "Næstved",
+      "postalCode": "4700",
+      "addressCountry": "DK"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 55.230760599999996,
+      "longitude": 11.761835699999999
+    },
+    "telephone": "+4555778798",
+    "url": "https://maps.google.com/?cid=10937926852505944707",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.3",
+      "reviewCount": "342",
+      "bestRating": "5"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Sunday"], "opens": "11:00", "closes": "20:30" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday"], "opens": "11:00", "closes": "05:00" }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --charcoal: #120e0c;
+      --charcoal-2: #1c1613;
+      --ash: #2a2320;
+      --ember: #e04e1a;
+      --ember-hot: #ff6a2a;
+      --ember-soft: #b89a88;
+      --flame: #e8b87a;
+      --smoke: #c8bfb6;
+      --bone: #f2ebe3;
+      --bone-dim: rgba(242, 235, 227, 0.72);
+      --line: rgba(242, 235, 227, 0.12);
+      --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+      --font-body: "Figtree", system-ui, sans-serif;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --max: 1120px;
+      /* Kebab box image — tweak via panel or here */
+      --box-size: 220px;
+      --box-y: 22px;
+      --box-rotate: 3deg;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--charcoal);
+      color: var(--bone);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    ul { list-style: none; }
+
+    .grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ——— Nav ——— */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      transition: background 0.4s var(--ease-out), backdrop-filter 0.4s;
+    }
+
+    .nav.is-scrolled {
+      background: rgba(18, 14, 12, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .nav-brand span { color: var(--ember-hot); }
+
+    .nav-links {
+      display: none;
+      gap: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--bone-dim);
+    }
+
+    .nav-links a:hover { color: var(--bone); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.15rem;
+      background: var(--ember);
+      color: var(--bone);
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 2px;
+      transition: background 0.25s, transform 0.25s var(--ease-out);
+    }
+
+    .nav-cta:hover {
+      background: var(--ember-hot);
+      transform: translateY(-1px);
+    }
+
+    .nav-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 28px;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      height: 2px;
+      background: var(--bone);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(18, 14, 12, 0.97);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 6vw, 2.5rem);
+      font-weight: 700;
+    }
+
+    .nav-mobile.is-open { display: flex; }
+
+    @media (min-width: 768px) {
+      .nav { padding: 1.25rem 2.5rem; }
+      .nav-links { display: flex; }
+      .nav-toggle { display: none; }
+    }
+
+    /* ——— Hero ——— */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      transform: scale(1.06);
+      animation: hero-zoom 12s var(--ease-out) forwards;
+    }
+
+    @keyframes hero-zoom {
+      to { transform: scale(1); }
+    }
+
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(18, 14, 12, 0.35) 0%, rgba(18, 14, 12, 0.15) 35%, rgba(18, 14, 12, 0.75) 70%, rgba(18, 14, 12, 0.97) 100%),
+        radial-gradient(ellipse 80% 50% at 70% 30%, rgba(224, 78, 26, 0.22), transparent 55%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 3rem, var(--max));
+      margin: 0 auto;
+      padding: 0 0 4.5rem;
+    }
+
+    .hero-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(3.4rem, 12vw, 7.5rem);
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      opacity: 0;
+      animation: rise 0.9s var(--ease-out) 0.15s forwards;
+    }
+
+    .hero-brand em {
+      font-style: normal;
+      color: var(--ember-hot);
+      display: block;
+    }
+
+    .hero-lead {
+      max-width: 28rem;
+      font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+      color: var(--bone-dim);
+      margin-bottom: 1.75rem;
+      opacity: 0;
+      animation: rise 0.9s var(--ease-out) 0.35s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      opacity: 0;
+      animation: rise 0.9s var(--ease-out) 0.5s forwards;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.95rem 1.55rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 2px;
+      transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.25s var(--ease-out);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: var(--ember);
+      color: var(--bone);
+    }
+
+    .btn-primary:hover { background: var(--ember-hot); }
+
+    .btn-ghost {
+      border: 1px solid rgba(242, 235, 227, 0.35);
+      color: var(--bone);
+      background: transparent;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--bone);
+      background: rgba(242, 235, 227, 0.06);
+    }
+
+    /* ——— Sections ——— */
+    section {
+      position: relative;
+      padding: clamp(4.5rem, 10vw, 7.5rem) 1.5rem;
+    }
+
+    .wrap {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ember-soft);
+      margin-bottom: 0.85rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2rem, 5.5vw, 3.25rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .section-copy {
+      max-width: 36rem;
+      color: var(--smoke);
+      font-size: 1.05rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+
+    .reveal.is-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ——— Menu ——— */
+    .menu {
+      background:
+        radial-gradient(ellipse 60% 40% at 0% 0%, rgba(224, 78, 26, 0.08), transparent 50%),
+        var(--charcoal-2);
+    }
+
+    .menu-head {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: clamp(2.5rem, 6vw, 3.5rem);
+    }
+
+    @media (min-width: 720px) {
+      .menu-head {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+    }
+
+    .menu-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    @media (min-width: 640px) {
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 960px) {
+      .menu-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .menu-note {
+      color: var(--smoke);
+      font-size: 0.9rem;
+      margin-top: 0.35rem;
+    }
+
+    .menu-featured {
+      display: grid;
+      gap: 0;
+      align-items: center;
+      background: var(--charcoal-2);
+      border: 1px solid var(--line);
+      margin-bottom: 2.25rem;
+      overflow: visible;
+    }
+
+    @media (min-width: 720px) {
+      .menu-featured { grid-template-columns: 1.2fr 0.8fr; }
+    }
+
+    .menu-featured-copy {
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .menu-featured-copy h3 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+      letter-spacing: -0.03em;
+    }
+
+    .menu-featured-copy p {
+      color: var(--smoke);
+      font-size: 0.95rem;
+      max-width: 28rem;
+    }
+
+    .menu-featured-price {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.75rem;
+      color: var(--flame);
+      letter-spacing: -0.02em;
+    }
+
+    .menu-featured-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1rem 0;
+      background: none;
+      overflow: visible;
+    }
+
+    .menu-featured-visual img {
+      width: var(--box-size);
+      max-width: 70%;
+      height: auto;
+      display: block;
+      transform: translateY(var(--box-y)) rotate(var(--box-rotate));
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.55));
+      transition: transform 0.25s var(--ease-out);
+    }
+
+    @media (min-width: 720px) {
+      .menu-featured-visual {
+        padding: 0.5rem 1.25rem 0 0;
+        justify-content: flex-end;
+      }
+
+      .menu-featured-visual img {
+        max-width: 85%;
+      }
+    }
+
+    /* Design controls — remove before launch */
+    .box-controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 200;
+      width: 220px;
+      padding: 0.9rem 1rem;
+      background: rgba(28, 22, 19, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--smoke);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .box-controls strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--bone);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .box-controls label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .box-controls label:last-of-type { margin-bottom: 0; }
+
+    .box-controls .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .box-controls output {
+      color: var(--flame);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .box-controls input[type="range"] {
+      width: 100%;
+      accent-color: var(--ember);
+    }
+
+    .menu-cats {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 720px) {
+      .menu-cats { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 960px) {
+      .menu-cats { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .menu-cat {
+      background: var(--charcoal-2);
+      border: 1px solid var(--line);
+      padding: 1.35rem 1.25rem 1.15rem;
+    }
+
+    .menu-cat h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .menu-cat-note {
+      font-size: 0.78rem;
+      color: var(--ember-soft);
+      margin-bottom: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .menu-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.92rem;
+    }
+
+    .menu-row:last-child { border-bottom: none; }
+
+    .menu-row span:first-child {
+      color: var(--bone-dim);
+    }
+
+    .menu-row .menu-price {
+      font-size: 0.95rem;
+    }
+
+    .menu-row.is-featured span:first-child {
+      color: var(--bone);
+      font-weight: 600;
+    }
+
+    .menu-item {
+      background: var(--charcoal-2);
+      padding: 1.75rem 1.5rem;
+      display: grid;
+      gap: 0.65rem;
+      transition: background 0.35s;
+    }
+
+    .menu-item:hover { background: var(--ash); }
+
+    .menu-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .menu-item h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .menu-price {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--flame);
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+
+    .menu-item p {
+      color: var(--smoke);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .menu-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ember-soft);
+    }
+
+    /* ——— Story ——— */
+    .story {
+      background: var(--charcoal);
+      overflow: hidden;
+    }
+
+    .story-grid {
+      display: grid;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    @media (min-width: 860px) {
+      .story-grid {
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 4rem;
+      }
+    }
+
+    .story-visual {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .story-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .story-visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(135deg, rgba(224, 78, 26, 0.2), transparent 45%);
+      pointer-events: none;
+    }
+
+    .story-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto -8% -8% auto;
+      width: 55%;
+      height: 55%;
+      border: 1px solid rgba(224, 78, 26, 0.45);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .story-body .section-copy { margin-bottom: 1.75rem; }
+
+    .story-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .story-stats strong {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      letter-spacing: -0.03em;
+      color: var(--ember-hot);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+
+    .story-stats span {
+      font-size: 0.8rem;
+      color: var(--smoke);
+      line-height: 1.35;
+    }
+
+    /* ——— Experience ——— */
+    .experience {
+      background:
+        linear-gradient(180deg, var(--charcoal-2), var(--charcoal));
+    }
+
+    .exp-grid {
+      display: grid;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    @media (min-width: 720px) {
+      .exp-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+    }
+
+    .exp-step {
+      position: relative;
+      padding-top: 0.25rem;
+    }
+
+    .exp-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3.5rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(224, 78, 26, 0.55);
+      margin-bottom: 1rem;
+    }
+
+    .exp-step h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.55rem;
+    }
+
+    .exp-step p {
+      color: var(--smoke);
+      font-size: 0.95rem;
+    }
+
+    /* ——— Visit ——— */
+    .visit {
+      background: var(--charcoal-2);
+      padding-bottom: clamp(5rem, 12vw, 8rem);
+    }
+
+    .visit-panel {
+      display: grid;
+      gap: 0;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    @media (min-width: 800px) {
+      .visit-panel { grid-template-columns: 1.1fr 0.9fr; }
+    }
+
+    .visit-map {
+      position: relative;
+      min-height: 320px;
+      background: var(--ash);
+      overflow: hidden;
+    }
+
+    .visit-map iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: grayscale(0.2) contrast(1.05) brightness(0.92);
+    }
+
+    .visit-info {
+      padding: clamp(2rem, 5vw, 3rem);
+      background: var(--ash);
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .visit-block h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .visit-block p,
+    .visit-block a {
+      color: var(--smoke);
+      font-size: 0.95rem;
+    }
+
+    .visit-block a:hover { color: var(--ember-hot); }
+
+    .hours-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+      color: var(--smoke);
+    }
+
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row strong { color: var(--bone); font-weight: 500; }
+
+    .visit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .rating-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--bone-dim);
+    }
+
+    .rating-pill strong {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--flame);
+      letter-spacing: -0.02em;
+    }
+
+    .rating-stars {
+      color: var(--flame);
+      letter-spacing: 0.05em;
+      font-size: 0.85rem;
+    }
+
+    /* ——— Reviews ——— */
+    .reviews {
+      background:
+        radial-gradient(ellipse 50% 40% at 100% 0%, rgba(224, 78, 26, 0.1), transparent 55%),
+        var(--charcoal);
+    }
+
+    .reviews-head {
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .reviews-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    @media (min-width: 720px) {
+      .reviews-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .review-card {
+      background: var(--charcoal-2);
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .review-stars {
+      color: var(--flame);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+
+    .review-card blockquote {
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: var(--bone-dim);
+      flex: 1;
+    }
+
+    .review-card cite {
+      font-style: normal;
+      font-size: 0.8rem;
+      color: var(--smoke);
+    }
+
+    .reviews-link {
+      margin-top: 2rem;
+    }
+
+    /* ——— Footer ——— */
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 2.5rem 1.5rem 3rem;
+      background: var(--charcoal);
+    }
+
+    .footer-inner {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .footer-brand span { color: var(--ember-hot); }
+
+    .footer-meta {
+      color: var(--smoke);
+      font-size: 0.85rem;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .footer-social a:hover { color: var(--ember-hot); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-media img { animation: none; transform: none; }
+      .hero-brand, .hero-lead, .hero-actions {
+        animation: none;
+        opacity: 1;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <a href="#top" class="nav-brand">Konya <span>Kebab</span></a>
+    <nav class="nav-links" aria-label="Primær">
+      <a href="#menu">Menu</a>
+      <a href="#story">Om os</a>
+      <a href="#reviews">Anmeldelser</a>
+      <a href="#visit">Find os</a>
+    </nav>
+    <a class="nav-cta" href="tel:+4555778798">Ring 55 77 87 98</a>
+    <button class="nav-toggle" type="button" aria-label="Åbn menu" aria-expanded="false" id="navToggle">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="nav-mobile" id="navMobile" hidden>
+    <a href="#menu">Menu</a>
+    <a href="#story">Om os</a>
+    <a href="#reviews">Anmeldelser</a>
+    <a href="#visit">Find os</a>
+    <a href="tel:+4555778798">Ring 55 77 87 98</a>
+  </div>
+
+  <main id="top">
+    <section class="hero" aria-label="Hero">
+      <div class="hero-media">
+        <img
+          src="https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=2000&q=80"
+          alt="Grillspyd over åben ild hos Konya Kebab"
+          width="2000"
+          height="1333"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="hero-content">
+        <h1 class="hero-brand">Konya<em>Kebab</em></h1>
+        <p class="hero-lead">Tyrkisk restaurant i Næstved — kebab, durum og grillmad med smag af Konya. Hurtig service, ægte ild.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="tel:+4555778798">Bestil på 55 77 87 98</a>
+          <a class="btn btn-ghost" href="#visit">Ramsherred 25</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu" id="menu">
+      <div class="wrap">
+        <div class="menu-head reveal">
+          <div>
+            <p class="section-label">Menu</p>
+            <h2 class="section-title">Priser fra grillen</h2>
+            <p class="section-copy">Pita, durum, retter, burgers og snacks — med salat, tomat, løg og dressing. Tilbehør: chili, salatmayonnaise, remoulade og ketchup.</p>
+          </div>
+          <a class="btn btn-ghost" href="tel:+4555778798">Bestil på telefon</a>
+        </div>
+
+        <div class="menu-featured reveal">
+          <div class="menu-featured-copy">
+            <p class="menu-tag">Populær</p>
+            <h3>Kebab box</h3>
+            <p>Kebab, pommes frites, salat, tomat, løg og dressing — klar til at tage med.</p>
+            <p class="menu-featured-price">40 kr</p>
+          </div>
+          <div class="menu-featured-visual">
+            <img
+              src="Noodle-Box-Banner004.webp"
+              alt="Kebab box med kebab og pommes"
+              width="1200"
+              height="675"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <div class="menu-cats">
+          <div class="menu-cat reveal">
+            <h3>Pita</h3>
+            <p class="menu-cat-note">Alle er med salat, tomat, løg og dressing</p>
+            <div class="menu-row"><span>Pita kebab</span><span class="menu-price">25 kr</span></div>
+            <div class="menu-row"><span>Pita falafel</span><span class="menu-price">25 kr</span></div>
+            <div class="menu-row"><span>Pita kylling</span><span class="menu-price">30 kr</span></div>
+            <div class="menu-row"><span>Pita mix kebab og kylling</span><span class="menu-price">45 kr</span></div>
+          </div>
+
+          <div class="menu-cat reveal">
+            <h3>Durum</h3>
+            <p class="menu-cat-note">Alle er med salat, tomat, løg og dressing</p>
+            <div class="menu-row"><span>Durum kebab</span><span class="menu-price">35 kr</span></div>
+            <div class="menu-row"><span>Durum falafel</span><span class="menu-price">35 kr</span></div>
+            <div class="menu-row"><span>Durum kylling</span><span class="menu-price">40 kr</span></div>
+            <div class="menu-row is-featured"><span>Durum mix kebab og kylling</span><span class="menu-price">45 kr</span></div>
+          </div>
+
+          <div class="menu-cat reveal">
+            <h3>Retter</h3>
+            <p class="menu-cat-note">Med salat, tomat, løg og dressing</p>
+            <div class="menu-row"><span>Kebab ret <small style="color:var(--smoke)">(m. pommes)</small></span><span class="menu-price">65 kr</span></div>
+            <div class="menu-row"><span>Kylling ret <small style="color:var(--smoke)">(m. pommes)</small></span><span class="menu-price">75 kr</span></div>
+            <div class="menu-row"><span>Falafel ret <small style="color:var(--smoke)">(m. hummus)</small></span><span class="menu-price">50 kr</span></div>
+            <div class="menu-row is-featured"><span>Konya ret <small style="color:var(--smoke)">(kebab, falafel, hummus)</small></span><span class="menu-price">65 kr</span></div>
+            <div class="menu-row"><span>Mix ret kylling og kebab</span><span class="menu-price">80 kr</span></div>
+          </div>
+
+          <div class="menu-cat reveal">
+            <h3>Burgers</h3>
+            <p class="menu-cat-note">Tilbehør: chili, salatmayonnaise, remoulade, ketchup</p>
+            <div class="menu-row"><span>Big Burger</span><span class="menu-price">35 kr</span></div>
+            <div class="menu-row"><span>Cheese Burger</span><span class="menu-price">40 kr</span></div>
+            <div class="menu-row"><span>Kylling Burger</span><span class="menu-price">40 kr</span></div>
+            <div class="menu-row"><span>Dobb. Big Burger</span><span class="menu-price">50 kr</span></div>
+            <div class="menu-row"><span>Dobb. Cheese Burger</span><span class="menu-price">55 kr</span></div>
+            <div class="menu-row"><span>Dobb. Kylling Burger</span><span class="menu-price">55 kr</span></div>
+          </div>
+
+          <div class="menu-cat reveal">
+            <h3>Snacks</h3>
+            <p class="menu-cat-note">Tilbehør: chili, salatmayonnaise, remoulade, ketchup</p>
+            <div class="menu-row"><span>Mozzarella stick (10 stk)</span><span class="menu-price">45 kr</span></div>
+            <div class="menu-row"><span>Chilicheesetops (10 stk)</span><span class="menu-price">45 kr</span></div>
+            <div class="menu-row"><span>Snack Mix (6+6)</span><span class="menu-price">50 kr</span></div>
+            <div class="menu-row"><span>Nuggets (10 stk)</span><span class="menu-price">45 kr</span></div>
+          </div>
+
+          <div class="menu-cat reveal">
+            <h3>Andet</h3>
+            <p class="menu-cat-note">Hurtige tillæg</p>
+            <div class="menu-row is-featured"><span>Kebab box</span><span class="menu-price">40 kr</span></div>
+            <div class="menu-row"><span>Fransk Hotdog</span><span class="menu-price">20 kr</span></div>
+            <div class="menu-row"><span>Lille pommes</span><span class="menu-price">20 kr</span></div>
+            <div class="menu-row"><span>Stor pommes</span><span class="menu-price">25 kr</span></div>
+            <div class="menu-row"><span>Ekstra tilbehør</span><span class="menu-price">5 kr</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story" id="story">
+      <div class="wrap story-grid">
+        <div class="story-visual reveal">
+          <img
+            src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?auto=format&fit=crop&w=1200&q=80"
+            alt="Krydret kød på grillspyd"
+            width="1200"
+            height="1500"
+            loading="lazy"
+          />
+        </div>
+        <div class="story-body reveal">
+          <p class="section-label">Om os</p>
+          <h2 class="section-title">Smagen af Konya — midt i Næstved</h2>
+          <p class="section-copy">
+            Konya Kebab er en tyrkisk restaurant på Ramsherred. Gæster beskriver stemningen som barndom i Konya — og maden som noget, man husker længe efter.
+          </p>
+          <p class="section-copy">
+            Ejeren tager imod med et smil, ventetiden er kort, og Nizamettin sørger for, at grillen kører. Fra hurtig durum til en rigtig grillret: det er casual, ægte og bygget til sultne mennesker.
+          </p>
+          <div class="story-stats">
+            <div>
+              <strong>4,3</strong>
+              <span>Google-rating</span>
+            </div>
+            <div>
+              <strong>342</strong>
+              <span>Anmeldelser</span>
+            </div>
+            <div>
+              <strong>05.00</strong>
+              <span>Åbent fre–lør</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="experience" id="order">
+      <div class="wrap">
+        <div class="reveal">
+          <p class="section-label">Sådan gør du</p>
+          <h2 class="section-title">Sulten? Tre skridt.</h2>
+          <p class="section-copy">Kom forbi, ring inden, eller tag det med — vi er hurtige, så du slipper for at vente sulten.</p>
+        </div>
+        <div class="exp-grid">
+          <div class="exp-step reveal">
+            <div class="exp-num" aria-hidden="true">01</div>
+            <h3>Vælg din ret</h3>
+            <p>Durum, kebab eller grill — og sig til om kød, salat og pommes. Vi tilpasser ordren.</p>
+          </div>
+          <div class="exp-step reveal">
+            <div class="exp-num" aria-hidden="true">02</div>
+            <h3>Vi tænder grillen</h3>
+            <p>Ordren går direkte på. Gæster nævner ofte næsten ingen ventetid — og det holder vi fast i.</p>
+          </div>
+          <div class="exp-step reveal">
+            <div class="exp-num" aria-hidden="true">03</div>
+            <h3>Spis her eller tag med</h3>
+            <p>Spis på stedet, eller tag det varmt med. Ramsherred 25, midt i Næstved.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reviews" id="reviews">
+      <div class="wrap">
+        <div class="reviews-head reveal">
+          <div class="rating-pill">
+            <strong>4,3</strong>
+            <span class="rating-stars" aria-hidden="true">★★★★☆</span>
+            <span>342 Google-anmeldelser</span>
+          </div>
+          <p class="section-label">Hvad gæsterne siger</p>
+          <h2 class="section-title">Tillid fra Næstved</h2>
+          <p class="section-copy">Flinke ejere, kort ventetid og mad med smag af Konya — det går igen i anmeldelserne.</p>
+        </div>
+
+        <div class="reviews-grid">
+          <article class="review-card reveal">
+            <p class="review-stars" aria-label="5 ud af 5">★★★★★</p>
+            <blockquote>
+              «Ejeren var virkelig flink, næsten ingen ventetid, og maden var seriøst det bedste jeg nogensinde har smagt. Stemningen minder mig om min barndom i Konya i Tyrkiet. Konya Kebab i Næstved er bare helt urealistisk god.»
+            </blockquote>
+            <cite>Google · for 2 måneder siden</cite>
+          </article>
+
+          <article class="review-card reveal">
+            <p class="review-stars" aria-label="5 ud af 5">★★★★★</p>
+            <blockquote>
+              «Jeg elsker maden. Den bedste restaurant i hele Danmark. Jeg elsker Nizamettin. Jeg er gode venner med ejerens søn. Den bedste restaurant i hele verden.»
+            </blockquote>
+            <cite>Google · for 2 måneder siden</cite>
+          </article>
+
+          <article class="review-card reveal">
+            <p class="review-stars" aria-label="5 ud af 5">★★★★★</p>
+            <blockquote>
+              «En nat efter en dejlig aften på Crazy Daisy bestiller jeg en durum … Den falder prompte inden for ca. 45 sekunder — og smager fuldstændig himmelsk. 5 stjerner herfra.»
+            </blockquote>
+            <cite>Google · for 1 år siden</cite>
+          </article>
+        </div>
+
+        <div class="reviews-link reveal">
+          <a
+            class="btn btn-ghost"
+            href="https://maps.google.com/?cid=10937926852505944707&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Se alle anmeldelser på Google Maps</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="visit" id="visit">
+      <div class="wrap">
+        <div class="reveal" style="margin-bottom: 2.5rem;">
+          <p class="section-label">Find os</p>
+          <h2 class="section-title">Kom sulten forbi</h2>
+          <p class="section-copy">Ramsherred 25, 4700 Næstved — tyrkisk restaurant midt i byen.</p>
+        </div>
+
+        <div class="visit-panel reveal">
+          <div class="visit-map">
+            <iframe
+              title="Konya Kebab på Google Maps"
+              src="https://maps.google.com/maps?q=55.230760599999996,11.761835699999999&z=16&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="visit-info">
+            <div class="visit-block">
+              <h3>Adresse</h3>
+              <p>
+                Ramsherred 25<br />
+                4700 Næstved
+              </p>
+              <p style="margin-top: 0.5rem;">
+                <a
+                  href="https://maps.google.com/?cid=10937926852505944707&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >Åbn i Google Maps</a>
+              </p>
+            </div>
+            <div class="visit-block">
+              <h3>Kontakt</h3>
+              <p>
+                <a href="tel:+4555778798">55 77 87 98</a><br />
+                <a href="tel:+4555778798">+45 55 77 87 98</a>
+              </p>
+            </div>
+            <div class="visit-block">
+              <h3>Åbningstider</h3>
+              <div class="hours-row"><span>Mandag</span><strong>11.00–20.30</strong></div>
+              <div class="hours-row"><span>Tirsdag</span><strong>11.00–20.30</strong></div>
+              <div class="hours-row"><span>Onsdag</span><strong>11.00–20.30</strong></div>
+              <div class="hours-row"><span>Torsdag</span><strong>11.00–20.30</strong></div>
+              <div class="hours-row"><span>Fredag</span><strong>11.00–05.00</strong></div>
+              <div class="hours-row"><span>Lørdag</span><strong>11.00–05.00</strong></div>
+              <div class="hours-row"><span>Søndag</span><strong>11.00–20.30</strong></div>
+            </div>
+            <div class="visit-actions">
+              <a class="btn btn-primary" href="tel:+4555778798">Ring 55 77 87 98</a>
+              <a
+                class="btn btn-ghost"
+                href="https://maps.google.com/?cid=10937926852505944707&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Google Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Konya <span>Kebab</span></div>
+        <p class="footer-meta">Tyrkisk restaurant · Ramsherred 25, 4700 Næstved<br />© 2026 Konya Kebab · 4,3/5 på Google (342 anmeldelser)</p>
+      </div>
+      <div class="footer-social">
+        <a href="tel:+4555778798">55 77 87 98</a>
+        <a
+          href="https://maps.google.com/?cid=10937926852505944707&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Google Maps</a>
+        <a href="#menu">Menu</a>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="box-controls" id="boxControls" aria-label="Kebab box controls">
+    <strong>Kebab box</strong>
+    <label>
+      <span class="row">Size <output id="boxSizeOut">220px</output></span>
+      <input type="range" id="boxSize" min="120" max="360" value="220" step="4" />
+    </label>
+    <label>
+      <span class="row">Y placement <output id="boxYOut">22px</output></span>
+      <input type="range" id="boxY" min="-40" max="80" value="22" step="1" />
+    </label>
+  </aside>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const size = document.getElementById("boxSize");
+      const y = document.getElementById("boxY");
+      const sizeOut = document.getElementById("boxSizeOut");
+      const yOut = document.getElementById("boxYOut");
+
+      const apply = () => {
+        root.style.setProperty("--box-size", `${size.value}px`);
+        root.style.setProperty("--box-y", `${y.value}px`);
+        sizeOut.textContent = `${size.value}px`;
+        yOut.textContent = `${y.value}px`;
+      };
+
+      size.addEventListener("input", apply);
+      y.addEventListener("input", apply);
+      apply();
+    })();
+  </script>
+
+  <script>
+    (function () {
+      const nav = document.getElementById("nav");
+      const toggle = document.getElementById("navToggle");
+      const mobile = document.getElementById("navMobile");
+
+      const onScroll = () => {
+        nav.classList.toggle("is-scrolled", window.scrollY > 40);
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+
+      const setOpen = (open) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", open ? "Luk menu" : "Åbn menu");
+        mobile.hidden = !open;
+        mobile.classList.toggle("is-open", open);
+        document.body.style.overflow = open ? "hidden" : "";
+      };
+
+      toggle.addEventListener("click", () => {
+        setOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+
+      mobile.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => setOpen(false));
+      });
+
+      const reveals = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        reveals.forEach((el, i) => {
+          el.style.transitionDelay = `${(i % 3) * 80}ms`;
+          io.observe(el);
+        });
+      } else {
+        reveals.forEach((el) => el.classList.add("is-in"));
+      }
+    })();
+  </script>
+</body>
+</html>

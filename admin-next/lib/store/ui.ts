@@ -47,6 +47,10 @@ type UiState = {
   setLeadTableDataColumnShown: (columnId: string, shown: boolean) => void
   resetLeadTableColumns: () => void
 
+  /** When true, show Flow-2 pipeline status columns in the leads table. */
+  leadTableShowFlowColumns: boolean
+  setLeadTableShowFlowColumns: (v: boolean) => void
+
   /** Last lead opened on /leads — session only, not persisted. */
   selectedLeadId: string | null
   setSelectedLeadId: (id: string | null) => void
@@ -99,7 +103,11 @@ export const useUiStore = create<UiState>()(
           leadTableDataColumnShown: {},
           leadTableColumnOrder: [],
           leadTableColumnSizing: {},
+          leadTableShowFlowColumns: false,
         }),
+
+      leadTableShowFlowColumns: false,
+      setLeadTableShowFlowColumns: (v) => set({ leadTableShowFlowColumns: v }),
 
       selectedLeadId: null,
       setSelectedLeadId: (id) => set({ selectedLeadId: id }),
@@ -116,6 +124,7 @@ export const useUiStore = create<UiState>()(
         leadTableColumnOrder: state.leadTableColumnOrder,
         leadTableColumnSizing: state.leadTableColumnSizing,
         leadTableDataColumnShown: state.leadTableDataColumnShown,
+        leadTableShowFlowColumns: state.leadTableShowFlowColumns,
       }),
     },
   ),

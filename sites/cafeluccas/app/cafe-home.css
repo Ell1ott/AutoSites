@@ -390,6 +390,70 @@
   font-weight: 800;
 }
 
+.cafe-page .menu-offer-price {
+  bottom: 20px;
+  right: 40px;
+}
+
+.cafe-page .menu-page-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  border-bottom: var(--border);
+}
+
+.cafe-page .menu-page-columns .menu-section {
+  border-bottom: none;
+}
+
+.cafe-page .menu-page-columns .menu-section:first-child {
+  border-right: var(--border);
+}
+
+.cafe-page .menu-pizza-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+}
+
+.cafe-page .menu-pizza-dishes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cafe-page .menu-pizza-info {
+  background-color: var(--cream);
+  border: var(--border);
+  padding: 40px;
+  position: relative;
+}
+
+.cafe-page .menu-pizza-takeaway-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: var(--blue);
+  color: white;
+  padding: 14px 38px;
+  font-family: var(--font-bricolage), serif;
+  font-size: 23px;
+  transform: rotate(2deg);
+  z-index: 5;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.cafe-page .menu-categories-footer {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.cafe-page .menu-categories-footer > div:last-child {
+  text-align: right;
+}
+
 .cafe-page .menu-section {
   padding: 80px 52px;
   border-bottom: var(--border);
@@ -915,6 +979,57 @@
     padding: 2.25rem 1.25rem;
   }
 
+  .cafe-page .menu-offer-banner .menu-offer-price {
+    position: static;
+    display: inline-block;
+    transform: none;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    padding: 0.55rem 1.15rem;
+  }
+
+  .cafe-page .menu-page-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .cafe-page .menu-page-columns .menu-section:first-child {
+    border-right: none;
+    border-bottom: var(--border);
+  }
+
+  .cafe-page .menu-pizza-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cafe-page .menu-pizza-dishes {
+    grid-template-columns: 1fr;
+  }
+
+  .cafe-page .menu-pizza-info {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .cafe-page .menu-pizza-takeaway-badge {
+    position: static;
+    display: inline-block;
+    transform: none;
+    margin-bottom: 1rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .cafe-page .menu-categories-footer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .cafe-page .menu-categories-footer > div:last-child {
+    text-align: left;
+  }
+
   .cafe-page .menu-offer-title {
     font-size: clamp(1.75rem, 8vw, 2.5rem);
   }
@@ -1048,27 +1163,10 @@
   }
 
   .cafe-page .tape-label {
-    right: 0;
-    left: 0.75rem;
-    top: 0.75rem;
-    padding: 0.5rem 1.25rem;
-    font-size: 1.05rem;
+    display: none;
   }
 
-  .cafe-page .menu-page-header .tape-label {
-    right: 0;
-    left: 0.75rem;
-    top: 0.75rem;
-  }
-
-  .cafe-page .tape-label.tape-label--pizza-info {
-    top: 0.75rem;
-    right: 0.75rem;
-    left: auto;
-    transform: rotate(0deg);
-  }
-
-  .cafe-page .diagonal-banner {
+  .cafe-page .diagonal-banner:not(.menu-offer-price) {
     bottom: 0.75rem;
     right: 0.75rem;
     left: 0.75rem;

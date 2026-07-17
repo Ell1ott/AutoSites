@@ -18,6 +18,7 @@ import type { Lead } from "@/lib/types"
 
 import { isLeadCrawled } from "@/lib/website-contacts"
 
+import { CopyMapsDataButton } from "./copy-maps-data-button"
 import { WebsiteContactsCard } from "./website-contacts-card"
 
 type Props = {
@@ -75,9 +76,12 @@ export function ContactTab({ lead }: Props): React.JSX.Element {
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-6">
       <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="mb-3 text-[13px] font-semibold text-foreground">
-          Listing contacts
-        </h2>
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <h2 className="text-[13px] font-semibold text-foreground">
+            Listing contacts
+          </h2>
+          <CopyMapsDataButton lead={lead} />
+        </div>
         <div className="space-y-3">
           {address ? (
             <ContactRow

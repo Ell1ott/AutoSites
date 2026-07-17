@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>novine digital — Facebook banner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Fraunces:opsz,wght@9..144,300&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 851px;
+      height: 315px;
+      overflow: hidden;
+      background: #E6E4E2;
+    }
+
+    .banner {
+      position: relative;
+      width: 851px;
+      height: 315px;
+      background: #E6E4E2;
+      color: #3D352F;
+      overflow: hidden;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      height: 100%;
+      padding: 0 48px;
+      max-width: 540px;
+    }
+
+    .logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+    }
+
+    .title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 42px;
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .title .caret {
+      display: inline-block;
+      transform: translateY(-3px);
+      margin-left: 1px;
+      font-weight: 200;
+    }
+
+    .hero-art {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 496px;
+      opacity: 0.5;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-art img {
+      display: block;
+      width: 100%;
+      height: auto;
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <div class="content">
+      <div class="logo">novine digital</div>
+      <h1 class="title">Vi bygger din næste hjemmeside<span class="caret">^</span></h1>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <img src="./vector-2.svg" alt="">
+    </div>
+  </div>
+</body>
+</html>

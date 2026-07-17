@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wok og Chopsticks - Authentic Chinese Cuisine</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Playfair Display for Serifs, Inter for Sans-serif -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#a31d24',
+              dark: '#1a1a1a',
+              gold: '#d4af37',
+              cream: '#fdfaf6'
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+    .hero-gradient {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    }
+    .parallax-bg {
+      background-attachment: fixed;
+      background-position: center;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body class="bg-white text-brand-dark">
+<!-- BEGIN: Top Info Bar -->
+<div class="bg-brand-dark text-white text-xs py-2 px-6 flex justify-between items-center border-b border-gray-800">
+<div class="flex space-x-6">
+<span class="flex items-center gap-2"><i class="opacity-70">📍</i> Your Address Here</span>
+<span class="flex items-center gap-2"><i class="opacity-70">📞</i> +1234567890</span>
+<span class="flex items-center gap-2"><i class="opacity-70">✉️</i> example@example.com</span>
+</div>
+<div class="flex space-x-4 opacity-80">
+<a href="#">FB</a>
+<a href="#">IG</a>
+<a href="#">LN</a>
+<a href="#">X</a>
+</div>
+</div>
+<!-- END: Top Info Bar -->
+<!-- BEGIN: MainHeader -->
+<header class="absolute top-10 left-0 w-full z-50 px-10">
+<nav class="max-w-7xl mx-auto flex items-center justify-between">
+<!-- Logo placeholder using standard brand color -->
+<div class="flex items-center gap-2">
+<div class="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white font-bold italic">WOC</div>
+<div class="text-white">
+<p class="text-xl font-bold tracking-widest leading-none uppercase">Wok og</p>
+<p class="text-sm tracking-[0.2em] uppercase">Chopsticks</p>
+</div>
+</div>
+<ul class="hidden lg:flex space-x-8 text-white text-sm font-medium uppercase tracking-wider">
+<li><a class="text-brand-red" href="#">Home</a></li>
+<li><a class="hover:text-brand-red transition" href="#">About</a></li>
+<li><a class="hover:text-brand-red transition" href="#">Menu &amp; Locations</a></li>
+<li><a class="hover:text-brand-red transition" href="#">Reservation</a></li>
+<li><a class="hover:text-brand-red transition" href="#">Merchandise</a></li>
+<li><a class="hover:text-brand-red transition" href="#">Career</a></li>
+<li><a class="hover:text-brand-red transition" href="#">Contact</a></li>
+</ul>
+<a class="bg-transparent border border-white text-white px-6 py-2 text-sm uppercase tracking-widest hover:bg-white hover:text-brand-dark transition" href="#reservation">Book a Table</a>
+</nav>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
+<img alt="Hero Background" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiIPMX_Lb1jmXMoO8JBbZvvGnhPyzsgYxdOdZlelNaRwFMq6NcarKcB9rkZ7UDy17qOU0pRvQeEE6NTtsr02EZ5mjX0hIpTMlBR-Usb_ai1TfxM5-qvdqCaoLibJoeo7LYqb20FirsmqO7oWXGKe9HK9G3aZqvLKAD-HESaz7K4V0WjwBkyYgQQcpkXgzw-nTRmTrMGXPeHSP-_iF3X-7vFMUDnBBJXrERMPpFGIa38TVWwzgXcqV0Bg"/>
+<div class="absolute inset-0 hero-gradient"></div>
+<div class="relative z-10 max-w-4xl px-6 pt-20">
+<h1 class="text-5xl md:text-7xl font-serif mb-6 leading-tight uppercase tracking-wide">
+        Welcome to Wok og Chopsticks – <br/>Where Every Bite Tells a Story
+      </h1>
+<p class="text-lg md:text-xl font-light mb-10 max-w-2xl mx-auto opacity-90 leading-relaxed">
+        At Wok og Chopsticks, we bring families and friends together over the timeless tradition of sharing delectable dishes. From our expertly crafted dim sum to our vibrant ambiance, every moment here is a celebration of taste and togetherness.
+      </p>
+<button class="bg-brand-red hover:bg-red-800 text-white px-8 py-3 rounded-sm uppercase tracking-widest text-sm transition-all duration-300">
+        Explore Our Menu →
+      </button>
+</div>
+<!-- Floating Badge -->
+<div class="absolute bottom-10 right-10 w-32 h-32 flex items-center justify-center">
+<div class="absolute inset-0 border border-white/30 rounded-full animate-spin-slow"></div>
+<div class="bg-white/10 backdrop-blur-sm rounded-full p-4 text-[10px] text-center uppercase tracking-tighter leading-none">
+<p>Authentic Recipes</p>
+<p class="font-bold py-1">Check Our Profile</p>
+<p>Crafted with Love</p>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: OurStory -->
+<section class="py-24 bg-brand-cream relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+<div class="relative z-10">
+<h2 class="text-4xl font-serif uppercase mb-6 tracking-wider">Our Story</h2>
+<p class="text-gray-700 leading-relaxed mb-8">
+          At Wok og Chopsticks, we are a local Singaporean brand that prepares dim sum dishes with wholehearted dedication and passion. Our chefs use traditional techniques to craft our dishes, ensuring that they are of the highest quality. Come and experience our fresh and flavorful cuisine.
+        </p>
+<button class="bg-brand-red text-white px-8 py-3 uppercase tracking-widest text-sm hover:opacity-90 transition">Learn More →</button>
+</div>
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-full h-full border border-brand-red/20 rounded-xl"></div>
+<img alt="Restaurant Front" class="relative rounded-xl shadow-2xl w-full h-[400px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc3VaaQPBOUNnk0jnmbF2XjM0_AkKcaCt1bZxcHaHfbRytg_WbiTlC1D0GEZKg6_pbm_isDr15B1eR9mQe-w35ckJoGRorjDSr-1xsG_rxhNH2bQwT_n5kpu3fyUpxLnPb1t-FZb1g2WBmFeJRKoWkKJN_OVGZ_vl4-sr7rzYMhNQjN_Fy6NsccGyfMAiE7b7NI_nQR4SMY6kdgUaaV3coIvSgq8PM4aVSzhiBlX56H6xDsCeKfsGyxQ"/>
+</div>
+</div>
+<!-- Decor Background -->
+<div class="absolute top-0 right-0 opacity-5 pointer-events-none">
+<img alt="Decor" class="w-96" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt_15Tnps5ibEWMQXJSpLfzDQPVtpYskkO3wGWzVQo5v6pDD8LBhPjQedrbsCM6H_A8PMsTl2hR_zlnhvPXbqjM6K_6VC6x23tBmfUyiUNjwDdVU50sCTjrjJE63FQ3W3DZYKMocqruQDpsrxJDF_HUxrhHfIsQHRem4DrPkCsv0Gtz6EU7LBtfDCWGNSFVu_b8W-noTKTbwuagWg7dO0nxSdgbhiYzinPvws4rFZQZMw6e40zfKLqaw"/>
+</div>
+</section>
+<!-- END: OurStory -->
+<!-- BEGIN: Statistics -->
+<section class="py-16 bg-white border-y border-gray-100">
+<div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+<div>
+<div class="text-brand-red text-3xl mb-2 flex justify-center">😊</div>
+<div class="text-3xl font-serif font-bold">6,000+</div>
+<div class="text-gray-500 text-sm uppercase tracking-widest mt-1">Happy Guests</div>
+</div>
+<div>
+<div class="text-brand-red text-3xl mb-2 flex justify-center">🍱</div>
+<div class="text-3xl font-serif font-bold">50+</div>
+<div class="text-gray-500 text-sm uppercase tracking-widest mt-1">Unique Dishes</div>
+</div>
+<div>
+<div class="text-brand-red text-3xl mb-2 flex justify-center">🏆</div>
+<div class="text-3xl font-serif font-bold">20+</div>
+<div class="text-gray-500 text-sm uppercase tracking-widest mt-1">Years Of Quality</div>
+</div>
+<div>
+<div class="text-brand-red text-3xl mb-2 flex justify-center">📅</div>
+<div class="text-3xl font-serif font-bold">12+</div>
+<div class="text-gray-500 text-sm uppercase tracking-widest mt-1">Monthly Events</div>
+</div>
+</div>
+</section>
+<!-- END: Statistics -->
+<!-- BEGIN: TasteTradition -->
+<section class="py-24 bg-white">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-serif uppercase tracking-widest mb-2">Taste The Tradition</h2>
+<div class="w-24 h-px bg-brand-red mx-auto"></div>
+</div>
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Feature 1 - Large -->
+<div class="md:col-span-2 relative group overflow-hidden rounded-xl h-[400px]">
+<img alt="Wolfberry Siew Mai" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6ZFyIbTUplBxRkOVFPs0KFxpIdlR230rAhae0qRHVg3_FNXs-WqHmEYbErMtL2Y2OwHkX6JB71Jz6t5U4xPI5KxHnvHAxFmHNigdOkcHhaP9OGSWKv_ZNkynf9x1Oc3sgVI7wwP7dL1hNPyjz1qetZUqPGmGGaxrRgJ3QiNzF35lZXB3DTI78qwPpMO60Y2N2yrGLK-dop34rdvNHYRZi1awn54_BjpLkeNjUYE4xwo77SnOqB2RaFw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
+<h3 class="text-white text-xl font-serif mb-2">Wolfberry with Mushroom Siew Mai 枸杞子烧麦</h3>
+<div class="flex justify-between items-end">
+<p class="text-gray-300 text-sm max-w-md">A traditional dim sum favorite featuring steamed dumplings filled with succulent pork, mushrooms, and topped with wolfberries for a hint of sweetness.</p>
+<a class="text-white border border-white/50 px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition" href="#">View Details →</a>
+</div>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="relative group overflow-hidden rounded-xl h-[400px]">
+<img alt="Chopsticks food" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHYBn6KF81gH7wikqx_QVhzykETXYeJnrW7zhHg2XBCb9o3sDmX699wG5Um8KcEORv2E4AISf5VFbAkeiWxMNfBjjGnEHkbisJ-xD4weSG3r0ncZMJvtH4D7un9nT3ArpWOOmNq6vr66I0LaVrxquXNslKJyapTRq_3QRiPK8nzVYTWKqYJ71pM0UOVAJOXElS1zJ62tkvdvae3Cq7-GSBWSrU-oAwF2YrAIgCulwT7EIL9j1wCT_6dg"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+</div>
+<!-- Feature 3 -->
+<div class="relative group overflow-hidden rounded-xl h-[400px]">
+<img alt="Noodles" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS5TOalOHzUVrUhIjjU91-q8vEPCE1TlLnQPxFk5jGvGQuhslzRI1aq_wSZvU3Uqdyy3en0k0Av3h8vJ6i1_TYxSKCljQp7FP3HBENcV1sY9KKueq5BjJBnTixCVsMxHfDQ9Qly0BkGj__bJzncQdOiMTvA-exZEnz0I33rYc51rHJkJJz4l_-ik3IRxjYaa2bJk1vDGLBOY-B6_KWtgl2XJJJcCtO1g_FCRhj2COwOevAllLb6wYAaw"/>
+</div>
+<!-- Feature 4 -->
+<div class="md:col-span-2 relative group overflow-hidden rounded-xl h-[400px]">
+<img alt="Golden Dish" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkjPU7QkNL6fbKIOUMtKQ643s79nF48C2pb6bzuo03_WXIdhIOi9VAWXo2pp2ZXoabvOQIMMbwbP7pMnF7_lWJFh896l3iVQlVE7qhT5trDtRbdAko4JSSIUxDJtUb9y4tQ9jFppRO1J6fWfJ-acAosJI_akVP4kIm9Fpj8zsFuVtpGUxZcSObF6wrgEYJA2HvdnNjnhqtjCDZVvPSLUWQJNyKXB8ASjJvH0tpWpE_-X1rG0ePPZXQoA"/>
+</div>
+</div>
+<!-- Pagination Dots -->
+<div class="flex justify-center gap-2 mt-12">
+<span class="w-2 h-2 rounded-full border border-brand-red bg-brand-red"></span>
+<span class="w-2 h-2 rounded-full border border-gray-300"></span>
+<span class="w-2 h-2 rounded-full border border-gray-300"></span>
+<span class="w-2 h-2 rounded-full border border-gray-300"></span>
+</div>
+</div>
+</section>
+<!-- END: TasteTradition -->
+<!-- BEGIN: PromoSection -->
+<section class="relative py-32 flex items-center justify-center text-center text-white">
+<img alt="Cooking Background" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxlEvyAj3q6VLNOF_Mu_F4o5D5McDJA1rdgIfset5uxinnt54OQlJWw6JTQhstyKK13WnchjZJ73IJIXQwSBnUsDuXuUcfzmqywsmH26Wl4Bmfp-Re8HKs3gRwfbhWBxPrO--fbTnT2n-riO_r658I4752W2ZsNtRq-rvGRXmSErxPU5he7v6Z4HIJhG9obecYon53Xrwm8tmECiWsl-tPzPz9vk5C1pBB1n21ZLXCkDak5467Tw9Eeg"/>
+<div class="absolute inset-0 bg-black/60"></div>
+<div class="relative z-10 max-w-4xl px-6">
+<h2 class="text-4xl md:text-5xl font-serif uppercase tracking-widest mb-6">Dive into the World of Sumptuous Chinese Cuisine</h2>
+<p class="text-lg opacity-80 mb-10 max-w-2xl mx-auto leading-relaxed">
+        Embark on a culinary journey where every bite tells a story of tradition and passion. At Wok og Chopsticks, we bring you an authentic Asian dining experience with handcrafted dishes, vibrant flavors, and the warmth of our culture.
+      </p>
+<button class="bg-brand-red px-10 py-3 uppercase tracking-widest text-sm hover:scale-105 transition">Explore More →</button>
+</div>
+</section>
+<!-- END: PromoSection -->
+<!-- BEGIN: Testimonials -->
+<section class="py-24 bg-brand-dark text-white relative overflow-hidden">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-serif uppercase tracking-widest mb-2">The Talk Of The Town</h2>
+<div class="w-24 h-px bg-brand-red mx-auto"></div>
+</div>
+<div class="max-w-4xl mx-auto px-6 text-center relative">
+<span class="text-6xl text-brand-red opacity-50 font-serif leading-none absolute -top-10 left-0 md:left-20">“</span>
+<div class="mb-8">
+<img alt="Testimonial User" class="w-20 h-20 rounded-full mx-auto border-2 border-brand-red p-1 mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqlg2FmVi1ndK_XugsilFRS4HfTewFn2bwHFbBUtOr2BMdW6QzjMIGarySNa1iZnzDvL1ToVk9qc1TcXjb6cv6FQr69TEzD_MUDuvsDVvTpbZVPf6_dR510ScVEOWWK4SYoeM95AFyWcjCMR_iW_v40o7tS1JmJ5UwRLMwCloVvfKlxlFE_bm_uqc7v9Jmr74kVVVr8UnwCdNF4Y8BJ72dIdQBR4ZxH8qhYVWsRak0tpjmLuW9MD1SkQ"/>
+<p class="text-lg italic leading-relaxed text-gray-300">
+          Wok og Chopsticks is more than just a restaurant—it's an experience that transports you to the heart of Asian culinary tradition. Each bite is a harmonious blend of flavor, texture, and passion, crafted meticulously to reflect the essence of our culture. From delicate dumplings to savory bites, you're greeted by the comforting aroma of freshly steamed dumplings, the vibrant energy of a bustling kitchen, and the warm smiles of a team dedicated to delivering perfection on every plate.
+        </p>
+</div>
+<div class="flex flex-col items-center">
+<div class="flex gap-1 text-brand-gold mb-4">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="h-px w-16 bg-gray-600"></div>
+<p class="text-2xl font-serif italic text-brand-gold">Rosario Roca</p>
+</div>
+</div>
+<!-- Slide controls -->
+<div class="flex justify-center gap-2 mt-12">
+<span class="w-2 h-2 rounded-full border border-brand-red bg-brand-red"></span>
+<span class="w-2 h-2 rounded-full border border-gray-600"></span>
+<span class="w-2 h-2 rounded-full border border-gray-600"></span>
+</div>
+</div>
+</section>
+<!-- END: Testimonials -->
+<!-- BEGIN: ReservationSection -->
+<section class="py-24 bg-white" id="reservation">
+<div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-full h-full border border-brand-red/20 rounded-lg"></div>
+<img alt="Restaurant Interior" class="relative rounded-lg shadow-xl w-full h-[500px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_XJSVp1WuMqsCKvG2usrF8-9-i0c4ckE3FEj6QbAPZYtAdpuiZPNA7JLeHDFhq1JEC_UYd8MfVpZp8LHBTHiI290U8j9wacU0hQbKHfwCjUW2vfG2D4wUpOWc_WxQ3ujgodynBVlkKGeo4L9qSPr3tqO4hG--nUxUvUFTMTdoxAP3ducbdFS-xrDaWZK14UuWt2S0BG06RC9HC3uQU3G2nDA5U46vt_POQUi4kwCnqZSOdRwzuY2twA"/>
+</div>
+<div>
+<h2 class="text-4xl font-serif uppercase tracking-widest mb-6">Reserve Your Table For An Authentic Experience</h2>
+<p class="text-gray-600 mb-10 leading-relaxed">
+          Don't miss the chance to savor the finest flavors of authentic Chinese cuisine in a warm and inviting atmosphere. Whether it's a special occasion, a family gathering, or a cozy dinner for two, our handcrafted dishes and impeccable service make every moment memorable. Reserve your table now and let us take you on a culinary journey filled with tradition, passion, and the joy of exceptional food. Your unforgettable dining experience awaits!
+        </p>
+<form class="grid grid-cols-2 gap-6">
+<input class="col-span-1 border-b border-gray-300 focus:border-brand-red transition outline-none py-2 text-sm bg-transparent" placeholder="Your Name" type="text"/>
+<select class="col-span-1 border-b border-gray-300 focus:border-brand-red transition outline-none py-2 text-sm bg-transparent">
+<option>1 Person</option>
+<option>2 Persons</option>
+<option>4+ Persons</option>
+</select>
+<input class="col-span-1 border-b border-gray-300 focus:border-brand-red transition outline-none py-2 text-sm bg-transparent" placeholder="21-12-2024" type="text"/>
+<select class="col-span-1 border-b border-gray-300 focus:border-brand-red transition outline-none py-2 text-sm bg-transparent">
+<option>9:00 PM</option>
+<option>8:00 PM</option>
+</select>
+<div class="col-span-2 mt-4">
+<button class="bg-brand-red text-white px-10 py-3 uppercase tracking-widest text-sm hover:opacity-90 transition w-fit">Book Now</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+<!-- END: ReservationSection -->
+<!-- BEGIN: ContactFormSection -->
+<section class="relative min-h-[600px] flex items-stretch">
+<div class="w-full md:w-3/5 relative overflow-hidden group">
+<img alt="Contact Background" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs6R1G0vhybIqcJ_NOz3CLpbCV87hDDKu1y97lWWxAgR5YrojR6i6ofQY2iVjokOuv3B0pCdPcrwHzM5N4OK5eNl0XpA9QxMJ9u5NTA_CeV6krOY_nxGx1xbGTFvtEBFidNvlS8pzBg2nuiSQu1KZhHD_skVMRrO_FV7HoBA_edozb6npNPMbkvj_D-Puv3lC8IqOJsCid8JySNVX6IRPsCQfCRpB56v0DzbafPs4mk7e83IYSKEg77A"/>
+<div class="absolute inset-0 bg-black/50 p-12 md:p-20 flex flex-col justify-center">
+<h3 class="text-white text-3xl font-serif mb-2">Just Say Hi !</h3>
+<p class="text-gray-300 mb-8">Tell us more about you and we'll contact you soon.</p>
+<form class="grid grid-cols-2 gap-6 text-white">
+<input class="col-span-2 border-b border-white/30 bg-transparent py-2 focus:border-white outline-none placeholder:text-gray-400" placeholder="Name" type="text"/>
+<input class="col-span-1 border-b border-white/30 bg-transparent py-2 focus:border-white outline-none placeholder:text-gray-400" placeholder="Email" type="email"/>
+<input class="col-span-1 border-b border-white/30 bg-transparent py-2 focus:border-white outline-none placeholder:text-gray-400" placeholder="Phone Number" type="text"/>
+<textarea class="col-span-2 border-b border-white/30 bg-transparent py-2 focus:border-white outline-none placeholder:text-gray-400" placeholder="Type your message here" rows="3"></textarea>
+<button class="col-span-2 bg-brand-red text-white py-3 mt-4 uppercase tracking-widest text-sm hover:bg-red-800 transition">Submit →</button>
+</form>
+</div>
+</div>
+<div class="hidden md:flex w-2/5 bg-[#f5e6e8] p-12 md:p-20 flex-col justify-center relative">
+<div class="relative z-10">
+<h3 class="text-xl font-bold uppercase tracking-widest mb-6">Contact Information</h3>
+<ul class="space-y-4 text-gray-700 text-sm">
+<li>Maui, Hawaii, USA</li>
+<li>Call us: +1234567890</li>
+<li>Whatsapp: +1234567890</li>
+</ul>
+<div class="mt-12">
+<h4 class="font-bold uppercase tracking-widest mb-4">Follow Us</h4>
+<div class="flex gap-6">
+<a class="text-brand-dark hover:text-brand-red" href="#">FB</a>
+<a class="text-brand-dark hover:text-brand-red" href="#">LN</a>
+<a class="text-brand-dark hover:text-brand-red" href="#">X</a>
+</div>
+</div>
+</div>
+<!-- Background Graphic -->
+<img alt="Decor" class="absolute bottom-0 right-0 w-64 opacity-10 pointer-events-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiJv_F94n8IIA4_dGynT_NHtyPAUS_4oNWCqjz3ltBdP6QW4q30Ksgy_8Erfjo7KVl9JY-TNZ4V2cJpE4wrj1FM5CXRBNWw1yFZnB1raXyfbK7h6qepHAb5d9YkA8wSpP3YDj9oR2diDyVBPSuPAcEDQJoVU3UuDCemixWGPZC_6kxTSrrVBc0KHYkZvsTYqjrTlABmvQ7J6qrckJKZGV455XuHcjnc_lVewIo66bRqTESIzdLzu3xbQ"/>
+<p class="absolute bottom-10 right-10 text-4xl font-serif italic text-brand-red/10 select-none">Contact Us</p>
+</div>
+</section>
+<!-- END: ContactFormSection -->
+<!-- BEGIN: Footer -->
+<footer class="bg-white py-16 border-t border-gray-100">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-12">
+<!-- Left: Info -->
+<div class="text-center md:text-left space-y-4">
+<h4 class="font-bold uppercase tracking-widest text-sm mb-4">Contact</h4>
+<p class="text-sm text-gray-500 flex items-center justify-center md:justify-start gap-2">📞 +1234567890</p>
+<p class="text-sm text-gray-500 flex items-center justify-center md:justify-start gap-2">📍 Your Address Here</p>
+<p class="text-sm text-gray-500 flex items-center justify-center md:justify-start gap-2">✉️ example@example.com</p>
+</div>
+<!-- Center: Brand & Social -->
+<div class="text-center">
+<div class="flex items-center justify-center gap-2 mb-6">
+<div class="text-brand-dark">
+<p class="text-2xl font-serif font-bold tracking-widest leading-none uppercase">Wok og</p>
+<p class="text-xs tracking-[0.2em] uppercase">Chopsticks</p>
+</div>
+</div>
+<div class="flex justify-center gap-6 text-gray-400">
+<a class="hover:text-brand-red" href="#">FB</a>
+<a class="hover:text-brand-red" href="#">IG</a>
+<a class="hover:text-brand-red" href="#">LN</a>
+<a class="hover:text-brand-red" href="#">X</a>
+</div>
+</div>
+<!-- Right: Links -->
+<div class="text-center md:text-right space-y-2">
+<ul class="text-sm text-gray-600 space-y-2 uppercase tracking-wide">
+<li><a class="hover:text-brand-red" href="#">Home</a></li>
+<li><a class="hover:text-brand-red" href="#">About Us</a></li>
+<li><a class="hover:text-brand-red" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-brand-red" href="#">Terms &amp; Conditions</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-16 pt-8 border-t border-gray-100 text-center text-[10px] text-gray-400 uppercase tracking-widest">
+        Copyright 2024 © Wok og Chopsticks
+      </div>
+</div>
+</footer>
+<!-- END: Footer -->
+</body></html>

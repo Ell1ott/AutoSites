@@ -3,6 +3,9 @@ import { expect, test } from "bun:test"
 import {
   buildLeadFlow2Snapshot,
   extractFlow2TemplateRefs,
+  FLOW2_TABLE_STEPS,
+  getFlow2PipelineSteps,
+  isFlow2StepComplete,
   outputFieldForFlow2Task,
 } from "./lead-flow-2"
 import { jobKindForTask } from "./job-kind"
@@ -498,4 +501,77 @@ test("adds recommended subpage dependency for relevant tasks", () => {
   const overview = snapshot.nodes.find((n) => n.id === "task:website_overview")
   expect(overview?.dependencies).toContain("ai_subpages")
   expect(overview?.counts.blocked).toBe(1)
+})
+
+test("FLOW2_TABLE_STEPS follows lane order with contacts after markdown", () => {
+  const ids = FLOW2_TABLE_STEPS.map((s) => s.id)
+  expect(ids[0]).toBe("artifact:website")
+  expect(ids.indexOf("artifact:markdown")).toBe(2)
+  expect(ids.indexOf("artifact:contacts")).toBe(3)
+  expect(ids.at(-1)).toBe("task:variant_design")
+  expect(ids).not.toContain("source")
+})
+
+test("isFlow2StepComplete checks artifacts and tasks", () => {
+  const tasks: AiTask[] = [
+    baseTask({
+      name: "discard_score",
+      config: { output_field: "discard_score", discard_at: 7 },
+    }),
+  ]
+  const steps = getFlow2PipelineSteps(tasks)
+  const ctx = { tasks, steps }
+  const lead = baseLead({
+    dynamic: {
+      visuel_rating: 5,
+      discard_score: { score: 3, reason: "ok" },
+      design_prompt: "brief",
+    },
+  })
+
+  expect(isFlow2StepComplete(lead, "artifact:website", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "artifact:crawl", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "task:visuel_rating", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "task:discard_score", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "gate:discard", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "task:design_prompt", ctx)).toBe(true)
+  expect(isFlow2StepComplete(lead, "task:variant_design", ctx)).toBe(false)
+})
+
+test("isFlow2StepComplete accepts visual_rating fallback", () => {
+  const ctx = { tasks: [], steps: getFlow2PipelineSteps([]) }
+  const lead = baseLead({ dynamic: { visual_rating: 8 } })
+  expect(isFlow2StepComplete(lead, "task:visuel_rating", ctx)).toBe(true)
+})
+
+test("isFlow2StepComplete gate fails when score at or above threshold", () => {
+  const tasks: AiTask[] = [
+    baseTask({
+      name: "discard_score",
+      config: { output_field: "discard_score", discard_at: 5 },
+    }),
+  ]
+  const ctx = { tasks, steps: getFlow2PipelineSteps(tasks) }
+  const kept = baseLead({
+    dynamic: { discard_score: { score: 3, reason: "keep" } },
+  })
+  const discarded = baseLead({
+    dynamic: { discard_score: { score: 8, reason: "drop" } },
+  })
+  const unscored = baseLead({ dynamic: {} })
+
+  expect(isFlow2StepComplete(kept, "gate:discard", ctx)).toBe(true)
+  expect(isFlow2StepComplete(discarded, "gate:discard", ctx)).toBe(false)
+  expect(isFlow2StepComplete(unscored, "gate:discard", ctx)).toBe(false)
+})
+
+test("isFlow2StepComplete gate passes everyone when threshold unset", () => {
+  const ctx = { tasks: [], steps: getFlow2PipelineSteps([]) }
+  expect(
+    isFlow2StepComplete(
+      baseLead({ dynamic: { discard_score: { score: 9, reason: "x" } } }),
+      "gate:discard",
+      ctx,
+    ),
+  ).toBe(true)
 })

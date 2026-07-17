@@ -147,8 +147,7 @@ export async function MenuPageContent() {
             />
           </p>
           <div
-            className="diagonal-banner"
-            style={{ bottom: "20px", right: "40px" }}
+            className="diagonal-banner menu-offer-price"
           >
             <EditableText
               cmsKey="menu.frokost.priceBanner"
@@ -158,17 +157,10 @@ export async function MenuPageContent() {
           </div>
         </section>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-            borderBottom: "var(--border)",
-          }}
-        >
+        <div className="menu-page-columns">
           <section
             className="menu-section"
             aria-labelledby="sandwich-heading"
-            style={{ borderBottom: "none", borderRight: "var(--border)" }}
           >
             <EditableText
               cmsKey="menu.sandwich.label"
@@ -200,7 +192,6 @@ export async function MenuPageContent() {
           <section
             className="menu-section menu-section--peach"
             aria-labelledby="burger-heading"
-            style={{ borderBottom: "none" }}
           >
             <EditableText
               cmsKey="menu.burger.label"
@@ -264,13 +255,7 @@ export async function MenuPageContent() {
           aria-labelledby="pizza-heading"
           style={{ backgroundColor: "var(--mint)", borderBottom: "none" }}
         >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.2fr 1fr",
-              gap: "40px",
-            }}
-          >
+          <div className="menu-pizza-layout">
             <div>
               <EditableText
                 cmsKey="menu.pizza.label"
@@ -297,11 +282,7 @@ export async function MenuPageContent() {
               />
               <EditableList<DishFallback>
                 cmsKey="menu.pizzas.items"
-                wrapperStyle={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "20px",
-                }}
+                wrapperClassName="menu-pizza-dishes"
                 fallback={[
                   {
                     id: "2",
@@ -330,15 +311,8 @@ export async function MenuPageContent() {
                 renderItem={renderDish}
               />
             </div>
-            <div
-              style={{
-                backgroundColor: "var(--cream)",
-                border: "var(--border)",
-                padding: "40px",
-                position: "relative",
-              }}
-            >
-              <div className="tape-label tape-label--pizza-info">
+            <div className="menu-pizza-info">
+              <div className="menu-pizza-takeaway-badge">
                 <EditableText
                   cmsKey="menu.pizza.takeawayTape"
                   fallback="TAKE AWAY"
@@ -500,15 +474,7 @@ export async function MenuPageContent() {
           </li>
         </ul>
 
-        <div
-          style={{
-            marginTop: "60px",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "40px",
-            alignItems: "center",
-          }}
-        >
+        <div className="menu-categories-footer">
           <EditableText
             cmsKey="menu.footer.note"
             fallback="Har du spørgsmål til allergener eller tilpasninger, er du velkommen til at ringe — vi hjælper gerne."

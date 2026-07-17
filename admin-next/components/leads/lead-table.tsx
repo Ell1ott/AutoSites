@@ -70,6 +70,11 @@ import { cn } from "@/lib/utils"
 
 import { LeadScreenshot } from "./lead-screenshot"
 import { LeadTableScoreCell } from "./lead-table-score-cell"
+import {
+  buildFlow2ColumnDefs,
+  FLOW2_COL_WIDTH,
+  useFlow2TableContext,
+} from "./lead-table-flow-columns"
 import { useRowSelection } from "./use-row-selection"
 
 type Props = {
@@ -439,6 +444,7 @@ export function LeadTable({
   const columnSizingStored = useUiStore((s) => s.leadTableColumnSizing)
   const setLeadTableColumnSizing = useUiStore((s) => s.setLeadTableColumnSizing)
   const dataColumnShown = useUiStore((s) => s.leadTableDataColumnShown)
+  const showFlowColumns = useUiStore((s) => s.leadTableShowFlowColumns)
   const { onCheckboxClick } = useRowSelection(rows)
   const { fields } = useFields()
 
@@ -454,6 +460,12 @@ export function LeadTable({
     !!currentTask &&
     currentTask.task_type !== "browser_agent" &&
     currentTask.task_type !== "variant"
+
+  const { steps: flow2Steps, ctx: flow2Ctx } = useFlow2TableContext(tasks)
+  const flow2ColumnDefs = useMemo(
+    () => (showFlowColumns ? buildFlow2ColumnDefs(flow2Steps, flow2Ctx) : []),
+    [showFlowColumns, flow2Steps, flow2Ctx],
+  )
 
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
 
@@ -570,22 +582,35 @@ export function LeadTable({
     out[SELECT_COL_ID] = 32
     if (showMissingCol) out[MISSING_COL_ID] = 22
     if (showScreenshot) out[SCREENSHOT_COL_ID] = 56
+    if (showFlowColumns) {
+      for (const step of flow2Steps) {
+        out[`flow2.${step.id}`] = FLOW2_COL_WIDTH
+      }
+    }
     for (const oc of orderedDataColumns) {
       const id = oc.id
       const def = widthForOrderedCol(oc)
       out[id] = sanitizedSizingStored[id] ?? def
     }
     return out
-  }, [orderedDataColumns, showScreenshot, showMissingCol, sanitizedSizingStored])
+  }, [
+    orderedDataColumns,
+    showScreenshot,
+    showMissingCol,
+    showFlowColumns,
+    flow2Steps,
+    sanitizedSizingStored,
+  ])
 
   const fullColumnOrder = useMemo(
     () => [
       SELECT_COL_ID,
       ...(showMissingCol ? [MISSING_COL_ID] : []),
       ...(showScreenshot ? [SCREENSHOT_COL_ID] : []),
+      ...(showFlowColumns ? flow2Steps.map((s) => `flow2.${s.id}`) : []),
       ...orderedDataColumns.map((c) => c.id),
     ],
-    [showScreenshot, showMissingCol, orderedDataColumns],
+    [showScreenshot, showMissingCol, showFlowColumns, flow2Steps, orderedDataColumns],
   )
 
   const columns = useMemo((): ColumnDef<SlimLead>[] => {
@@ -642,6 +667,10 @@ export function LeadTable({
       )
     }
 
+    if (showFlowColumns) {
+      defs.push(...flow2ColumnDefs)
+    }
+
     for (const oc of orderedDataColumns) {
       const sortKey = sortKeyForOrderedCol(oc)
       const label =
@@ -676,7 +705,15 @@ export function LeadTable({
     }
 
     return defs
-  }, [orderedDataColumns, showScreenshot, showMissingCol, currentTask, onCheckboxClick])
+  }, [
+    orderedDataColumns,
+    showScreenshot,
+    showMissingCol,
+    showFlowColumns,
+    flow2ColumnDefs,
+    currentTask,
+    onCheckboxClick,
+  ])
 
   const overlayMeta = useMemo(() => {
     if (!activeDragId) return null
@@ -760,7 +797,10 @@ export function LeadTable({
   const headerGroup = table.getHeaderGroups()[0]
   const headers = headerGroup?.headers ?? []
   const leadingCount =
-    1 + (showMissingCol ? 1 : 0) + (showScreenshot ? 1 : 0)
+    1 +
+    (showMissingCol ? 1 : 0) +
+    (showScreenshot ? 1 : 0) +
+    (showFlowColumns ? flow2Steps.length : 0)
   const leadingHeaders = headers.slice(0, leadingCount)
   const draggableHeaders = headers.slice(leadingCount)
 
@@ -782,15 +822,22 @@ export function LeadTable({
             </colgroup>
             <thead className="sticky top-0 z-10 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/75">
               <tr>
-                {leadingHeaders.map((header) => (
+                {leadingHeaders.map((header) => {
+                  const isFlow2 = header.column.id.startsWith("flow2.")
+                  return (
                   <th
                     key={header.id}
                     scope="col"
-                    className="border-b border-border px-2 py-1.5"
+                    className={cn(
+                      "border-b border-border py-1.5",
+                      isFlow2 ? "px-0.5" : "px-2",
+                    )}
                     aria-label={
                       header.column.id === SELECT_COL_ID
                         ? "select all"
-                        : "screenshot"
+                        : isFlow2
+                          ? (header.column.columnDef.meta as { flow2Step?: { fullLabel: string } })?.flow2Step?.fullLabel
+                          : "screenshot"
                     }
                     style={{
                       width: header.getSize(),
@@ -802,7 +849,8 @@ export function LeadTable({
                       header.getContext(),
                     )}
                   </th>
-                ))}
+                  )
+                })}
                 <SortableContext
                   items={sortableIds}
                   strategy={horizontalListSortingStrategy}
@@ -855,12 +903,14 @@ export function LeadTable({
                   >
                     {row.getVisibleCells().map((cell) => {
                       const isSelect = cell.column.id === SELECT_COL_ID
+                      const isFlow2 = cell.column.id.startsWith("flow2.")
                       const meta = cell.column.columnDef.meta as
                         | { align?: "left" | "right" }
                         | undefined
                       const rightAligned =
                         cell.column.id !== SELECT_COL_ID &&
                         cell.column.id !== SCREENSHOT_COL_ID &&
+                        !isFlow2 &&
                         meta?.align === "right"
                       return (
                         <td
@@ -870,7 +920,7 @@ export function LeadTable({
                             maxWidth: cell.column.getSize(),
                           }}
                           className={cn(
-                            "truncate px-2",
+                            isFlow2 ? "px-0.5" : "truncate px-2",
                             rightAligned && "text-right",
                           )}
                           onClick={isSelect ? (e) => e.stopPropagation() : undefined}

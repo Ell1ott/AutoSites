@@ -296,6 +296,137 @@ function discardThreshold(tasks: AiTask[]): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null
 }
 
+/** Default output fields when a task row is absent from `ai_tasks`. */
+const DEFAULT_TASK_OUTPUT_FIELDS: Record<string, string> = {
+  visuel_rating: "visuel_rating",
+  discard_score: "discard_score",
+  ai_subpages: "ai_subpages",
+  website_overview: "website_overview",
+  products: "products",
+  design_prompt: "design_prompt",
+  desgin_search_queries: "desgin_search_queries",
+  generate_inspiration_queries: "inspiration_queries",
+  find_inspiration: "design_inspirations",
+  variant_design: "variant_design",
+}
+
+const FLOW2_TABLE_STEP_LABELS: Record<
+  string,
+  { shortLabel: string; fullLabel: string }
+> = {
+  "artifact:website": { shortLabel: "Web", fullLabel: "Website" },
+  "artifact:crawl": { shortLabel: "Crawl", fullLabel: "Screenshot crawl" },
+  "artifact:markdown": { shortLabel: "MD", fullLabel: "Markdown" },
+  "artifact:contacts": { shortLabel: "Cont", fullLabel: "Website contacts" },
+  "task:visuel_rating": { shortLabel: "Vis", fullLabel: "Visual rating" },
+  "task:discard_score": { shortLabel: "Disc", fullLabel: "Discard score" },
+  "gate:discard": { shortLabel: "Gate", fullLabel: "Discard gate" },
+  "task:ai_subpages": { shortLabel: "Sub", fullLabel: "Recommended subpages" },
+  "task:website_overview": { shortLabel: "Ovr", fullLabel: "Website overview" },
+  "task:products": { shortLabel: "Prod", fullLabel: "Products" },
+  "task:design_prompt": { shortLabel: "Brief", fullLabel: "Design brief" },
+  "task:desgin_search_queries": {
+    shortLabel: "Srch",
+    fullLabel: "Design search queries",
+  },
+  "task:generate_inspiration_queries": {
+    shortLabel: "InQ",
+    fullLabel: "Inspiration queries",
+  },
+  "task:find_inspiration": { shortLabel: "Insp", fullLabel: "Find inspiration" },
+  "task:variant_design": { shortLabel: "Var", fullLabel: "Variant design" },
+}
+
+function buildFlow2TableStepIds(): string[] {
+  const ids = FLOW2_LANE_ORDER.filter((id) => id !== "source")
+  const mdIndex = ids.indexOf("artifact:markdown")
+  if (mdIndex >= 0 && !ids.includes("artifact:contacts")) {
+    ids.splice(mdIndex + 1, 0, "artifact:contacts")
+  }
+  return ids
+}
+
+export type Flow2PipelineStep = {
+  id: string
+  shortLabel: string
+  fullLabel: string
+  /** Resolved dynamic output field for task nodes. */
+  outputField?: string
+}
+
+/** Ordered pipeline steps for the leads-table status columns. */
+export const FLOW2_TABLE_STEPS: Flow2PipelineStep[] = buildFlow2TableStepIds()
+  .map((id) => {
+    const labels = FLOW2_TABLE_STEP_LABELS[id]
+    return {
+      id,
+      shortLabel: labels?.shortLabel ?? id,
+      fullLabel: labels?.fullLabel ?? id,
+    }
+  })
+
+export function flow2StepColumnId(stepId: string): string {
+  return `flow2.${stepId}`
+}
+
+export function getFlow2PipelineSteps(tasks: AiTask[]): Flow2PipelineStep[] {
+  const tasksByName = new Map(tasks.map((t) => [t.name, t]))
+  return FLOW2_TABLE_STEPS.map((step) => {
+    if (!step.id.startsWith("task:")) return step
+    const taskName = step.id.slice("task:".length)
+    const task = tasksByName.get(taskName)
+    const outputField = task
+      ? outputFieldForFlow2Task(task)
+      : DEFAULT_TASK_OUTPUT_FIELDS[taskName]
+    return outputField ? { ...step, outputField } : step
+  })
+}
+
+const VISUAL_RATING_FIELDS = ["visuel_rating", "visual_rating"] as const
+
+function hasVisualRating(lead: SlimLead): boolean {
+  return VISUAL_RATING_FIELDS.some((key) => outputExists(lead, key))
+}
+
+function passedDiscardGate(lead: SlimLead, tasks: AiTask[]): boolean {
+  const threshold = discardThreshold(tasks)
+  if (threshold === null) return true
+  const s = readDiscardScore(lead)
+  return s !== null && s < threshold
+}
+
+export type Flow2StepCompleteContext = {
+  tasks: AiTask[]
+  /** Resolved steps from {@link getFlow2PipelineSteps}. */
+  steps?: Flow2PipelineStep[]
+}
+
+export function isFlow2StepComplete(
+  lead: SlimLead,
+  stepId: string,
+  ctx: Flow2StepCompleteContext,
+): boolean {
+  if (stepId === "artifact:website") return hasWebsite(lead)
+  if (stepId === "artifact:crawl") return hasScreenshot(lead)
+  if (stepId === "artifact:markdown") return hasMarkdown(lead)
+  if (stepId === "artifact:contacts") return leadHasContacts(lead)
+  if (stepId === "gate:discard") return passedDiscardGate(lead, ctx.tasks)
+
+  if (stepId === "task:visuel_rating") return hasVisualRating(lead)
+
+  if (stepId.startsWith("task:")) {
+    const steps = ctx.steps ?? getFlow2PipelineSteps(ctx.tasks)
+    const step = steps.find((s) => s.id === stepId)
+    const outputField =
+      step?.outputField ??
+      DEFAULT_TASK_OUTPUT_FIELDS[stepId.slice("task:".length)]
+    if (!outputField) return false
+    return outputExists(lead, outputField)
+  }
+
+  return false
+}
+
 function fieldFilterKey(key: string): string {
   if (key === "website") return key
   if (key.startsWith("dynamic.") || key.startsWith("data.")) return key

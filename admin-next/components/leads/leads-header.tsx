@@ -12,7 +12,12 @@ import {
   Table01Icon,
 } from "@hugeicons/core-free-icons"
 
+import {
+  fieldFilterClauses,
+  LocationFilterChip,
+} from "@/components/filter/location-filter-chip"
 import { FilterBuilder } from "@/components/filter/filter-builder"
+import { setLocationFilter, extractLocationFilter } from "@/lib/location-filter"
 import { LeadQuickFilters } from "@/components/leads/lead-quick-filters"
 import { LeadTableColumnsMenu } from "@/components/leads/lead-table-columns-menu"
 import { Button } from "@/components/ui/button"
@@ -28,6 +33,7 @@ import { useFields } from "@/hooks/use-fields"
 import { isComparableLeadField } from "@/lib/field-descriptors"
 import { getMapColorOptions } from "@/lib/lead-map-color"
 import type { LeadsViewMode } from "@/lib/store/ui"
+import { useUiStore } from "@/lib/store/ui"
 import {
   fieldClauseKey,
   type FilterClause,
@@ -97,6 +103,13 @@ export function LeadsHeader({
 
   const sortKey = sort?.key ?? ""
   const sortDir = sort?.dir ?? "asc"
+  const showFlowColumns = useUiStore((s) => s.leadTableShowFlowColumns)
+  const setShowFlowColumns = useUiStore((s) => s.setLeadTableShowFlowColumns)
+  const fieldClauses = useMemo(() => fieldFilterClauses(clauses), [clauses])
+
+  function onFieldClausesChange(next: FilterClause[]) {
+    onClausesChange(setLocationFilter(next, extractLocationFilter(clauses)))
+  }
 
   return (
     <div className="flex flex-col gap-3 border-b border-border bg-background px-4 py-3">
@@ -182,7 +195,16 @@ export function LeadsHeader({
             />
           </div>
           <div className="min-w-0 flex-1">
-            <FilterBuilder clauses={clauses} onChange={onClausesChange} />
+            <div className="flex flex-wrap items-center gap-1.5">
+              <LocationFilterChip
+                clauses={clauses}
+                onClausesChange={onClausesChange}
+              />
+              <FilterBuilder
+                clauses={fieldClauses}
+                onChange={onFieldClausesChange}
+              />
+            </div>
           </div>
         </div>
 
@@ -256,7 +278,25 @@ export function LeadsHeader({
               />
             </Button>
           )}
-          {showTableColumnsMenu ? <LeadTableColumnsMenu /> : null}
+          {showTableColumnsMenu ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-pressed={showFlowColumns}
+                onClick={() => setShowFlowColumns(!showFlowColumns)}
+                className={cn(
+                  "h-8 rounded-md px-2.5 text-[12px] font-medium",
+                  showFlowColumns &&
+                    "border-primary/40 bg-primary/10 text-primary shadow-[var(--shadow-card)]",
+                )}
+              >
+                AI flow
+              </Button>
+              <LeadTableColumnsMenu />
+            </>
+          ) : null}
         </div>
       </div>
     </div>

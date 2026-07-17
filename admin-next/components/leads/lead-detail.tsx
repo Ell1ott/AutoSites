@@ -51,6 +51,7 @@ import {
 import { cn } from "@/lib/utils"
 
 import { ContactTab } from "./contact-tab"
+import { CopyMapsDataButton } from "./copy-maps-data-button"
 import { WebsiteContactsCard } from "./website-contacts-card"
 import { InspirationTab } from "./inspiration-tab"
 import { RatingEditor } from "./rating-editor"
@@ -756,6 +757,8 @@ function LeadQuickActions({ lead }: { lead: Lead }): React.JSX.Element {
 
   return (
     <>
+      <CopyMapsDataButton lead={lead} variant="icon" />
+
       <Tooltip>
         <TooltipTrigger asChild>
           <Button type="button" variant="ghost" size="icon-sm" asChild>

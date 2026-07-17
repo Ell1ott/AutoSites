@@ -251,6 +251,33 @@
         "typescript": "^5",
       },
     },
+    "sites/konya-kebab": {
+      "name": "@autosites/site-konya-kebab",
+      "version": "0.1.0",
+      "dependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "@autosites/site-shell": "workspace:*",
+        "@supabase/ssr": "^0.10.2",
+        "@supabase/supabase-js": "^2.103.2",
+        "next": "16.2.4",
+        "posthog-js": "^1.369.3",
+        "posthog-node": "^5.29.2",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
+      },
+      "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.2.4",
+        "glob": "^13.0.6",
+        "tailwindcss": "^4",
+        "typescript": "^5",
+      },
+    },
     "sites/mikkelborg-kro": {
       "name": "@autosites/site-mikkelborg-kro",
       "version": "0.1.0",
@@ -307,6 +334,33 @@
     },
     "sites/skotte-og-stentoft": {
       "name": "@autosites/site-skotte-og-stentoft",
+      "version": "0.1.0",
+      "dependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "@autosites/site-shell": "workspace:*",
+        "@supabase/ssr": "^0.10.2",
+        "@supabase/supabase-js": "^2.103.2",
+        "next": "16.2.4",
+        "posthog-js": "^1.369.3",
+        "posthog-node": "^5.29.2",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
+      },
+      "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.2.4",
+        "glob": "^13.0.6",
+        "tailwindcss": "^4",
+        "typescript": "^5",
+      },
+    },
+    "sites/solo-pizza": {
+      "name": "@autosites/site-solo-pizza",
       "version": "0.1.0",
       "dependencies": {
         "@autosites/analytics": "workspace:*",
@@ -413,6 +467,33 @@
         "typescript": "^5",
       },
     },
+    "sites/wok-og-chopsticks": {
+      "name": "@autosites/site-wok-og-chopsticks",
+      "version": "0.1.0",
+      "dependencies": {
+        "@autosites/analytics": "workspace:*",
+        "@autosites/cms": "workspace:*",
+        "@autosites/site-shell": "workspace:*",
+        "@supabase/ssr": "^0.10.2",
+        "@supabase/supabase-js": "^2.103.2",
+        "next": "16.2.4",
+        "posthog-js": "^1.369.3",
+        "posthog-node": "^5.29.2",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
+      },
+      "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.2.4",
+        "glob": "^13.0.6",
+        "tailwindcss": "^4",
+        "typescript": "^5",
+      },
+    },
   },
   "trustedDependencies": [
     "sharp",
@@ -435,6 +516,8 @@
 
     "@autosites/site-kina-buffet": ["@autosites/site-kina-buffet@workspace:sites/kina-buffet"],
 
+    "@autosites/site-konya-kebab": ["@autosites/site-konya-kebab@workspace:sites/konya-kebab"],
+
     "@autosites/site-mikkelborg-kro": ["@autosites/site-mikkelborg-kro@workspace:sites/mikkelborg-kro"],
 
     "@autosites/site-novine-digital": ["@autosites/site-novine-digital@workspace:sites/novine-digital"],
@@ -443,11 +526,15 @@
 
     "@autosites/site-skotte-og-stentoft": ["@autosites/site-skotte-og-stentoft@workspace:sites/skotte-og-stentoft"],
 
+    "@autosites/site-solo-pizza": ["@autosites/site-solo-pizza@workspace:sites/solo-pizza"],
+
     "@autosites/site-test-01": ["@autosites/site-test-01@workspace:sites/test-01"],
 
     "@autosites/site-test-02": ["@autosites/site-test-02@workspace:sites/test-02"],
 
     "@autosites/site-test-03": ["@autosites/site-test-03@workspace:sites/test-03"],
+
+    "@autosites/site-wok-og-chopsticks": ["@autosites/site-wok-og-chopsticks@workspace:sites/wok-og-chopsticks"],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
 
